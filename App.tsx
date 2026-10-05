@@ -1,45 +1,28 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
+ * IconAura - Premium Android Customization App
+ * Create custom home-screen shortcuts with beautiful icon themes
  *
  * @format
  */
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import React from 'react';
+import { StatusBar, useColorScheme } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+// @ts-ignore - gesture-handler doesn't have TS types but is required by React Navigation
+import 'react-native-gesture-handler';
+import RootNavigator from './src/navigation/RootNavigator';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <AppContent />
+      <StatusBar
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+      />
+      <RootNavigator />
     </SafeAreaProvider>
   );
 }
-
-function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
-
-  return (
-    <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
-    </View>
-  );
-}
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
 
 export default App;
