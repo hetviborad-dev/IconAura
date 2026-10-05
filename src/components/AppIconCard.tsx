@@ -11,13 +11,16 @@ import {
   useColorScheme,
 } from 'react-native';
 import { Colors, Spacing, Typography, Radius } from '../constants/design';
+import AppSvgIcon from './AppSvgIcon';
 
 interface AppIconCardProps {
   appName: string;
   iconColor: string;
   backgroundColor: string;
   status?: string;
+  statusColor?: string;
   onApply?: () => void;
+  disabled?: boolean;
 }
 
 export default function AppIconCard({
@@ -25,14 +28,16 @@ export default function AppIconCard({
   iconColor,
   backgroundColor,
   status = 'Ready',
+  statusColor,
   onApply,
+  disabled = false,
 }: AppIconCardProps) {
   const isDarkMode = useColorScheme() === 'dark';
   const cardBackground = isDarkMode ? '#1E1E1E' : Colors.background;
   const textColor = isDarkMode ? '#FFFFFF' : Colors.textPrimary;
   const secondaryTextColor = isDarkMode ? '#AAAAAA' : Colors.textSecondary;
   const borderColor = isDarkMode ? '#333333' : Colors.border;
-  const buttonBackground = isDarkMode ? '#0A84FF' : '#0A84FF';
+  const buttonBackground = disabled ? secondaryTextColor : '#0A84FF';
 
   return (
     <View
@@ -41,6 +46,7 @@ export default function AppIconCard({
         {
           backgroundColor: cardBackground,
           borderColor,
+          opacity: disabled && status !== 'Waiting for Android confirmation...' && status !== 'Preparing icon...' ? 0.6 : 1,
         },
       ]}
     >
@@ -54,14 +60,7 @@ export default function AppIconCard({
           },
         ]}
       >
-        <View
-          style={[
-            styles.icon,
-            {
-              backgroundColor: iconColor,
-            },
-          ]}
-        />
+        <AppSvgIcon appName={appName} iconColor={iconColor} size={36} />
       </View>
 
       {/* Middle: App Info */}
@@ -69,7 +68,14 @@ export default function AppIconCard({
         <Text style={[styles.appName, { color: textColor }]}>
           {appName}
         </Text>
-        <Text style={[styles.status, { color: secondaryTextColor }]}>
+        <Text
+          style={[
+            styles.status,
+            {
+              color: statusColor || secondaryTextColor,
+            },
+          ]}
+        >
           {status}
         </Text>
       </View>
@@ -84,7 +90,8 @@ export default function AppIconCard({
             },
           ]}
           onPress={onApply}
-          activeOpacity={0.8}
+          disabled={disabled}
+          activeOpacity={disabled ? 0.5 : 0.8}
         >
           <Text style={styles.buttonText}>Apply</Text>
         </TouchableOpacity>
@@ -110,11 +117,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  icon: {
-    width: 48,
-    height: 48,
-    borderRadius: Radius.sm,
   },
   infoContainer: {
     flex: 1,

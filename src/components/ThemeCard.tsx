@@ -11,6 +11,7 @@ import {
   useColorScheme,
 } from 'react-native';
 import { Colors, Spacing, Typography, Radius } from '../constants/design';
+import AppSvgIcon from './AppSvgIcon';
 
 interface ThemeCardProps {
   themeName: string;
@@ -59,27 +60,17 @@ export default function ThemeCard({
       >
         {/* Instagram Icon Preview */}
         <View style={styles.iconRow}>
-          <View
-            style={[
-              styles.previewIcon,
-              {
-                backgroundColor: iconColor,
-              },
-            ]}
-          />
+          <View style={styles.previewIcon}>
+            <AppSvgIcon appName="Instagram" iconColor={iconColor} size={40} />
+          </View>
           <Text style={[styles.appLabel, { color: iconColor }]}>IG</Text>
         </View>
 
         {/* WhatsApp Icon Preview */}
         <View style={styles.iconRow}>
-          <View
-            style={[
-              styles.previewIcon,
-              {
-                backgroundColor: iconColor,
-              },
-            ]}
-          />
+          <View style={styles.previewIcon}>
+            <AppSvgIcon appName="WhatsApp" iconColor={iconColor} size={40} />
+          </View>
           <Text style={[styles.appLabel, { color: iconColor }]}>WA</Text>
         </View>
       </View>
@@ -121,7 +112,8 @@ const styles = StyleSheet.create({
   previewIcon: {
     width: 48,
     height: 48,
-    borderRadius: Radius.sm,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   appLabel: {
     fontSize: Typography.sizes.caption,

@@ -25,14 +25,14 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
   'mono-white': {
     id: 'mono-white',
     name: 'Mono White',
-    description: 'Minimal white-on-white aesthetic.',
+    description: 'Subtle white icons on soft light grey.',
     colors: {
       icon: '#FFFFFF',
-      background: '#FFFFFF',
+      background: '#1A1A1A',
     },
     preview: {
       featuredApps: ['instagram', 'whatsapp'],
-      subtitle: 'White on white',
+      subtitle: 'White on dark',
     },
   },
   'mono-grey': {
