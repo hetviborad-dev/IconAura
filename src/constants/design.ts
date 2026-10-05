@@ -9,7 +9,7 @@ export const Colors = {
 
   // Backgrounds
   background: '#FFFFFF',
-  backgroundSecondary: '#F8F8F8',
+  backgroundSecondary: '#FAFAFA',
 
   // Text
   textPrimary: '#000000',
@@ -17,29 +17,24 @@ export const Colors = {
   textTertiary: '#999999',
 
   // Borders & Dividers
-  border: '#E8E8E8',
+  border: '#E5E5E5',
   divider: '#F0F0F0',
 
   // Semantic colors
-  success: '#34C759',
-  error: '#FF3B30',
-  warning: '#FF9500',
-  info: '#0A84FF',
+  success: '#10B981',
+  error: '#EF4444',
+  warning: '#F59E0B',
+  info: '#3B82F6',
 
-  // Theme-specific
-  mono: {
-    light: {
-      icon: '#000000',
-      background: '#FFFFFF',
-    },
-    white: {
-      icon: '#FFFFFF',
-      background: '#FFFFFF',
-    },
-    grey: {
-      icon: '#000000',
-      background: '#E8E8E8',
-    },
+  // Dark mode
+  dark: {
+    background: '#000000',
+    backgroundSecondary: '#1A1A1A',
+    surface: '#1F1F1F',
+    border: '#2A2A2A',
+    textPrimary: '#FFFFFF',
+    textSecondary: '#A0A0A0',
+    textTertiary: '#666666',
   },
 };
 
@@ -48,17 +43,18 @@ export const Spacing = {
   sm: 8,
   md: 12,
   lg: 16,
-  xl: 24,
-  xxl: 32,
+  xl: 20,
+  xxl: 24,
+  xxxl: 32,
 };
 
 export const Typography = {
   fontFamily: 'System',
   sizes: {
-    h1: 32,
-    h2: 28,
-    h3: 24,
-    h4: 20,
+    h1: 28,
+    h2: 24,
+    h3: 20,
+    h4: 18,
     body: 16,
     bodySmall: 14,
     caption: 12,
@@ -69,28 +65,28 @@ export const Typography = {
     semibold: '600' as const,
     bold: '700' as const,
   },
+  lineHeights: {
+    tight: 1.2,
+    normal: 1.5,
+    relaxed: 1.6,
+  },
 };
 
 export const Radius = {
+  xs: 4,
   sm: 8,
   md: 12,
   lg: 16,
+  xl: 20,
   full: 999,
 };
 
-export const Shadows = {
-  sm: {
-    elevation: 2,
-  },
-  md: {
-    elevation: 4,
-  },
-  lg: {
-    elevation: 8,
-  },
+export const TouchTarget = {
+  min: 44, // Minimum touch target size for accessibility
 };
 
 export const Layout = {
   screenPadding: Spacing.lg,
   maxContentWidth: 600,
+  cardSpacing: Spacing.md,
 };

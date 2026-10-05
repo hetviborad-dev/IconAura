@@ -7,6 +7,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useColorScheme } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import HomeScreen from '../screens/HomeScreen';
 import ThemeDetailScreen from '../screens/ThemeDetailScreen';
@@ -44,6 +45,7 @@ function HomeStackNavigator() {
 
 export default function RootNavigator() {
   const isDarkMode = useColorScheme() === 'dark';
+  const insets = useSafeAreaInsets();
 
   const backgroundColor = isDarkMode ? '#1E1E1E' : Colors.background;
   const activeColor = isDarkMode ? '#FFFFFF' : Colors.textPrimary;
@@ -59,9 +61,9 @@ export default function RootNavigator() {
             backgroundColor,
             borderTopColor,
             borderTopWidth: 1,
-            paddingBottom: 8,
+            paddingBottom: insets.bottom + 8,
             paddingTop: 8,
-            height: 60,
+            height: 60 + insets.bottom,
           },
           tabBarActiveTintColor: activeColor,
           tabBarInactiveTintColor: inactiveColor,

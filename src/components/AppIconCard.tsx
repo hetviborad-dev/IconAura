@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   useColorScheme,
 } from 'react-native';
-import { Colors, Spacing, Typography, Radius } from '../constants/design';
+import { Colors, Spacing, Typography, Radius, TouchTarget } from '../constants/design';
 import AppSvgIcon from './AppSvgIcon';
 
 interface AppIconCardProps {
@@ -33,11 +33,15 @@ export default function AppIconCard({
   disabled = false,
 }: AppIconCardProps) {
   const isDarkMode = useColorScheme() === 'dark';
-  const cardBackground = isDarkMode ? '#1E1E1E' : Colors.background;
-  const textColor = isDarkMode ? '#FFFFFF' : Colors.textPrimary;
-  const secondaryTextColor = isDarkMode ? '#AAAAAA' : Colors.textSecondary;
-  const borderColor = isDarkMode ? '#333333' : Colors.border;
-  const buttonBackground = disabled ? secondaryTextColor : '#0A84FF';
+  const cardBackground = isDarkMode ? Colors.dark.surface : Colors.background;
+  const textColor = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
+  const secondaryTextColor = isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary;
+  const borderColor = isDarkMode ? Colors.dark.border : Colors.border;
+  const buttonBackground = disabled
+    ? (isDarkMode ? Colors.dark.textTertiary : Colors.textTertiary)
+    : Colors.textPrimary;
+
+  const isProcessing = status === 'Waiting for Android confirmation...' || status === 'Preparing icon...';
 
   return (
     <View
@@ -46,7 +50,7 @@ export default function AppIconCard({
         {
           backgroundColor: cardBackground,
           borderColor,
-          opacity: disabled && status !== 'Waiting for Android confirmation...' && status !== 'Preparing icon...' ? 0.6 : 1,
+          opacity: disabled && !isProcessing ? 0.5 : 1,
         },
       ]}
     >
@@ -60,12 +64,15 @@ export default function AppIconCard({
           },
         ]}
       >
-        <AppSvgIcon appName={appName} iconColor={iconColor} size={36} />
+        <AppSvgIcon appName={appName} iconColor={iconColor} size={40} />
       </View>
 
       {/* Middle: App Info */}
       <View style={styles.infoContainer}>
-        <Text style={[styles.appName, { color: textColor }]}>
+        <Text
+          style={[styles.appName, { color: textColor }]}
+          numberOfLines={1}
+        >
           {appName}
         </Text>
         <Text
@@ -75,6 +82,7 @@ export default function AppIconCard({
               color: statusColor || secondaryTextColor,
             },
           ]}
+          numberOfLines={2}
         >
           {status}
         </Text>
@@ -91,7 +99,7 @@ export default function AppIconCard({
           ]}
           onPress={onApply}
           disabled={disabled}
-          activeOpacity={disabled ? 0.5 : 0.8}
+          activeOpacity={disabled ? 1 : 0.7}
         >
           <Text style={styles.buttonText}>Apply</Text>
         </TouchableOpacity>
@@ -106,36 +114,41 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: Radius.md,
     borderWidth: 1,
-    padding: Spacing.md,
+    padding: Spacing.lg,
     marginBottom: Spacing.md,
-    gap: Spacing.md,
+    gap: Spacing.lg,
+    minHeight: TouchTarget.min * 1.8,
   },
   iconPreview: {
-    width: 64,
-    height: 64,
-    borderRadius: Radius.sm,
+    width: 56,
+    height: 56,
+    borderRadius: Radius.md,
     borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   infoContainer: {
     flex: 1,
+    gap: Spacing.xs,
   },
   appName: {
     fontSize: Typography.sizes.body,
     fontWeight: Typography.weights.semibold,
-    marginBottom: Spacing.xs,
+    lineHeight: Typography.sizes.body * Typography.lineHeights.tight,
   },
   status: {
     fontSize: Typography.sizes.bodySmall,
     fontWeight: Typography.weights.regular,
+    lineHeight: Typography.sizes.bodySmall * Typography.lineHeights.normal,
   },
   applyButton: {
-    paddingHorizontal: Spacing.lg,
-    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: Spacing.md,
     borderRadius: Radius.sm,
     justifyContent: 'center',
     alignItems: 'center',
+    minHeight: TouchTarget.min,
+    minWidth: 80,
   },
   buttonText: {
     color: '#FFFFFF',

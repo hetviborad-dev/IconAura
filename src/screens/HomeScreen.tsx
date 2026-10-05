@@ -24,9 +24,9 @@ interface HomeScreenProps {
 
 export default function HomeScreen({ navigation }: HomeScreenProps) {
   const isDarkMode = useColorScheme() === 'dark';
-  const backgroundColor = isDarkMode ? '#121212' : Colors.background;
-  const textColor = isDarkMode ? '#FFFFFF' : Colors.textPrimary;
-  const secondaryTextColor = isDarkMode ? '#AAAAAA' : Colors.textSecondary;
+  const backgroundColor = isDarkMode ? Colors.dark.background : Colors.background;
+  const textColor = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
+  const secondaryTextColor = isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary;
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
@@ -40,7 +40,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
             IconAura
           </Text>
           <Text style={[styles.tagline, { color: secondaryTextColor }]}>
-            Make your home screen yours.
+            Beautiful custom icons for your home screen
           </Text>
         </View>
 
@@ -48,7 +48,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
         <View style={styles.section}>
           <SectionHeader
             title="Icon Themes"
-            subtitle="Choose a theme for your custom icons"
+            subtitle="Choose a theme for your apps"
           />
 
           {getAllThemes().map((theme) => (
@@ -76,22 +76,24 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: Layout.screenPadding,
-    paddingTop: Spacing.lg,
-    paddingBottom: Spacing.xl,
+    paddingTop: Spacing.xxl,
+    paddingBottom: Spacing.xxxl,
   },
   header: {
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.xxxl,
   },
   appName: {
     fontSize: Typography.sizes.h1,
     fontWeight: Typography.weights.bold,
     marginBottom: Spacing.sm,
+    lineHeight: Typography.sizes.h1 * Typography.lineHeights.tight,
   },
   tagline: {
     fontSize: Typography.sizes.body,
     fontWeight: Typography.weights.regular,
+    lineHeight: Typography.sizes.body * Typography.lineHeights.normal,
   },
   section: {
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.xxl,
   },
 });

@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   useColorScheme,
 } from 'react-native';
-import { Colors, Spacing, Typography, Radius } from '../constants/design';
+import { Colors, Spacing, Typography, Radius, TouchTarget } from '../constants/design';
 import AppSvgIcon from './AppSvgIcon';
 
 interface ThemeCardProps {
@@ -31,10 +31,10 @@ export default function ThemeCard({
   onPress,
 }: ThemeCardProps) {
   const isDarkMode = useColorScheme() === 'dark';
-  const cardBackground = isDarkMode ? '#1E1E1E' : Colors.backgroundSecondary;
-  const textColor = isDarkMode ? '#FFFFFF' : Colors.textPrimary;
-  const secondaryTextColor = isDarkMode ? '#AAAAAA' : Colors.textSecondary;
-  const borderColor = isDarkMode ? '#333333' : Colors.border;
+  const cardBackground = isDarkMode ? Colors.dark.backgroundSecondary : Colors.background;
+  const textColor = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
+  const secondaryTextColor = isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary;
+  const borderColor = isDarkMode ? Colors.dark.border : Colors.border;
 
   return (
     <TouchableOpacity
@@ -46,7 +46,7 @@ export default function ThemeCard({
         },
       ]}
       onPress={onPress}
-      activeOpacity={0.7}
+      activeOpacity={0.6}
     >
       {/* Preview Area */}
       <View
@@ -59,79 +59,87 @@ export default function ThemeCard({
         ]}
       >
         {/* Instagram Icon Preview */}
-        <View style={styles.iconRow}>
+        <View style={styles.iconColumn}>
           <View style={styles.previewIcon}>
-            <AppSvgIcon appName="Instagram" iconColor={iconColor} size={40} />
+            <AppSvgIcon appName="Instagram" iconColor={iconColor} size={48} />
           </View>
-          <Text style={[styles.appLabel, { color: iconColor }]}>IG</Text>
+          <Text style={[styles.appLabel, { color: iconColor }]}>Instagram</Text>
         </View>
 
         {/* WhatsApp Icon Preview */}
-        <View style={styles.iconRow}>
+        <View style={styles.iconColumn}>
           <View style={styles.previewIcon}>
-            <AppSvgIcon appName="WhatsApp" iconColor={iconColor} size={40} />
+            <AppSvgIcon appName="WhatsApp" iconColor={iconColor} size={48} />
           </View>
-          <Text style={[styles.appLabel, { color: iconColor }]}>WA</Text>
+          <Text style={[styles.appLabel, { color: iconColor }]}>WhatsApp</Text>
         </View>
       </View>
 
       {/* Theme Info */}
-      <Text style={[styles.themeName, { color: textColor }]}>
-        {themeName}
-      </Text>
-      <Text style={[styles.description, { color: secondaryTextColor }]}>
-        {description}
-      </Text>
-      <Text style={[styles.appCount, { color: secondaryTextColor }]}>
-        {supportedAppCount} app{supportedAppCount !== 1 ? 's' : ''}
-      </Text>
+      <View style={styles.infoContainer}>
+        <Text style={[styles.themeName, { color: textColor }]}>
+          {themeName}
+        </Text>
+        <Text style={[styles.description, { color: secondaryTextColor }]}>
+          {description}
+        </Text>
+        <Text style={[styles.appCount, { color: secondaryTextColor }]}>
+          {supportedAppCount} app{supportedAppCount !== 1 ? 's' : ''}
+        </Text>
+      </View>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: Radius.md,
-    borderWidth: 1,
-    padding: Spacing.md,
-    marginBottom: Spacing.md,
-  },
-  previewContainer: {
-    borderRadius: Radius.sm,
+    borderRadius: Radius.lg,
     borderWidth: 1,
     padding: Spacing.lg,
-    marginBottom: Spacing.md,
+    marginBottom: Spacing.lg,
+    minHeight: TouchTarget.min,
+  },
+  previewContainer: {
+    borderRadius: Radius.md,
+    borderWidth: 1,
+    padding: Spacing.xxl,
+    marginBottom: Spacing.lg,
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
+    minHeight: 120,
   },
-  iconRow: {
+  iconColumn: {
     alignItems: 'center',
     gap: Spacing.sm,
   },
   previewIcon: {
-    width: 48,
-    height: 48,
+    width: 64,
+    height: 64,
     justifyContent: 'center',
     alignItems: 'center',
   },
   appLabel: {
     fontSize: Typography.sizes.caption,
-    fontWeight: Typography.weights.semibold,
+    fontWeight: Typography.weights.medium,
     marginTop: Spacing.xs,
   },
+  infoContainer: {
+    gap: Spacing.xs,
+  },
   themeName: {
-    fontSize: Typography.sizes.h4,
+    fontSize: Typography.sizes.h3,
     fontWeight: Typography.weights.semibold,
-    marginBottom: Spacing.xs,
+    lineHeight: Typography.sizes.h3 * Typography.lineHeights.tight,
   },
   description: {
     fontSize: Typography.sizes.bodySmall,
     fontWeight: Typography.weights.regular,
-    marginBottom: Spacing.xs,
+    lineHeight: Typography.sizes.bodySmall * Typography.lineHeights.normal,
   },
   appCount: {
     fontSize: Typography.sizes.caption,
-    fontWeight: Typography.weights.regular,
+    fontWeight: Typography.weights.medium,
+    marginTop: Spacing.xs,
   },
 });

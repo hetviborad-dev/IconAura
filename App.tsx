@@ -19,6 +19,8 @@ function App() {
     <SafeAreaProvider>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor="transparent"
+        translucent={true}
       />
       <RootNavigator />
     </SafeAreaProvider>
