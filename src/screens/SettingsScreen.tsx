@@ -1,26 +1,26 @@
 /**
  * SettingsScreen - Settings and information screen
- * Shows saved icons, account/plan info, support, and app details
  */
 
 import React from 'react';
 import {
   View,
-  Text,
-  StyleSheet,
   ScrollView,
   SafeAreaView,
   useColorScheme,
+  Text,
+  StyleSheet,
 } from 'react-native';
 import { Colors, Spacing, Typography, Radius, Layout } from '../constants/design';
+import SectionHeader from '../components/SectionHeader';
+import SettingsRow from '../components/SettingsRow';
 import { APP_NAME, APP_VERSION } from '../data/config';
 
 export default function SettingsScreen() {
   const isDarkMode = useColorScheme() === 'dark';
-
   const backgroundColor = isDarkMode ? '#121212' : Colors.background;
   const textColor = isDarkMode ? '#FFFFFF' : Colors.textPrimary;
-  const secondaryTextColor = isDarkMode ? '#CCCCCC' : Colors.textSecondary;
+  const secondaryTextColor = isDarkMode ? '#AAAAAA' : Colors.textSecondary;
   const cardBackground = isDarkMode ? '#1E1E1E' : Colors.backgroundSecondary;
   const borderColor = isDarkMode ? '#333333' : Colors.border;
 
@@ -29,8 +29,9 @@ export default function SettingsScreen() {
       title: 'Saved Icons',
       items: [
         {
+          icon: 'bookmark-outline',
           label: 'Your custom shortcuts',
-          description: 'Manage your created icons',
+          subtitle: 'Manage your created icons',
         },
       ],
     },
@@ -38,8 +39,9 @@ export default function SettingsScreen() {
       title: 'Account',
       items: [
         {
+          icon: 'star-outline',
           label: 'Plan Status',
-          description: 'Free plan',
+          subtitle: 'Free plan',
         },
       ],
     },
@@ -47,12 +49,14 @@ export default function SettingsScreen() {
       title: 'Support',
       items: [
         {
+          icon: 'help-circle-outline',
           label: 'Customer Support',
-          description: 'Get help and support',
+          subtitle: 'Get help and support',
         },
         {
+          icon: 'shield-checkmark-outline',
           label: 'Privacy Policy',
-          description: 'Read our privacy policy',
+          subtitle: 'Read our privacy policy',
         },
       ],
     },
@@ -60,8 +64,9 @@ export default function SettingsScreen() {
       title: 'About',
       items: [
         {
-          label: `${APP_NAME}`,
-          description: `Version ${APP_VERSION}`,
+          icon: 'information-circle-outline',
+          label: APP_NAME,
+          subtitle: `Version ${APP_VERSION}`,
         },
       ],
     },
@@ -74,21 +79,12 @@ export default function SettingsScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View style={styles.header}>
-          <Text style={[styles.title, { color: textColor }]}>Settings</Text>
-        </View>
+        <Text style={[styles.title, { color: textColor }]}>Settings</Text>
 
         {/* Settings Sections */}
         {settingsSections.map((section, sectionIndex) => (
           <View key={section.title} style={styles.section}>
-            <Text
-              style={[
-                styles.sectionTitle,
-                { color: textColor, marginBottom: Spacing.md },
-              ]}
-            >
-              {section.title}
-            </Text>
+            <SectionHeader title={section.title} />
 
             <View
               style={[
@@ -100,34 +96,17 @@ export default function SettingsScreen() {
               ]}
             >
               {section.items.map((item, itemIndex) => (
-                <View
+                <SettingsRow
                   key={item.label}
-                  style={[
-                    styles.settingItem,
-                    {
-                      borderBottomColor: borderColor,
-                      borderBottomWidth:
-                        itemIndex < section.items.length - 1 ? 1 : 0,
-                    },
-                  ]}
-                >
-                  <View style={styles.settingInfo}>
-                    <Text style={[styles.settingLabel, { color: textColor }]}>
-                      {item.label}
-                    </Text>
-                    <Text
-                      style={[
-                        styles.settingDescription,
-                        { color: secondaryTextColor },
-                      ]}
-                    >
-                      {item.description}
-                    </Text>
-                  </View>
-                  <Text style={[styles.settingArrow, { color: borderColor }]}>
-                    →
-                  </Text>
-                </View>
+                  icon={item.icon}
+                  title={item.label}
+                  subtitle={item.subtitle}
+                  onPress={() => {
+                    // TODO: Handle navigation in Phase 2
+                    console.log(`Pressed: ${item.label}`);
+                  }}
+                  showBorder={itemIndex < section.items.length - 1}
+                />
               ))}
             </View>
           </View>
@@ -135,7 +114,7 @@ export default function SettingsScreen() {
 
         {/* App Info */}
         <View style={styles.infoSection}>
-          <Text style={[styles.infoTitle, { color: secondaryTextColor }]}>
+          <Text style={[styles.infoText, { color: secondaryTextColor }]}>
             {APP_NAME} is a premium customization app for Android. Create
             beautiful home-screen shortcuts with custom themes.
           </Text>
@@ -154,54 +133,24 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.lg,
     paddingBottom: Spacing.xl,
   },
-  header: {
-    marginBottom: Spacing.xl,
-  },
   title: {
     fontSize: Typography.sizes.h1,
     fontWeight: Typography.weights.bold,
+    marginBottom: Spacing.xl,
   },
   section: {
     marginBottom: Spacing.xl,
-  },
-  sectionTitle: {
-    fontSize: Typography.sizes.h4,
-    fontWeight: Typography.weights.semibold,
   },
   sectionContent: {
     borderRadius: Radius.md,
     borderWidth: 1,
     overflow: 'hidden',
   },
-  settingItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.md,
-  },
-  settingInfo: {
-    flex: 1,
-    marginRight: Spacing.md,
-  },
-  settingLabel: {
-    fontSize: Typography.sizes.body,
-    fontWeight: Typography.weights.medium,
-    marginBottom: Spacing.xs,
-  },
-  settingDescription: {
-    fontSize: Typography.sizes.bodySmall,
-    fontWeight: Typography.weights.regular,
-  },
-  settingArrow: {
-    fontSize: Typography.sizes.h4,
-    fontWeight: Typography.weights.semibold,
-  },
   infoSection: {
     marginTop: Spacing.xl,
     marginBottom: Spacing.lg,
   },
-  infoTitle: {
+  infoText: {
     fontSize: Typography.sizes.bodySmall,
     fontWeight: Typography.weights.regular,
     lineHeight: Typography.sizes.bodySmall * 1.6,
