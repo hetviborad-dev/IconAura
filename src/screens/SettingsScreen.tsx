@@ -115,7 +115,7 @@ export default function SettingsScreen() {
         {/* App Info */}
         <View style={styles.infoSection}>
           <Text style={[styles.infoText, { color: secondaryTextColor }]}>
-            {APP_NAME} is a premium customization app for Android. Create
+            IconAura is a premium customization app for Android. Create
             beautiful home-screen shortcuts with custom themes.
           </Text>
         </View>

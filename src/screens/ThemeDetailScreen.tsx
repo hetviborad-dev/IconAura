@@ -17,7 +17,9 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Colors, Spacing, Typography, Radius, Layout } from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
 import { Theme } from '../types/index';
-import { THEMES, SUPPORTED_APPS } from '../data/config';
+import { getTheme } from '../data/themes';
+import { getMvpApps } from '../data/apps';
+import { createThemedIcon } from '../data/themed-icons';
 import AppIconCard from '../components/AppIconCard';
 import PrimaryButton from '../components/PrimaryButton';
 
@@ -36,15 +38,8 @@ export default function ThemeDetailScreen({
 }: ThemeDetailScreenProps) {
   const isDarkMode = useColorScheme() === 'dark';
   const { themeId } = route.params;
-  const theme = THEMES[themeId];
-
-  if (!theme) {
-    return (
-      <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? '#121212' : Colors.background }]}>
-        <Text>Theme not found</Text>
-      </SafeAreaView>
-    );
-  }
+  const theme = getTheme(themeId);
+  const mvpApps = getMvpApps();
 
   const backgroundColor = isDarkMode ? '#121212' : Colors.background;
   const textColor = isDarkMode ? '#FFFFFF' : Colors.textPrimary;
@@ -82,12 +77,12 @@ export default function ThemeDetailScreen({
           style={[
             styles.largePreview,
             {
-              backgroundColor: theme.backgroundColor,
+              backgroundColor: theme.colors.background,
               borderColor,
             },
           ]}
         >
-          {Object.values(SUPPORTED_APPS).map((app, index) => (
+          {mvpApps.map((app, index) => (
             <View
               key={app.id}
               style={[
@@ -99,14 +94,14 @@ export default function ThemeDetailScreen({
                 style={[
                   styles.largeIcon,
                   {
-                    backgroundColor: theme.iconColor,
+                    backgroundColor: theme.colors.icon,
                   },
                 ]}
               />
               <Text
                 style={[
                   styles.previewLabel,
-                  { color: theme.iconColor },
+                  { color: theme.colors.icon },
                 ]}
               >
                 {app.name}
@@ -121,19 +116,22 @@ export default function ThemeDetailScreen({
             Apply to Apps
           </Text>
 
-          {Object.values(SUPPORTED_APPS).map((app) => (
-            <AppIconCard
-              key={app.id}
-              appName={app.name}
-              iconColor={theme.iconColor}
-              backgroundColor={theme.backgroundColor}
-              status="Ready to apply"
-              onApply={() => {
-                // TODO: Implement apply functionality in Phase 2
-                console.log(`Apply ${theme.name} to ${app.name}`);
-              }}
-            />
-          ))}
+          {mvpApps.map((app) => {
+            const themedIcon = createThemedIcon(app.id, themeId);
+            return (
+              <AppIconCard
+                key={app.id}
+                appName={app.name}
+                iconColor={themedIcon.iconColor}
+                backgroundColor={themedIcon.backgroundColor}
+                status="Ready to apply"
+                onApply={() => {
+                  // TODO: Implement apply functionality in Phase 2
+                  console.log(`Apply ${theme.name} to ${app.name}`);
+                }}
+              />
+            );
+          })}
 
           {/* Apply All Button */}
           <PrimaryButton

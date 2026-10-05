@@ -14,7 +14,7 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Colors, Spacing, Typography, Layout } from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
-import { THEMES } from '../data/config';
+import { getAllThemes } from '../data/themes';
 import ThemeCard from '../components/ThemeCard';
 import SectionHeader from '../components/SectionHeader';
 
@@ -51,13 +51,13 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
             subtitle="Choose a theme for your custom icons"
           />
 
-          {Object.values(THEMES).map((theme) => (
+          {getAllThemes().map((theme) => (
             <ThemeCard
               key={theme.id}
               themeName={theme.name}
               description={theme.description}
-              iconColor={theme.iconColor}
-              backgroundColor={theme.backgroundColor}
+              iconColor={theme.colors.icon}
+              backgroundColor={theme.colors.background}
               supportedAppCount={2}
               onPress={() => {
                 navigation.navigate('ThemeDetail', { themeId: theme.id });
