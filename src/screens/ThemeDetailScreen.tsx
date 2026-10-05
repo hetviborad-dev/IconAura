@@ -105,11 +105,6 @@ export default function ThemeDetailScreen({
 
       if (result.success) {
         setShortcutStates((prev) => ({ ...prev, [appId]: 'waiting_confirmation' }));
-        Alert.alert(
-          'Add to Home Screen',
-          `Android will now ask you to place "${appName}" on your home screen.`,
-          [{ text: 'OK' }]
-        );
       } else {
         setShortcutStates((prev) => ({ ...prev, [appId]: 'failed' }));
         Alert.alert(
@@ -126,6 +121,27 @@ export default function ThemeDetailScreen({
         'Failed to create shortcut. Please try again.',
         [{ text: 'OK' }]
       );
+    }
+  };
+
+  const handleApplyAll = async () => {
+    const installedApps = mvpApps.filter((app) => appStatus[app.id]?.installed);
+    if (installedApps.length === 0) {
+      return;
+    }
+
+    // Create shortcuts one at a time sequentially
+    for (const app of installedApps) {
+      const currentState = shortcutStates[app.id] || 'idle';
+      // Skip if already applied or in progress
+      if (currentState === 'applied' || currentState === 'applying' || currentState === 'waiting_confirmation') {
+        continue;
+      }
+
+      await handleCreateShortcut(app.id, app.name, app.packageName);
+
+      // Wait 1 second between shortcuts to allow Android to process each one
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
   };
 
@@ -275,14 +291,7 @@ export default function ThemeDetailScreen({
           {/* Apply All Button */}
           <PrimaryButton
             title="Apply All"
-            onPress={() => {
-              const installedApps = mvpApps.filter((app) => appStatus[app.id]?.installed);
-              if (installedApps.length > 0) {
-                installedApps.forEach((app) => {
-                  handleCreateShortcut(app.id, app.name, app.packageName);
-                });
-              }
-            }}
+            onPress={handleApplyAll}
             disabled={!Object.values(appStatus).some((s) => s?.installed) || Object.values(shortcutStates).some(s => s === 'applying' || s === 'waiting_confirmation')}
             fullWidth
             style={styles.applyAllButton}
