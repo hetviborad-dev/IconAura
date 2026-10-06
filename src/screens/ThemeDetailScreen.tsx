@@ -217,7 +217,7 @@ export default function ThemeDetailScreen({
               ]}
             >
               <View style={styles.largeIcon}>
-                <AppSvgIcon appId={app.id} iconColor={theme.colors.icon} size={64} />
+                <AppSvgIcon appId={app.id} iconColor={theme.colors.icon} size={56} />
               </View>
               <Text
                 style={[

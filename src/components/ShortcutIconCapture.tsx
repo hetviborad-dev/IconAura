@@ -31,7 +31,7 @@ export default function ShortcutIconCapture({
   return (
     <ViewShot ref={viewRef} style={styles.capture}>
       <View style={[styles.iconCanvas, { backgroundColor }]}>
-        <AppSvgIcon appId={appId} iconColor={iconColor} size={384} />
+        <AppSvgIcon appId={appId} iconColor={iconColor} size={240} />
       </View>
     </ViewShot>
   );
@@ -39,5 +39,10 @@ export default function ShortcutIconCapture({
 
 const styles = {
   capture: { position: 'absolute' as const, left: -600, top: 0, width: 512, height: 512 },
-  iconCanvas: { width: 512, height: 512, padding: 64 },
+  iconCanvas: {
+    width: 512,
+    height: 512,
+    alignItems: 'center' as const,
+    justifyContent: 'center' as const,
+  },
 };

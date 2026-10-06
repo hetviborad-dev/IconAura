@@ -67,7 +67,7 @@ export default function AppIconCard({
           },
         ]}
       >
-        <AppSvgIcon appId={appId} iconColor={iconColor} size={40} />
+        <AppSvgIcon appId={appId} iconColor={iconColor} size={36} />
       </View>
 
       {/* Middle: App Info */}

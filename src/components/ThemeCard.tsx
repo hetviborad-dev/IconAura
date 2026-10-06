@@ -61,7 +61,7 @@ export default function ThemeCard({
         {/* Instagram Icon Preview */}
         <View style={styles.iconColumn}>
           <View style={styles.previewIcon}>
-            <AppSvgIcon appId="instagram" iconColor={iconColor} size={48} />
+            <AppSvgIcon appId="instagram" iconColor={iconColor} size={42} />
           </View>
           <Text style={[styles.appLabel, { color: iconColor }]}>Instagram</Text>
         </View>
@@ -69,7 +69,7 @@ export default function ThemeCard({
         {/* WhatsApp Icon Preview */}
         <View style={styles.iconColumn}>
           <View style={styles.previewIcon}>
-            <AppSvgIcon appId="whatsapp" iconColor={iconColor} size={48} />
+            <AppSvgIcon appId="whatsapp" iconColor={iconColor} size={42} />
           </View>
           <Text style={[styles.appLabel, { color: iconColor }]}>WhatsApp</Text>
         </View>
