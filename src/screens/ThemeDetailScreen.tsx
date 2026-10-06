@@ -31,7 +31,7 @@ import AppIconCard from '../components/AppIconCard';
 import AppSvgIcon from '../components/AppSvgIcon';
 import PrimaryButton from '../components/PrimaryButton';
 
-type ShortcutState = 'idle' | 'applying' | 'waiting_confirmation' | 'applied' | 'failed';
+type ShortcutState = 'idle' | 'applying' | 'waiting_confirmation' | 'retry' | 'applied' | 'failed';
 
 const SUPPORTED_APPS = getAllApps();
 
@@ -56,6 +56,7 @@ export default function ThemeDetailScreen({
 
   // Track shortcut states per app ID
   const [shortcutStates, setShortcutStates] = useState<Record<string, ShortcutState>>({});
+  const confirmationTimers = React.useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const captureIcons = React.useRef<Partial<Record<AppId, () => Promise<string>>>>({});
   const registerCapture = React.useCallback((appId: AppId, capture: () => Promise<string>) => {
     captureIcons.current[appId] = capture;
@@ -75,15 +76,19 @@ export default function ThemeDetailScreen({
       const app = SUPPORTED_APPS.find((a) => generateShortcutId(a.packageName, themeId) === event.shortcutId);
 
       if (app) {
+        clearTimeout(confirmationTimers.current[app.id]);
+        delete confirmationTimers.current[app.id];
         setShortcutStates((prev) => ({
           ...prev,
-          [app.id]: event.status === 'success' ? 'applied' : 'failed'
+          [app.id]: event.status === 'success' ? 'applied' : 'failed',
         }));
       }
     });
 
     return () => {
       subscription.remove();
+      Object.values(confirmationTimers.current).forEach(clearTimeout);
+      confirmationTimers.current = {};
     };
   }, [themeId]);
 
@@ -122,6 +127,15 @@ export default function ThemeDetailScreen({
 
       if (result.success) {
         setShortcutStates((prev) => ({ ...prev, [appId]: 'waiting_confirmation' }));
+        clearTimeout(confirmationTimers.current[appId]);
+        confirmationTimers.current[appId] = setTimeout(() => {
+          setShortcutStates((prev) =>
+            prev[appId] === 'waiting_confirmation'
+              ? { ...prev, [appId]: 'retry' }
+              : prev,
+          );
+          delete confirmationTimers.current[appId];
+        }, 15000);
       } else {
         setShortcutStates((prev) => ({ ...prev, [appId]: 'failed' }));
         Alert.alert(
@@ -267,7 +281,7 @@ export default function ThemeDetailScreen({
               const themedIcon = createThemedIcon(app.id, themeId);
               const isInstalled = status?.installed ?? false;
               const shortcutState = shortcutStates[app.id] || 'idle';
-              const isApplying = shortcutState === 'applying' || shortcutState === 'waiting_confirmation';
+              const isBusy = shortcutState === 'applying' || shortcutState === 'waiting_confirmation';
 
               // Determine UI status based on shortcut state
               let displayStatus = 'Not installed';
@@ -278,6 +292,10 @@ export default function ThemeDetailScreen({
                   case 'idle':
                     displayStatus = 'Installed - Ready to apply';
                     displayColor = '#4CAF50'; // Green
+                    break;
+                  case 'retry':
+                    displayStatus = 'Not added - Tap to retry';
+                    displayColor = '#FF9800';
                     break;
                   case 'applying':
                     displayStatus = 'Preparing icon...';
@@ -308,17 +326,13 @@ export default function ThemeDetailScreen({
                     status={displayStatus}
                     statusColor={displayColor}
                     onApply={() => {
-                      if (isInstalled && !isApplying) {
+                      if (isInstalled && !isBusy) {
                         handleCreateShortcut(app.id, app.name, app.packageName);
                       }
                     }}
-                    disabled={!isInstalled || isApplying}
+                    disabled={!isInstalled || isBusy}
+                    loading={shortcutState === 'applying'}
                   />
-                  {isApplying && (
-                    <View style={styles.creatingOverlay}>
-                      <ActivityIndicator size="small" color={Colors.primary} />
-                    </View>
-                  )}
                 </View>
               );
             })}
@@ -327,7 +341,7 @@ export default function ThemeDetailScreen({
           <PrimaryButton
             title="Apply All"
             onPress={handleApplyAll}
-            disabled={!Object.values(appStatus).some((s) => s?.installed) || Object.values(shortcutStates).some(s => s === 'applying' || s === 'waiting_confirmation')}
+            disabled={!Object.values(appStatus).some((s) => s?.installed) || Object.values(shortcutStates).some(s => s === 'applying')}
             fullWidth
             style={styles.applyAllButton}
           />
@@ -433,12 +447,6 @@ const styles = StyleSheet.create({
   appCardContainer: {
     position: 'relative',
     marginBottom: Spacing.md,
-  },
-  creatingOverlay: {
-    position: 'absolute',
-    right: Spacing.md,
-    top: '50%',
-    transform: [{ translateY: -12 }],
   },
   applyAllButton: {
     marginTop: Spacing.lg,

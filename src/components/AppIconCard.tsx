@@ -8,6 +8,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  ActivityIndicator,
   useColorScheme,
 } from 'react-native';
 import { Colors, Spacing, Typography, Radius, TouchTarget } from '../constants/design';
@@ -23,6 +24,7 @@ interface AppIconCardProps {
   statusColor?: string;
   onApply?: () => void;
   disabled?: boolean;
+  loading?: boolean;
 }
 
 export default function AppIconCard({
@@ -34,6 +36,7 @@ export default function AppIconCard({
   statusColor,
   onApply,
   disabled = false,
+  loading = false,
 }: AppIconCardProps) {
   const isDarkMode = useColorScheme() === 'dark';
   const cardBackground = isDarkMode ? Colors.dark.surface : Colors.background;
@@ -104,7 +107,11 @@ export default function AppIconCard({
           disabled={disabled}
           activeOpacity={disabled ? 1 : 0.7}
         >
-          <Text style={styles.buttonText}>Apply</Text>
+          {loading ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+            <Text style={styles.buttonText}>Apply</Text>
+          )}
         </TouchableOpacity>
       )}
     </View>
