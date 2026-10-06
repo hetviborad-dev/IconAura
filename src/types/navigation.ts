@@ -7,6 +7,7 @@ import { Theme } from './index';
 export type RootStackParamList = {
   Home: undefined;
   ThemeDetail: { themeId: Theme };
+  ThemeCategory: { categoryId: import('./data').ThemeCategoryId };
   Settings: undefined;
   HomeStack: undefined;
 };
@@ -14,6 +15,7 @@ export type RootStackParamList = {
 export type HomeStackParamList = {
   Home: undefined;
   ThemeDetail: { themeId: Theme };
+  ThemeCategory: { categoryId: import('./data').ThemeCategoryId };
 };
 
 export type NavigationProps = {

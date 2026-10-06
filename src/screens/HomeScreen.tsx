@@ -14,9 +14,8 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Colors, Spacing, Typography, Layout } from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
-import { getAllThemes } from '../data/themes';
-import ThemeCard from '../components/ThemeCard';
-import SectionHeader from '../components/SectionHeader';
+import { getThemesByCategory, THEME_CATEGORIES } from '../data/themes';
+import ThemeCategorySection from '../components/ThemeCategorySection';
 
 interface HomeScreenProps {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home'>;
@@ -36,35 +35,25 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       >
         {/* Header */}
         <View style={styles.header}>
+          <Text style={[styles.eyebrow, { color: secondaryTextColor }]}>ICON PACKS</Text>
           <Text style={[styles.appName, { color: textColor }]}>
             IconAura
           </Text>
           <Text style={[styles.tagline, { color: secondaryTextColor }]}>
-            Beautiful custom icons for your home screen
+            Find an icon style that feels like you
           </Text>
         </View>
 
-        {/* Themes Section */}
-        <View style={styles.section}>
-          <SectionHeader
-            title="Icon Themes"
-            subtitle="Choose a theme for your apps"
+        {THEME_CATEGORIES.map((category) => (
+          <ThemeCategorySection
+            key={category.id}
+            title={category.title}
+            themes={getThemesByCategory(category.id)}
+            darkMode={isDarkMode}
+            onThemePress={(theme) => navigation.navigate('ThemeDetail', { themeId: theme.id })}
+            onMorePress={() => navigation.navigate('ThemeCategory', { categoryId: category.id })}
           />
-
-          {getAllThemes().map((theme) => (
-            <ThemeCard
-              key={theme.id}
-              themeName={theme.name}
-              description={theme.description}
-              iconColor={theme.colors.icon}
-              backgroundColor={theme.colors.background}
-              supportedAppCount={2}
-              onPress={() => {
-                navigation.navigate('ThemeDetail', { themeId: theme.id });
-              }}
-            />
-          ))}
-        </View>
+        ))}
       </ScrollView>
     </SafeAreaView>
   );
@@ -80,7 +69,13 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.xxxl,
   },
   header: {
-    marginBottom: Spacing.xxxl,
+    marginBottom: Spacing.xxl,
+  },
+  eyebrow: {
+    fontSize: Typography.sizes.caption,
+    fontWeight: Typography.weights.semibold,
+    letterSpacing: 1.4,
+    marginBottom: Spacing.sm,
   },
   appName: {
     fontSize: Typography.sizes.h1,
@@ -92,8 +87,5 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.body,
     fontWeight: Typography.weights.regular,
     lineHeight: Typography.sizes.body * Typography.lineHeights.normal,
-  },
-  section: {
-    marginBottom: Spacing.xxl,
   },
 });

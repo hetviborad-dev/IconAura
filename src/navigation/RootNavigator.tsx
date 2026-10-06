@@ -11,6 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import HomeScreen from '../screens/HomeScreen';
 import ThemeDetailScreen from '../screens/ThemeDetailScreen';
+import ThemeCategoryScreen from '../screens/ThemeCategoryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import { RootStackParamList } from '../types/navigation';
 import { Colors } from '../constants/design';
@@ -39,6 +40,7 @@ function HomeStackNavigator() {
           gestureEnabled: true,
         }}
       />
+      <Stack.Screen name="ThemeCategory" component={ThemeCategoryScreen} />
     </Stack.Navigator>
   );
 }

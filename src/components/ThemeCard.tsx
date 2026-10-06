@@ -1,7 +1,3 @@
-/**
- * ThemeCard - Visual preview of an icon theme
- */
-
 import React from 'react';
 import {
   View,
@@ -10,7 +6,8 @@ import {
   TouchableOpacity,
   useColorScheme,
 } from 'react-native';
-import { Colors, Spacing, Typography, Radius, TouchTarget } from '../constants/design';
+import { Colors, Radius, Spacing, Typography } from '../constants/design';
+import type { AppId } from '../types/data';
 import AppSvgIcon from './AppSvgIcon';
 
 interface ThemeCardProps {
@@ -18,7 +15,7 @@ interface ThemeCardProps {
   description: string;
   iconColor: string;
   backgroundColor: string;
-  supportedAppCount: number;
+  featuredApps: AppId[];
   onPress: () => void;
 }
 
@@ -27,119 +24,73 @@ export default function ThemeCard({
   description,
   iconColor,
   backgroundColor,
-  supportedAppCount,
+  featuredApps,
   onPress,
 }: ThemeCardProps) {
   const isDarkMode = useColorScheme() === 'dark';
-  const cardBackground = isDarkMode ? Colors.dark.backgroundSecondary : Colors.background;
-  const textColor = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
-  const secondaryTextColor = isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary;
   const borderColor = isDarkMode ? Colors.dark.border : Colors.border;
+  const cardColor = isDarkMode ? Colors.dark.surface : Colors.background;
+  const secondaryTextColor = isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary;
 
   return (
     <TouchableOpacity
-      style={[
-        styles.card,
-        {
-          backgroundColor: cardBackground,
-          borderColor,
-        },
-      ]}
+      style={[styles.card, { backgroundColor: cardColor, borderColor }]}
       onPress={onPress}
-      activeOpacity={0.6}
+      activeOpacity={0.8}
+      accessibilityRole="button"
+      accessibilityLabel={`${themeName} icon pack`}
     >
-      {/* Preview Area */}
-      <View
-        style={[
-          styles.previewContainer,
-          {
-            backgroundColor,
-            borderColor,
-          },
-        ]}
-      >
-        {/* Instagram Icon Preview */}
-        <View style={styles.iconColumn}>
-          <View style={styles.previewIcon}>
-            <AppSvgIcon appId="instagram" iconColor={iconColor} size={42} />
+      <View style={[styles.preview, { backgroundColor, borderColor }]}>
+        {featuredApps.slice(0, 4).map((appId) => (
+          <View key={appId} style={[styles.iconTile, { backgroundColor, borderColor }]}>
+            <AppSvgIcon appId={appId} iconColor={iconColor} size={28} />
           </View>
-          <Text style={[styles.appLabel, { color: iconColor }]}>Instagram</Text>
-        </View>
-
-        {/* WhatsApp Icon Preview */}
-        <View style={styles.iconColumn}>
-          <View style={styles.previewIcon}>
-            <AppSvgIcon appId="whatsapp" iconColor={iconColor} size={42} />
-          </View>
-          <Text style={[styles.appLabel, { color: iconColor }]}>WhatsApp</Text>
-        </View>
+        ))}
       </View>
-
-      {/* Theme Info */}
-      <View style={styles.infoContainer}>
-        <Text style={[styles.themeName, { color: textColor }]}>
-          {themeName}
-        </Text>
-        <Text style={[styles.description, { color: secondaryTextColor }]}>
-          {description}
-        </Text>
-        <Text style={[styles.appCount, { color: secondaryTextColor }]}>
-          {supportedAppCount} app{supportedAppCount !== 1 ? 's' : ''}
-        </Text>
-      </View>
+      <Text style={[styles.name, { color: isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary }]} numberOfLines={1}>
+        {themeName}
+      </Text>
+      <Text style={[styles.description, { color: secondaryTextColor }]} numberOfLines={1}>
+        {description}
+      </Text>
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
+    width: 158,
+    padding: Spacing.sm,
     borderRadius: Radius.lg,
     borderWidth: 1,
-    padding: Spacing.lg,
-    marginBottom: Spacing.lg,
-    minHeight: TouchTarget.min,
+    marginRight: Spacing.md,
   },
-  previewContainer: {
+  preview: {
+    width: 140,
+    height: 140,
+    padding: Spacing.md,
     borderRadius: Radius.md,
     borderWidth: 1,
-    padding: Spacing.xxl,
-    marginBottom: Spacing.lg,
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    minHeight: 120,
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    alignContent: 'space-between',
   },
-  iconColumn: {
+  iconTile: {
+    width: 52,
+    height: 52,
+    borderWidth: StyleSheet.hairlineWidth,
+    borderRadius: Radius.md,
     alignItems: 'center',
-    gap: Spacing.sm,
-  },
-  previewIcon: {
-    width: 64,
-    height: 64,
     justifyContent: 'center',
-    alignItems: 'center',
   },
-  appLabel: {
-    fontSize: Typography.sizes.caption,
-    fontWeight: Typography.weights.medium,
-    marginTop: Spacing.xs,
-  },
-  infoContainer: {
-    gap: Spacing.xs,
-  },
-  themeName: {
-    fontSize: Typography.sizes.h3,
+  name: {
+    marginTop: Spacing.md,
+    fontSize: Typography.sizes.bodySmall,
     fontWeight: Typography.weights.semibold,
-    lineHeight: Typography.sizes.h3 * Typography.lineHeights.tight,
   },
   description: {
-    fontSize: Typography.sizes.bodySmall,
-    fontWeight: Typography.weights.regular,
-    lineHeight: Typography.sizes.bodySmall * Typography.lineHeights.normal,
-  },
-  appCount: {
-    fontSize: Typography.sizes.caption,
-    fontWeight: Typography.weights.medium,
     marginTop: Spacing.xs,
+    fontSize: Typography.sizes.caption,
   },
 });

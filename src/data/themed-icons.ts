@@ -44,7 +44,7 @@ export function createThemedIconsForApp(appId: AppId): ThemedIcon[] {
  */
 export function getMvpThemedIcons(): ThemedIcon[] {
   const mvpApps = getMvpApps();
-  const mvpThemeIds: ThemeId[] = ['mono-light', 'mono-white', 'mono-grey'];
+  const mvpThemeIds = Object.keys(THEMES) as ThemeId[];
 
   const themedIcons: ThemedIcon[] = [];
   for (const app of mvpApps) {

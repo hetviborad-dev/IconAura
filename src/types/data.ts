@@ -11,7 +11,9 @@ export type AppId =
   | 'soundcloud' | 'signal' | 'line' | 'viber' | 'wechat' | 'threads' | 'tinder' | 'duolingo'
   | 'strava' | 'fitbit' | 'wikipedia' | 'messenger';
 
-export type ThemeId = 'mono-light' | 'mono-white' | 'mono-grey';
+export type ThemeId =
+  | 'mono-light' | 'mono-white' | 'mono-grey'
+  | 'midnight' | 'ocean' | 'rose' | 'forest' | 'lavender' | 'sunset';
 
 /**
  * Represents an installed application that can have custom icons
@@ -29,10 +31,14 @@ export interface AppDefinition {
 /**
  * Represents a complete icon theme with colors and styling
  */
+export type ThemeCategoryId = 'popular' | 'simple' | 'colorful' | 'light';
+
 export interface ThemeDefinition {
   id: ThemeId;
   name: string;
   description: string;
+  category: ThemeCategoryId;
+  featuredApps: AppId[];
   colors: {
     icon: string;
     background: string;

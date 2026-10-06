@@ -2,7 +2,9 @@
  * Core type definitions for IconAura
  */
 
-export type Theme = 'mono-light' | 'mono-white' | 'mono-grey';
+import type { ThemeId } from './data';
+
+export type Theme = ThemeId;
 
 export type SupportedApp = 'instagram' | 'whatsapp';
 
