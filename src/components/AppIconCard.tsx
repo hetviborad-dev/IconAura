@@ -15,6 +15,7 @@ import AppSvgIcon from './AppSvgIcon';
 
 interface AppIconCardProps {
   appName: string;
+  iconId: string;
   iconColor: string;
   backgroundColor: string;
   status?: string;
@@ -25,6 +26,7 @@ interface AppIconCardProps {
 
 export default function AppIconCard({
   appName,
+  iconId,
   iconColor,
   backgroundColor,
   status = 'Ready',
@@ -64,7 +66,7 @@ export default function AppIconCard({
           },
         ]}
       >
-        <AppSvgIcon appName={appName} iconColor={iconColor} size={40} />
+        <AppSvgIcon appName={appName} iconId={iconId} iconColor={iconColor} size={40} />
       </View>
 
       {/* Middle: App Info */}

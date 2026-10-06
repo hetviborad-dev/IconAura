@@ -1,42 +1,26 @@
 import React from 'react';
 import { View } from 'react-native';
 import Svg, { Path } from 'react-native-svg';
+import { ICON_PATHS } from '../data/icon-paths';
 
 export interface AppSvgIconProps {
   appName: string;
+  iconId?: string;
   iconColor: string;
   size?: number;
 }
 
-/**
- * 24x24 Instagram icon path
- */
-const InstagramPath = "M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z";
+const FALLBACK_ICON = ICON_PATHS.instagram;
 
-/**
- * 24x24 WhatsApp icon path
- * Simple, reliable filled version
- */
-const WhatsAppPath =
-  "M17.472 14.382c-0.297-0.149-1.758-0.867-2.03-0.967c-0.273-0.099-0.471-0.148-0.67 0.15c-0.197 0.297-0.767 0.966-0.94 1.164c-0.173 0.199-0.347 0.223-0.644 0.075c-0.297-0.15-1.255-0.463-2.39-1.475c-0.883-0.788-1.48-1.761-1.653-2.059c-0.173-0.297-0.018-0.458 0.13-0.606c0.134-0.133 0.298-0.347 0.446-0.52c0.149-0.174 0.198-0.298 0.298-0.497c0.099-0.198 0.05-0.371-0.025-0.52c-0.075-0.149-0.669-1.612-0.916-2.207c-0.242-0.579-0.487-0.5-0.67-0.51c-0.173-0.008-0.371-0.01-0.57-0.01c-0.198 0-0.52 0.074-0.792 0.372c-0.272 0.297-1.04 1.016-1.04 2.479c0 1.462 1.065 2.875 1.213 3.074c0.149 0.198 2.096 3.2 5.076 4.487c0.709 0.306 1.262 0.489 1.694 0.625c0.712 0.227 1.36 0.195 1.871 0.118c0.571-0.085 1.758-0.719 2.006-1.413c0.248-0.694 0.248-1.289 0.173-1.413c-0.074-0.124-0.272-0.198-0.57-0.347M12.051 21.785h-0.004c-1.774 0-3.513-0.477-5.031-1.378l-0.361-0.214l-3.741 0.982l0.998-3.648l-0.235-0.374c-0.99-1.574-1.512-3.393-1.511-5.26c0-5.445 4.433-9.878 9.884-9.878c2.64 0 5.122 1.03 6.988 2.898c1.866 1.869 2.893 4.352 2.892 6.993c-0.003 5.446-4.437 9.879-9.879 9.879M20.52 3.449C18.24 1.164 15.24 0 12.05 0C5.495 0 0.16 5.334 0.157 11.892c0 2.096 0.547 4.142 1.588 5.945L0 24l6.304-1.654c1.737 0.948 3.693 1.447 5.683 1.448h0.005c6.554 0 11.89-5.335 11.893-11.893c0.002-3.176-1.235-6.165-3.48-8.411";
-export default function AppSvgIcon({ appName, iconColor, size = 24 }: AppSvgIconProps) {
-  const normalizedName = appName.toLowerCase();
-
-  let pathData = '';
-
-  if (normalizedName.includes('instagram')) {
-    pathData = InstagramPath;
-  } else if (normalizedName.includes('whatsapp')) {
-    pathData = WhatsAppPath;
-  } else {
-    // Default fallback
-    pathData = InstagramPath;
-  }
+export default function AppSvgIcon({ appName, iconId, iconColor, size = 24 }: AppSvgIconProps) {
+  const paths = ICON_PATHS[iconId ?? appName.toLowerCase()] ?? FALLBACK_ICON;
 
   return (
     <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
       <Svg width={size} height={size} viewBox="0 0 24 24">
-        <Path d={pathData} fill={iconColor} />
+        {paths.map((path, index) => (
+          <Path key={index} d={path} fill={iconColor} />
+        ))}
       </Svg>
     </View>
   );

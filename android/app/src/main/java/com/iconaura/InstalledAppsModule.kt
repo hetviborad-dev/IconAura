@@ -41,13 +41,14 @@ class InstalledAppsModule(reactContext: ReactApplicationContext) :
         val packageName = packageData.getString("packageName") ?: continue
         val appName = packageData.getString("appName") ?: ""
 
-        val isInstalled = isAppInstalled(packageName)
+        val launchIntent = getLaunchIntentForApp(packageName)
 
         val appInfo: WritableMap = WritableNativeMap()
         appInfo.putString("id", id)
         appInfo.putString("packageName", packageName)
         appInfo.putString("appName", appName)
-        appInfo.putBoolean("installed", isInstalled)
+        appInfo.putBoolean("installed", launchIntent != null)
+        appInfo.putBoolean("launchable", launchIntent != null)
 
         result.pushMap(appInfo)
       }
@@ -58,37 +59,20 @@ class InstalledAppsModule(reactContext: ReactApplicationContext) :
     }
   }
 
-  /**
-   * Checks if a specific app is installed.
-   *
-   * Handles API level differences:
-   * - Android 11+ (API 30+): Uses package visibility filters
-   * - Android 10 and below: Direct PackageManager check
-   *
-   * @param packageName Package name to check
-   * @return true if app is installed, false otherwise
-   */
-  private fun isAppInstalled(packageName: String): Boolean {
+  private fun getLaunchIntentForApp(packageName: String): android.content.Intent? {
     return try {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        // Android 13+ (API 33+): Use package visibility with specific package name
         packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0))
-        true
-      } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        // Android 11+ (API 30+): Use package visibility with specific package name
-        packageManager.getPackageInfo(packageName, 0)
-        true
       } else {
-        // Android 10 and below: Standard check
-        packageManager.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
-        true
+        @Suppress("DEPRECATION")
+        packageManager.getPackageInfo(packageName, 0)
       }
-    } catch (e: PackageManager.NameNotFoundException) {
-      // Package is not installed
-      false
-    } catch (e: Exception) {
-      // Any other error: assume not installed
-      false
+      packageManager.getLaunchIntentForPackage(packageName)
+    } catch (_: PackageManager.NameNotFoundException) {
+      null
+    } catch (_: Exception) {
+      null
     }
   }
+
 }

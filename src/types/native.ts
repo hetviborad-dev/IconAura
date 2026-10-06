@@ -10,6 +10,7 @@ export interface InstalledApp {
   packageName: string;
   appName: string;
   installed: boolean;
+  launchable: boolean;
 }
 
 /**

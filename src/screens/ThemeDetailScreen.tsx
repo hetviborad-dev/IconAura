@@ -15,12 +15,14 @@ import {
   Alert,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useFocusEffect } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Colors, Spacing, Typography, Radius, Layout } from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
 import { Theme } from '../types/index';
 import { getTheme } from '../data/themes';
-import { getMvpApps } from '../data/apps';
+import { getAllApps } from '../data/apps';
+import { ICON_PATHS } from '../data/icon-paths';
 import { createThemedIcon } from '../data/themed-icons';
 import { useAppDetection } from '../hooks/useAppDetection';
 import { createShortcut, generateShortcutId, onShortcutPinned } from '../services/shortcutCreation';
@@ -29,6 +31,8 @@ import AppSvgIcon from '../components/AppSvgIcon';
 import PrimaryButton from '../components/PrimaryButton';
 
 type ShortcutState = 'idle' | 'applying' | 'waiting_confirmation' | 'applied' | 'failed';
+
+const SUPPORTED_APPS = getAllApps();
 
 interface ThemeDetailScreenProps {
   navigation: NativeStackNavigationProp<RootStackParamList, 'ThemeDetail'>;
@@ -46,18 +50,24 @@ export default function ThemeDetailScreen({
   const isDarkMode = useColorScheme() === 'dark';
   const { themeId } = route.params;
   const theme = getTheme(themeId);
-  const mvpApps = getMvpApps();
-  const { appStatus, loading, error } = useAppDetection();
+  const { appStatus, loading, error, refresh } = useAppDetection();
+  const installedApps = SUPPORTED_APPS.filter((app) => appStatus[app.id]?.installed);
 
   // Track shortcut states per app ID
   const [shortcutStates, setShortcutStates] = useState<Record<string, ShortcutState>>({});
+
+  useFocusEffect(
+    React.useCallback(() => {
+      void refresh();
+    }, [refresh]),
+  );
 
   // Listen for native shortcut confirmations
   useEffect(() => {
     const subscription = onShortcutPinned((event) => {
       // event.shortcutId format: "appId_themeId" or "packageName_themeId"
       // find the app that matches this shortcutId
-      const app = mvpApps.find((a) => generateShortcutId(a.packageName, themeId) === event.shortcutId);
+      const app = SUPPORTED_APPS.find((a) => generateShortcutId(a.packageName, themeId) === event.shortcutId);
 
       if (app) {
         setShortcutStates((prev) => ({
@@ -70,16 +80,15 @@ export default function ThemeDetailScreen({
     return () => {
       subscription.remove();
     };
-  }, [themeId, mvpApps]);
+  }, [themeId]);
 
   const backgroundColor = isDarkMode ? '#121212' : Colors.background;
   const textColor = isDarkMode ? '#FFFFFF' : Colors.textPrimary;
   const secondaryTextColor = isDarkMode ? '#AAAAAA' : Colors.textSecondary;
   const cardBackground = isDarkMode ? '#1E1E1E' : Colors.backgroundSecondary;
   const borderColor = isDarkMode ? '#333333' : Colors.border;
-  const disabledColor = isDarkMode ? '#444444' : Colors.textSecondary;
 
-  const handleCreateShortcut = async (appId: string, appName: string, packageName: string) => {
+  const handleCreateShortcut = async (appId: string, appName: string, packageName: string, iconId: string) => {
     // Only allow applying if it's idle or failed
     const currentState = shortcutStates[appId] || 'idle';
     if (currentState === 'applying' || currentState === 'waiting_confirmation') {
@@ -100,6 +109,7 @@ export default function ThemeDetailScreen({
         label: appName,
         iconColor: theme.colors.icon,
         backgroundColor: theme.colors.background,
+        iconPaths: ICON_PATHS[iconId] ?? [],
         themeId,
       });
 
@@ -116,32 +126,29 @@ export default function ThemeDetailScreen({
     } catch (err) {
       console.error('Shortcut creation error:', err);
       setShortcutStates((prev) => ({ ...prev, [appId]: 'failed' }));
-      Alert.alert(
-        'Error',
-        'Failed to create shortcut. Please try again.',
-        [{ text: 'OK' }]
-      );
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      Alert.alert('Shortcut Creation Failed', errorMessage, [{ text: 'OK' }]);
     }
   };
 
   const handleApplyAll = async () => {
-    const installedApps = mvpApps.filter((app) => appStatus[app.id]?.installed);
-    if (installedApps.length === 0) {
+    const appsToApply = SUPPORTED_APPS.filter((app) => appStatus[app.id]?.installed);
+    if (appsToApply.length === 0) {
       return;
     }
 
     // Create shortcuts one at a time sequentially
-    for (const app of installedApps) {
+    for (const app of appsToApply) {
       const currentState = shortcutStates[app.id] || 'idle';
       // Skip if already applied or in progress
       if (currentState === 'applied' || currentState === 'applying' || currentState === 'waiting_confirmation') {
         continue;
       }
 
-      await handleCreateShortcut(app.id, app.name, app.packageName);
+      await handleCreateShortcut(app.id, app.name, app.packageName, app.icon.assetId);
 
       // Wait 1 second between shortcuts to allow Android to process each one
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise<void>((resolve) => setTimeout(resolve, 1000));
     }
   };
 
@@ -180,7 +187,10 @@ export default function ThemeDetailScreen({
             },
           ]}
         >
-          {mvpApps.map((app, index) => (
+          {loading ? null : !error && theme.preview.featuredApps
+            .map((appId) => SUPPORTED_APPS.find((app) => app.id === appId))
+            .filter((app) => app && appStatus[app.id]?.installed)
+            .map((app, index) => app && (
             <View
               key={app.id}
               style={[
@@ -189,7 +199,7 @@ export default function ThemeDetailScreen({
               ]}
             >
               <View style={styles.largeIcon}>
-                <AppSvgIcon appName={app.name} iconColor={theme.colors.icon} size={64} />
+                <AppSvgIcon appName={app.name} iconId={app.icon.assetId} iconColor={theme.colors.icon} size={64} />
               </View>
               <Text
                 style={[
@@ -227,8 +237,14 @@ export default function ThemeDetailScreen({
             </View>
           )}
 
-          {!loading &&
-            mvpApps.map((app) => {
+          {!loading && !error && installedApps.length === 0 && (
+            <Text style={[styles.emptyState, { color: secondaryTextColor }]}>
+              None of the supported apps are installed yet.
+            </Text>
+          )}
+
+          {!loading && !error &&
+            installedApps.map((app) => {
               const status = appStatus[app.id];
               const themedIcon = createThemedIcon(app.id, themeId);
               const isInstalled = status?.installed ?? false;
@@ -268,13 +284,14 @@ export default function ThemeDetailScreen({
                 <View key={app.id} style={styles.appCardContainer}>
                   <AppIconCard
                     appName={app.name}
+                    iconId={app.icon.assetId}
                     iconColor={themedIcon.iconColor}
                     backgroundColor={themedIcon.backgroundColor}
                     status={displayStatus}
                     statusColor={displayColor}
                     onApply={() => {
                       if (isInstalled && !isApplying) {
-                        handleCreateShortcut(app.id, app.name, app.packageName);
+                        handleCreateShortcut(app.id, app.name, app.packageName, app.icon.assetId);
                       }
                     }}
                     disabled={!isInstalled || isApplying}
@@ -363,6 +380,10 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.h3,
     fontWeight: Typography.weights.semibold,
     marginBottom: Spacing.md,
+  },
+  emptyState: {
+    fontSize: Typography.sizes.body,
+    paddingVertical: Spacing.lg,
   },
   loadingContainer: {
     alignItems: 'center',

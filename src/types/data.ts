@@ -2,7 +2,14 @@
  * Core type definitions for apps and themes
  */
 
-export type AppId = 'instagram' | 'whatsapp' | 'youtube' | 'spotify' | 'telegram' | 'facebook' | 'chrome' | 'gmail';
+export type AppId =
+  | 'instagram' | 'whatsapp' | 'youtube' | 'spotify' | 'telegram' | 'facebook' | 'chrome' | 'gmail'
+  | 'tiktok' | 'x' | 'discord' | 'reddit' | 'netflix' | 'snapchat' | 'uber' | 'paypal'
+  | 'google-maps' | 'google-drive' | 'google-photos' | 'google-play' | 'google-calendar' | 'google-meet'
+  | 'zoom' | 'pinterest' | 'twitch' | 'steam' | 'roblox' | 'airbnb' | 'doordash' | 'uber-eats'
+  | 'etsy' | 'ebay' | 'cash-app' | 'venmo' | 'coinbase' | 'dropbox' | 'notion' | 'shazam'
+  | 'soundcloud' | 'signal' | 'line' | 'viber' | 'wechat' | 'threads' | 'tinder' | 'duolingo'
+  | 'strava' | 'fitbit' | 'wikipedia' | 'messenger';
 
 export type ThemeId = 'mono-light' | 'mono-white' | 'mono-grey';
 
@@ -15,10 +22,7 @@ export interface AppDefinition {
   packageName: string;
   description: string;
   icon: {
-    /**
-     * Reference to icon asset - can be a URI, local path, or identifier
-     * Examples: '@drawable/instagram', 'assets/icons/instagram.svg', etc.
-     */
+    /** Simple Icons slug used to look up bundled path data. */
     assetId: string;
     /**
      * Fallback color if icon asset is not available
@@ -52,7 +56,6 @@ export interface ThemeDefinition {
 
 /**
  * Represents an icon styled with a specific theme
- * This is a computed result - not stored as data
  */
 export interface ThemedIcon {
   appId: AppId;
