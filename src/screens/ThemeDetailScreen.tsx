@@ -93,7 +93,7 @@ export default function ThemeDetailScreen({
   const cardBackground = isDarkMode ? '#1E1E1E' : Colors.backgroundSecondary;
   const borderColor = isDarkMode ? '#333333' : Colors.border;
 
-  const handleCreateShortcut = async (appId: string, appName: string, packageName: string, iconId: string) => {
+  const handleCreateShortcut = async (appId: string, appName: string, packageName: string) => {
     // Only allow applying if it's idle or failed
     const currentState = shortcutStates[appId] || 'idle';
     if (currentState === 'applying' || currentState === 'waiting_confirmation') {
@@ -152,7 +152,7 @@ export default function ThemeDetailScreen({
         continue;
       }
 
-      await handleCreateShortcut(app.id, app.name, app.packageName, app.icon.assetId);
+      await handleCreateShortcut(app.id, app.name, app.packageName);
 
       // Wait 1 second between shortcuts to allow Android to process each one
       await new Promise<void>((resolve) => setTimeout(resolve, 1000));
@@ -309,7 +309,7 @@ export default function ThemeDetailScreen({
                     statusColor={displayColor}
                     onApply={() => {
                       if (isInstalled && !isApplying) {
-                        handleCreateShortcut(app.id, app.name, app.packageName, app.icon.assetId);
+                        handleCreateShortcut(app.id, app.name, app.packageName);
                       }
                     }}
                     disabled={!isInstalled || isApplying}

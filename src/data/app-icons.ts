@@ -104,17 +104,3 @@ export const APP_ICON_COMPONENTS: Record<AppId, ComponentType<SvgProps>> = {
   wikipedia: Wikipedia,
   messenger: Messenger,
 };
-
-export const APP_ICON_ASSET_IDS: Record<AppId, string> = {
-  instagram: 'instagram', whatsapp: 'whatsapp', youtube: 'youtube', spotify: 'spotify', telegram: 'telegram',
-  facebook: 'facebook', chrome: 'googlechrome', gmail: 'gmail', tiktok: 'tiktok', x: 'x', discord: 'discord',
-  reddit: 'reddit', netflix: 'netflix', snapchat: 'snapchat', uber: 'uber', paypal: 'paypal',
-  'google-maps': 'googlemaps', 'google-drive': 'googledrive', 'google-photos': 'googlephotos',
-  'google-play': 'googleplay', 'google-calendar': 'googlecalendar', 'google-meet': 'googlemeet', zoom: 'zoom',
-  pinterest: 'pinterest', twitch: 'twitch', steam: 'steam', roblox: 'roblox', airbnb: 'airbnb',
-  doordash: 'doordash', 'uber-eats': 'ubereats', etsy: 'etsy', ebay: 'ebay', 'cash-app': 'cashapp',
-  venmo: 'venmo', coinbase: 'coinbase', dropbox: 'dropbox', notion: 'notion', shazam: 'shazam',
-  soundcloud: 'soundcloud', signal: 'signal', line: 'line', viber: 'viber', wechat: 'wechat',
-  threads: 'threads', tinder: 'tinder', duolingo: 'duolingo', strava: 'strava', fitbit: 'fitbit',
-  wikipedia: 'wikipedia', messenger: 'messenger',
-};

@@ -22,11 +22,6 @@ export interface AppDefinition {
   packageName: string;
   description: string;
   icon: {
-    /** Simple Icons slug used to look up bundled path data. */
-    assetId: string;
-    /**
-     * Fallback color if icon asset is not available
-     */
     fallbackColor: string;
   };
 }
