@@ -41,7 +41,7 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
     description: 'Bold black icons on soft grey.',
     colors: {
       icon: '#000000',
-      background: '#E8E8E8',
+      background: '#bebebe',
     },
     preview: {
       featuredApps: ['instagram', 'whatsapp'],
