@@ -182,6 +182,7 @@ export default function ThemeDetailScreen({
             appId={app.id}
             iconColor={theme.colors.icon}
             backgroundColor={theme.colors.background}
+            pattern={theme.pattern}
             onCaptureReady={registerCapture}
           />
         ))}
@@ -231,7 +232,7 @@ export default function ThemeDetailScreen({
               ]}
             >
               <View style={styles.largeIcon}>
-                <AppSvgIcon appId={app.id} iconColor={theme.colors.icon} size={56} />
+                <AppSvgIcon appId={app.id} iconColor={theme.colors.icon} size={56} pattern={theme.pattern} />
               </View>
               <Text
                 style={[
@@ -323,6 +324,7 @@ export default function ThemeDetailScreen({
                     appId={app.id}
                     iconColor={themedIcon.iconColor}
                     backgroundColor={themedIcon.backgroundColor}
+                    pattern={theme.pattern}
                     status={displayStatus}
                     statusColor={displayColor}
                     onApply={() => {

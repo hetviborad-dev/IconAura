@@ -2,7 +2,7 @@
  * Theme definitions - source of truth for icon themes
  */
 
-import { ThemeCategoryId, ThemeDefinition, ThemeId } from '../types/data';
+import type { ThemeCategoryId, ThemeDefinition, ThemeId } from '../types/data';
 
 /**
  * Available icon themes
@@ -108,6 +108,16 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
     colors: { icon: '#FFB38A', background: '#48223D' },
     preview: { featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'], subtitle: 'Warm sunset' },
   },
+  'leopard-print': {
+    id: 'leopard-print',
+    name: 'Leopard Pink',
+    description: 'Leopard texture inside icons on blush pink.',
+    category: 'animal-print',
+    featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'],
+    pattern: 'leopard',
+    colors: { icon: '#422515', background: '#FFC5DC' },
+    preview: { featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'], subtitle: 'Leopard on blush' },
+  },
 };
 
 /**
@@ -141,6 +151,7 @@ export const THEME_CATEGORIES: { id: ThemeCategoryId; title: string }[] = [
   { id: 'simple', title: 'Simple' },
   { id: 'colorful', title: 'Colorful' },
   { id: 'light', title: 'Light & Dark' },
+  { id: 'animal-print', title: 'Animal Print' },
 ];
 
 export function getThemesByCategory(category: ThemeCategoryId): ThemeDefinition[] {

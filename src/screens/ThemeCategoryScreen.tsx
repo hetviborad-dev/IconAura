@@ -31,6 +31,7 @@ export default function ThemeCategoryScreen({ navigation, route }: ThemeCategory
               iconColor={theme.colors.icon}
               backgroundColor={theme.colors.background}
               featuredApps={theme.featuredApps}
+              pattern={theme.pattern}
               onPress={() => navigation.navigate('ThemeDetail', { themeId: theme.id })}
             />
           ))}

@@ -16,6 +16,7 @@ interface ThemeCardProps {
   iconColor: string;
   backgroundColor: string;
   featuredApps: AppId[];
+  pattern?: 'leopard';
   onPress: () => void;
 }
 
@@ -25,6 +26,7 @@ export default function ThemeCard({
   iconColor,
   backgroundColor,
   featuredApps,
+  pattern,
   onPress,
 }: ThemeCardProps) {
   const isDarkMode = useColorScheme() === 'dark';
@@ -43,7 +45,7 @@ export default function ThemeCard({
       <View style={[styles.preview, { backgroundColor, borderColor }]}>
         {featuredApps.slice(0, 4).map((appId) => (
           <View key={appId} style={[styles.iconTile, { backgroundColor, borderColor }]}>
-            <AppSvgIcon appId={appId} iconColor={iconColor} size={28} />
+            <AppSvgIcon appId={appId} iconColor={iconColor} size={28} pattern={pattern} />
           </View>
         ))}
       </View>

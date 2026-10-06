@@ -8,6 +8,7 @@ interface ShortcutIconCaptureProps {
   appId: AppId;
   iconColor: string;
   backgroundColor: string;
+  pattern?: 'leopard';
   onCaptureReady: (appId: AppId, capture: () => Promise<string>) => void;
 }
 
@@ -15,6 +16,7 @@ export default function ShortcutIconCapture({
   appId,
   iconColor,
   backgroundColor,
+  pattern,
   onCaptureReady,
 }: ShortcutIconCaptureProps) {
   const viewRef = React.useRef<ViewShotRef>(null);
@@ -31,7 +33,7 @@ export default function ShortcutIconCapture({
   return (
     <ViewShot ref={viewRef} style={styles.capture}>
       <View style={[styles.iconCanvas, { backgroundColor }]}>
-        <AppSvgIcon appId={appId} iconColor={iconColor} size={240} />
+        <AppSvgIcon appId={appId} iconColor={iconColor} size={240} pattern={pattern} />
       </View>
     </ViewShot>
   );

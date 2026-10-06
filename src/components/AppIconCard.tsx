@@ -20,6 +20,7 @@ interface AppIconCardProps {
   appId: AppId;
   iconColor: string;
   backgroundColor: string;
+  pattern?: 'leopard';
   status?: string;
   statusColor?: string;
   onApply?: () => void;
@@ -32,6 +33,7 @@ export default function AppIconCard({
   appId,
   iconColor,
   backgroundColor,
+  pattern,
   status = 'Ready',
   statusColor,
   onApply,
@@ -70,7 +72,7 @@ export default function AppIconCard({
           },
         ]}
       >
-        <AppSvgIcon appId={appId} iconColor={iconColor} size={36} />
+        <AppSvgIcon appId={appId} iconColor={iconColor} size={36} pattern={pattern} />
       </View>
 
       {/* Middle: App Info */}

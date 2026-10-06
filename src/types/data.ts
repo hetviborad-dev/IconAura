@@ -13,7 +13,7 @@ export type AppId =
 
 export type ThemeId =
   | 'mono-light' | 'mono-white' | 'mono-grey'
-  | 'midnight' | 'ocean' | 'rose' | 'forest' | 'lavender' | 'sunset';
+  | 'midnight' | 'ocean' | 'rose' | 'forest' | 'lavender' | 'sunset' | 'leopard-print';
 
 /**
  * Represents an installed application that can have custom icons
@@ -31,7 +31,7 @@ export interface AppDefinition {
 /**
  * Represents a complete icon theme with colors and styling
  */
-export type ThemeCategoryId = 'popular' | 'simple' | 'colorful' | 'light';
+export type ThemeCategoryId = 'popular' | 'simple' | 'colorful' | 'light' | 'animal-print';
 
 export interface ThemeDefinition {
   id: ThemeId;
@@ -39,6 +39,7 @@ export interface ThemeDefinition {
   description: string;
   category: ThemeCategoryId;
   featuredApps: AppId[];
+  pattern?: 'leopard';
   colors: {
     icon: string;
     background: string;

@@ -40,6 +40,7 @@ export default function ThemeCategorySection({
             iconColor={theme.colors.icon}
             backgroundColor={theme.colors.background}
             featuredApps={theme.featuredApps}
+            pattern={theme.pattern}
             onPress={() => onThemePress(theme)}
           />
         ))}
