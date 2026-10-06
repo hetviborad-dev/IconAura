@@ -105,12 +105,8 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
         ?: throw IllegalArgumentException("iconColor is required")
       val backgroundColor = config.getString("backgroundColor")
         ?: throw IllegalArgumentException("backgroundColor is required")
-      val iconPathsArray = config.getArray("iconPaths")
-        ?: throw IllegalArgumentException("iconPaths are required")
-      val iconPaths = (0 until iconPathsArray.size()).mapNotNull { index ->
-        if (iconPathsArray.isNull(index)) null else iconPathsArray.getString(index)
-      }
-      require(iconPaths.isNotEmpty()) { "No icon paths were provided for $label" }
+      val iconPngBase64 = config.getString("iconPngBase64")
+        ?: throw IllegalArgumentException("Rendered icon image is required")
       val themeId = config.getString("themeId") ?: "unknown"
 
       Log.i(TAG, "Creating shortcut: id=$shortcutId, app=$appPackageName, label=$label, theme=$themeId, colors=($iconColor, $backgroundColor)")
@@ -120,7 +116,7 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
         ?: throw IllegalStateException("Target app ($appPackageName) is not installed or does not have a launch activity")
 
       // Step 2: Create high-resolution icon using new rendering pipeline
-      val iconCompat = createIconFromTheme(label, iconColor, backgroundColor, iconPaths)
+      val iconCompat = createIconFromBase64(iconPngBase64, label)
 
       // Step 3: Create ShortcutInfo
       val shortcutInfo = ShortcutInfoCompat.Builder(context, shortcutId)
@@ -213,18 +209,12 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
    * @param backgroundColor Theme background color (hex, e.g., "#FFFFFF")
    * @return IconCompat or null if creation failed
    */
-  private fun createIconFromTheme(
-    appName: String,
-    iconColor: String,
-    backgroundColor: String,
-    iconPaths: List<String>
-  ): IconCompat {
-    val base64Png = IconRenderer.renderThemedIcon(appName, iconColor, backgroundColor, iconPaths)
-    val decodedBytes = android.util.Base64.decode(base64Png, android.util.Base64.DEFAULT)
+  private fun createIconFromBase64(iconPngBase64: String, appName: String): IconCompat {
+    val decodedBytes = android.util.Base64.decode(iconPngBase64, android.util.Base64.DEFAULT)
     val bitmap = android.graphics.BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-      ?: throw IllegalStateException("Could not decode rendered icon for $appName")
+      ?: throw IllegalStateException("Could not decode captured SVG icon for $appName")
 
-    Log.i(TAG, "High-res icon created: ${bitmap.width}x${bitmap.height}px for $appName")
+    Log.i(TAG, "Captured SVG icon created: ${bitmap.width}x${bitmap.height}px for $appName")
     return IconCompat.createWithBitmap(bitmap)
   }
 

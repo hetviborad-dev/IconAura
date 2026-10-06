@@ -20,9 +20,10 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Colors, Spacing, Typography, Radius, Layout } from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
 import { Theme } from '../types/index';
+import type { AppId } from '../types/data';
 import { getTheme } from '../data/themes';
 import { getAllApps } from '../data/apps';
-import { ICON_PATHS } from '../data/icon-paths';
+import ShortcutIconCapture from '../components/ShortcutIconCapture';
 import { createThemedIcon } from '../data/themed-icons';
 import { useAppDetection } from '../hooks/useAppDetection';
 import { createShortcut, generateShortcutId, onShortcutPinned } from '../services/shortcutCreation';
@@ -55,6 +56,10 @@ export default function ThemeDetailScreen({
 
   // Track shortcut states per app ID
   const [shortcutStates, setShortcutStates] = useState<Record<string, ShortcutState>>({});
+  const captureIcons = React.useRef<Partial<Record<AppId, () => Promise<string>>>>({});
+  const registerCapture = React.useCallback((appId: AppId, capture: () => Promise<string>) => {
+    captureIcons.current[appId] = capture;
+  }, []);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -101,6 +106,8 @@ export default function ThemeDetailScreen({
 
       // Generate stable shortcut ID
       const shortcutId = generateShortcutId(packageName, themeId);
+      const iconPngBase64 = await captureIcons.current[appId as AppId]?.();
+      if (!iconPngBase64) throw new Error('Could not capture the SVG icon asset.');
 
       // Create shortcut
       const result = await createShortcut({
@@ -109,7 +116,7 @@ export default function ThemeDetailScreen({
         label: appName,
         iconColor: theme.colors.icon,
         backgroundColor: theme.colors.background,
-        iconPaths: ICON_PATHS[iconId] ?? [],
+        iconPngBase64,
         themeId,
       });
 
@@ -154,6 +161,17 @@ export default function ThemeDetailScreen({
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
+      <View style={styles.hiddenCaptures} pointerEvents="none">
+        {SUPPORTED_APPS.map((app) => (
+          <ShortcutIconCapture
+            key={app.id}
+            appId={app.id}
+            iconColor={theme.colors.icon}
+            backgroundColor={theme.colors.background}
+            onCaptureReady={registerCapture}
+          />
+        ))}
+      </View>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -199,7 +217,7 @@ export default function ThemeDetailScreen({
               ]}
             >
               <View style={styles.largeIcon}>
-                <AppSvgIcon appName={app.name} iconId={app.icon.assetId} iconColor={theme.colors.icon} size={64} />
+                <AppSvgIcon appId={app.id} iconColor={theme.colors.icon} size={64} />
               </View>
               <Text
                 style={[
@@ -284,7 +302,7 @@ export default function ThemeDetailScreen({
                 <View key={app.id} style={styles.appCardContainer}>
                   <AppIconCard
                     appName={app.name}
-                    iconId={app.icon.assetId}
+                    appId={app.id}
                     iconColor={themedIcon.iconColor}
                     backgroundColor={themedIcon.backgroundColor}
                     status={displayStatus}
@@ -322,6 +340,11 @@ export default function ThemeDetailScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  hiddenCaptures: {
+    position: 'absolute',
+    left: -600,
+    top: 0,
   },
   scrollContent: {
     paddingHorizontal: Layout.screenPadding,

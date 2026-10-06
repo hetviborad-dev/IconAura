@@ -12,10 +12,11 @@ import {
 } from 'react-native';
 import { Colors, Spacing, Typography, Radius, TouchTarget } from '../constants/design';
 import AppSvgIcon from './AppSvgIcon';
+import type { AppId } from '../types/data';
 
 interface AppIconCardProps {
   appName: string;
-  iconId: string;
+  appId: AppId;
   iconColor: string;
   backgroundColor: string;
   status?: string;
@@ -26,7 +27,7 @@ interface AppIconCardProps {
 
 export default function AppIconCard({
   appName,
-  iconId,
+  appId,
   iconColor,
   backgroundColor,
   status = 'Ready',
@@ -66,7 +67,7 @@ export default function AppIconCard({
           },
         ]}
       >
-        <AppSvgIcon appName={appName} iconId={iconId} iconColor={iconColor} size={40} />
+        <AppSvgIcon appId={appId} iconColor={iconColor} size={40} />
       </View>
 
       {/* Middle: App Info */}

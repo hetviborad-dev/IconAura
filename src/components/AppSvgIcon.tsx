@@ -1,27 +1,19 @@
 import React from 'react';
-import { View } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
-import { ICON_PATHS } from '../data/icon-paths';
+import type { AppId } from '../types/data';
+import { APP_ICON_COMPONENTS } from '../data/app-icons';
 
 export interface AppSvgIconProps {
-  appName: string;
-  iconId?: string;
+  appId: AppId;
   iconColor: string;
   size?: number;
 }
 
-const FALLBACK_ICON = ICON_PATHS.instagram;
+export default function AppSvgIcon({ appId, iconColor, size = 24 }: AppSvgIconProps) {
+  const Icon = APP_ICON_COMPONENTS[appId];
 
-export default function AppSvgIcon({ appName, iconId, iconColor, size = 24 }: AppSvgIconProps) {
-  const paths = ICON_PATHS[iconId ?? appName.toLowerCase()] ?? FALLBACK_ICON;
+  if (typeof Icon !== 'function') {
+    throw new Error(`SVG icon for "${appId}" did not resolve to a component.`);
+  }
 
-  return (
-    <View style={{ width: size, height: size, alignItems: 'center', justifyContent: 'center' }}>
-      <Svg width={size} height={size} viewBox="0 0 24 24">
-        {paths.map((path, index) => (
-          <Path key={index} d={path} fill={iconColor} />
-        ))}
-      </Svg>
-    </View>
-  );
+  return <Icon width={size} height={size} color={iconColor} fill={iconColor} />;
 }

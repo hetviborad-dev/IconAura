@@ -1,7 +1,4 @@
-/**
- * TypeScript types for home-screen shortcut creation
- */
-
+/** Types for home-screen shortcut creation. */
 export interface ShortcutResult {
   shortcutId: string;
   appPackageName: string;
@@ -17,13 +14,10 @@ export interface ShortcutConfig {
   label: string;
   iconColor: string;
   backgroundColor: string;
-  iconPaths: string[];
+  iconPngBase64: string;
   themeId?: string;
 }
 
-/**
- * Type-safe wrapper around the native HomeShortcut module
- */
 export interface HomeShortcutModule {
   createShortcut(config: ShortcutConfig): Promise<ShortcutResult>;
 }
