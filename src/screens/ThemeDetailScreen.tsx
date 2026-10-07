@@ -24,7 +24,6 @@ import type { AppId } from '../types/data';
 import { getTheme } from '../data/themes';
 import { getAllApps } from '../data/apps';
 import ShortcutIconCapture from '../components/ShortcutIconCapture';
-import { createThemedIcon } from '../data/themed-icons';
 import { useAppDetection } from '../hooks/useAppDetection';
 import { createShortcut, generateShortcutId, onShortcutPinned } from '../services/shortcutCreation';
 import AppIconCard from '../components/AppIconCard';
@@ -264,7 +263,6 @@ export default function ThemeDetailScreen({
           {!loading && !error &&
             installedApps.map((app) => {
               const status = appStatus[app.id];
-              const themedIcon = createThemedIcon(app.id, themeId);
               const isInstalled = status?.installed ?? false;
               const shortcutState = shortcutStates[app.id] || 'idle';
               const isBusy = shortcutState === 'applying' || shortcutState === 'waiting_confirmation';

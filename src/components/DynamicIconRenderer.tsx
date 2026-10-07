@@ -1,6 +1,5 @@
 /**
  * DynamicIconRenderer - Renders icons on-demand for any theme/icon combo
- * Replaces pre-generated PNG approach with on-demand rendering
  */
 
 import React from 'react';

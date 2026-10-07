@@ -59,18 +59,6 @@ export interface ThemeDefinition {
 }
 
 /**
- * Represents an icon styled with a specific theme
- */
-export interface ThemedIcon {
-  appId: AppId;
-  themeId: ThemeId;
-  iconColor: string;
-  backgroundColor: string;
-  appName: string;
-  packageName: string;
-}
-
-/**
  * Collection of apps and themes
  */
 export interface IconAuraData {
