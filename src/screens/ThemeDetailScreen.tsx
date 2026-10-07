@@ -61,12 +61,6 @@ export default function ThemeDetailScreen({
     captureIcons.current[appId] = capture;
   }, []);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      void refresh();
-    }, [refresh]),
-  );
-
   // Listen for native shortcut confirmations
   useEffect(() => {
     const subscription = onShortcutPinned((event) => {
