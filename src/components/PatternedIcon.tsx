@@ -1,5 +1,5 @@
 import React from 'react';
-import { Svg, Defs, Pattern, Image, Mask, Rect } from 'react-native-svg';
+import { Svg, Defs, Pattern, Image, Mask, Rect, G } from 'react-native-svg';
 import type { AppId } from '../types/data';
 import { APP_ICON_COMPONENTS } from '../data/app-icons';
 import type { ImageSourcePropType } from 'react-native';
@@ -17,15 +17,15 @@ export default function PatternedIcon({ appId, patternImage, size }: PatternedIc
     return null;
   }
 
-  // Pattern size (tiling size)
   const patternSize = size * 0.2;
+  const uniqueId = `pattern-${appId}`;
+  const maskId = `mask-${appId}`;
 
   return (
     <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
       <Defs>
-        {/* 1. The tiling texture pattern */}
         <Pattern
-          id="iconPattern"
+          id={uniqueId}
           patternUnits="userSpaceOnUse"
           width={patternSize}
           height={patternSize}
@@ -38,24 +38,23 @@ export default function PatternedIcon({ appId, patternImage, size }: PatternedIc
           />
         </Pattern>
 
-        {/* 2. The mask based on the App's SVG shape */}
-        <Mask id="iconMask">
-          {/* Render the icon in white to define the mask area */}
-          <Icon
-            width={size}
-            height={size}
-            fill="white"
-            color="white"
-          />
+        <Mask id={maskId}>
+          <G fill="white">
+            <Icon
+              width={size}
+              height={size}
+              fill="white"
+              color="white"
+            />
+          </G>
         </Mask>
       </Defs>
 
-      {/* 3. Render a rectangle that is filled with the pattern and clipped by the mask */}
       <Rect
         width={size}
         height={size}
-        fill="url(#iconPattern)"
-        mask="url(#iconMask)"
+        fill={`url(#${uniqueId})`}
+        mask={`url(#${maskId})`}
       />
     </Svg>
   );
