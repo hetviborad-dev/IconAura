@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Svg, Defs, Pattern, Image, Mask, Rect, G } from 'react-native-svg';
 import type { AppId } from '../types/data';
 import { APP_ICON_COMPONENTS } from '../data/app-icons';
@@ -18,8 +18,10 @@ export default function PatternedIcon({ appId, patternImage, size }: PatternedIc
   }
 
   const patternSize = size * 0.2;
-  const uniqueId = `pattern-${appId}`;
-  const maskId = `mask-${appId}`;
+
+  // Memoize IDs to prevent unnecessary re-renders that can lead to ANRs
+  const uniqueId = useMemo(() => `pattern-${appId}`, [appId]);
+  const maskId = useMemo(() => `mask-${appId}`, [appId]);
 
   return (
     <Svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
