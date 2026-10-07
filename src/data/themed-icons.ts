@@ -16,8 +16,8 @@ export function createThemedIcon(appId: AppId, themeId: ThemeId): ThemedIcon {
   return {
     appId,
     themeId,
-    iconColor: theme.colors.icon,
-    backgroundColor: theme.colors.background,
+    iconColor: theme.icon.type === 'color' ? theme.icon.value : 'transparent',
+    backgroundColor: theme.background.type === 'color' ? theme.background.value : 'transparent',
     appName: app.name,
     packageName: app.packageName,
   };
