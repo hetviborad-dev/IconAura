@@ -106,8 +106,12 @@ export default function ThemeDetailScreen({
       setCapturingAppId(appId as AppId);
 
       // 2. Wait for the component to render and register its capture function
-      // The component has a 50ms delay + React render cycle
-      await new Promise((resolve) => setTimeout(resolve, 150));
+      // Poll every 50ms until the capture function is registered (up to 1 second)
+      let attempts = 0;
+      while (!captureIcons.current[appId as AppId] && attempts < 20) {
+        await new Promise((resolve) => setTimeout(resolve, 50));
+        attempts++;
+      }
 
       const iconPngBase64 = await captureIcons.current[appId as AppId]?.();
 
