@@ -4,7 +4,7 @@ import type { AppId } from '../types/data';
 import type { ThemeLayer } from '../types/data';
 import { APP_ICON_COMPONENTS } from '../data/app-icons';
 import { ICON_PATTERNS } from '../data/patterns';
-import { Radius } from '../constants/design';
+import PatternedIcon from './PatternedIcon';
 
 interface IconLayerProps {
   appId: AppId;
@@ -15,19 +15,13 @@ interface IconLayerProps {
 export default function IconLayer({ appId, layer, size }: IconLayerProps) {
   // Handle Pattern-based Icons (e.g., Leopard Print)
   if (layer.type === 'pattern') {
-    const patternSet = ICON_PATTERNS[layer.value];
-    if (!patternSet) {
-      console.warn(`Icon pattern set not found: ${layer.value}`);
+    const patternImage = ICON_PATTERNS[layer.value];
+    if (!patternImage) {
+      console.warn(`Icon pattern not found: ${layer.value}`);
       return null;
     }
 
-    const image = patternSet[appId];
-    if (!image) {
-      console.warn(`Icon image for app ${appId} not found in pattern ${layer.value}`);
-      return null;
-    }
-
-    return <Image source={image} style={{ width: size, height: size }} resizeMode="contain" />;
+    return <PatternedIcon appId={appId} patternImage={patternImage} size={size} />;
   }
 
   // Handle Color-based Icons (SVGs)
