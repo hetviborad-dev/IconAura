@@ -160,7 +160,7 @@ export default function ThemeDetailScreen({
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
       <View style={styles.hiddenCaptures} pointerEvents="none">
-        {SUPPORTED_APPS.map((app) => (
+        {SUPPORTED_APPS.slice(0, 10).map((app) => (
           <ShortcutIconCapture
             key={app.id}
             appId={app.id}
