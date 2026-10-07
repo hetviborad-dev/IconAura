@@ -10,11 +10,12 @@ export interface AppSvgIconProps {
   iconColor: string;
   size?: number;
   pattern?: 'leopard' | 'crimson-bloom';
+  fullSize?: boolean; // For shortcuts - render at 100% size, not scaled
 }
 
 const FLOWER_BACKGROUND = require('../assets/image/crystle_flower.png');
 const CRIMSON_ICON_SCALE = 0.72;
-export default function AppSvgIcon({ appId, iconColor, size = 28, pattern }: AppSvgIconProps) {
+export default function AppSvgIcon({ appId, iconColor, size = 28, pattern, fullSize = false }: AppSvgIconProps) {
   const Icon = APP_ICON_COMPONENTS[appId];
   if (typeof Icon !== 'function') {
     throw new Error(`SVG icon for "${appId}" did not resolve to a component.`);
@@ -25,7 +26,7 @@ export default function AppSvgIcon({ appId, iconColor, size = 28, pattern }: App
   }
 
   if (pattern === 'crimson-bloom') {
-    const markSize = size * CRIMSON_ICON_SCALE;
+    const markSize = fullSize ? size : size * CRIMSON_ICON_SCALE;
     return (
       <View style={[styles.tile, { width: size, height: size, borderRadius: Radius.md,
            }]}>

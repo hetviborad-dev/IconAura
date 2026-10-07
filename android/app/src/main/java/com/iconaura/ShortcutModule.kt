@@ -79,6 +79,76 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
 
   override fun getName(): String = "HomeShortcut"
 
+  @ReactMethod
+  fun renderIconToPng(config: ReadableMap, promise: Promise) {
+    try {
+      val appId = config.getString("appId") ?: throw IllegalArgumentException("appId required")
+      val iconColor = config.getString("iconColor") ?: throw IllegalArgumentException("iconColor required")
+      val backgroundColor = config.getString("backgroundColor") ?: throw IllegalArgumentException("backgroundColor required")
+      val patternType = config.getString("pattern") // "leopard", "crimson-bloom", or null
+
+      Log.i(TAG, "Rendering icon: appId=$appId, colors=($iconColor, $backgroundColor), pattern=$patternType")
+
+      // Create 1024x1024 bitmap
+      val bitmap = android.graphics.Bitmap.createBitmap(1024, 1024, android.graphics.Bitmap.Config.ARGB_8888)
+      val canvas = android.graphics.Canvas(bitmap)
+
+      // Draw based on pattern type
+      when (patternType) {
+        "leopard" -> renderLeopardIcon(canvas, appId, iconColor, backgroundColor)
+        "crimson-bloom" -> renderCrimsonBloomIcon(canvas, appId, iconColor)
+        else -> renderSimpleIcon(canvas, appId, iconColor, backgroundColor)
+      }
+
+      // Convert bitmap to base64 PNG
+      val baos = java.io.ByteArrayOutputStream()
+      bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, baos)
+      val base64 = android.util.Base64.encodeToString(baos.toByteArray(), android.util.Base64.NO_WRAP)
+
+      val result = WritableNativeMap()
+      result.putString("base64", base64)
+      promise.resolve(result)
+    } catch (e: Exception) {
+      Log.e(TAG, "Icon rendering failed", e)
+      promise.reject("RENDER_ERROR", e.message, e)
+    }
+  }
+
+  private fun renderSimpleIcon(canvas: android.graphics.Canvas, appId: String, iconColor: String, backgroundColor: String) {
+    // Fill background
+    canvas.drawColor(android.graphics.Color.parseColor(backgroundColor))
+
+    // Draw icon shape (simplified - you'll expand this)
+    val paint = android.graphics.Paint().apply {
+      color = android.graphics.Color.parseColor(iconColor)
+      isAntiAlias = true
+    }
+
+    // Placeholder: draw a circle with app initial
+    canvas.drawCircle(512f, 512f, 400f, paint)
+  }
+
+  private fun renderLeopardIcon(canvas: android.graphics.Canvas, appId: String, iconColor: String, backgroundColor: String) {
+    // Fill background
+    canvas.drawColor(android.graphics.Color.parseColor(backgroundColor))
+
+    // Draw leopard pattern + icon
+    // TODO: Load leopard pattern asset and blend with icon
+    renderSimpleIcon(canvas, appId, iconColor, backgroundColor)
+  }
+
+  private fun renderCrimsonBloomIcon(canvas: android.graphics.Canvas, appId: String, iconColor: String) {
+    // Fill transparent for pattern overlay
+    canvas.drawColor(android.graphics.Color.TRANSPARENT, android.graphics.PorterDuff.Mode.CLEAR)
+
+    // TODO: Load crimson-bloom flower pattern and render icon on top
+    val paint = android.graphics.Paint().apply {
+      color = android.graphics.Color.parseColor(iconColor)
+      isAntiAlias = true
+    }
+    canvas.drawCircle(512f, 512f, 360f, paint)
+  }
+
   /**
    * Creates a home-screen shortcut that launches the target application.
    *

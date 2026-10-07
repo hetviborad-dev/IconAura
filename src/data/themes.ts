@@ -63,6 +63,16 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
     colors: { icon: '#F7F7F7', background: '#08090D' },
     preview: { featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'], subtitle: 'White on black' },
   },
+  'crimson-bloom': {
+    id: 'crimson-bloom',
+    name: 'Crimson Bloom',
+    description: 'A floral collage background with a white app mark.',
+    category: 'colorful',
+    featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'],
+    pattern: 'crimson-bloom',
+    colors: { icon: '#FFFFFF', background: '#1F0B10' },
+    preview: { featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'], subtitle: 'Flowers behind white icons' },
+  },
   ocean: {
     id: 'ocean',
     name: 'Ocean Blue',
@@ -107,16 +117,6 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
     featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'],
     colors: { icon: '#FFB38A', background: '#48223D' },
     preview: { featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'], subtitle: 'Warm sunset' },
-  },
-  'crimson-bloom': {
-    id: 'crimson-bloom',
-    name: 'Crimson Bloom',
-    description: 'A floral collage background with a white app mark.',
-    category: 'colorful',
-    featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'],
-    pattern: 'crimson-bloom',
-    colors: { icon: '#FFFFFF', background: '#1F0B10' },
-    preview: { featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'], subtitle: 'Flowers behind white icons' },
   },
   'leopard-print': {
     id: 'leopard-print',
