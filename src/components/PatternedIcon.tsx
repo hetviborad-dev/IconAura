@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, memo } from 'react';
 import { Svg, Defs, Pattern, Image, Mask, Rect, G } from 'react-native-svg';
 import type { AppId } from '../types/data';
 import { APP_ICON_COMPONENTS } from '../data/app-icons';
@@ -10,17 +10,14 @@ interface PatternedIconProps {
   size: number;
 }
 
-export default function PatternedIcon({ appId, patternImage, size }: PatternedIconProps) {
+const PatternedIcon = memo(function PatternedIcon({ appId, patternImage, size }: PatternedIconProps) {
   const Icon = APP_ICON_COMPONENTS[appId];
   if (typeof Icon !== 'function') {
     console.error(`SVG icon for "${appId}" did not resolve to a component.`);
     return null;
   }
 
-  // Use full icon size to prevent tiling and show the image as-is
   const patternSize = size;
-
-  // Memoize IDs to prevent unnecessary re-renders that can lead to ANRs
   const uniqueId = useMemo(() => `pattern-${appId}`, [appId]);
   const maskId = useMemo(() => `mask-${appId}`, [appId]);
 
@@ -61,4 +58,6 @@ export default function PatternedIcon({ appId, patternImage, size }: PatternedIc
       />
     </Svg>
   );
-}
+});
+
+export default PatternedIcon;
