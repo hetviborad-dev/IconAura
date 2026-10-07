@@ -55,6 +55,7 @@ export default function ThemeDetailScreen({
 
   // Track shortcut states per app ID
   const [shortcutStates, setShortcutStates] = useState<Record<string, ShortcutState>>({});
+  const [capturingAppId, setCapturingAppId] = useState<AppId | null>(null);
   const confirmationTimers = React.useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const captureIcons = React.useRef<Partial<Record<AppId, () => Promise<string>>>>({});
   const registerCapture = React.useCallback((appId: AppId, capture: () => Promise<string>) => {
@@ -100,8 +101,19 @@ export default function ThemeDetailScreen({
       console.log(`Creating shortcut for ${appName}...`);
 
       const shortcutId = generateShortcutId(packageName, themeId);
+
+      // 1. Trigger the capture component to render this specific app
+      setCapturingAppId(appId as AppId);
+
+      // 2. Wait for the component to render and register its capture function
+      // The component has a 50ms delay + React render cycle
+      await new Promise((resolve) => setTimeout(resolve, 150));
+
       const iconPngBase64 = await captureIcons.current[appId as AppId]?.();
-      if (!iconPngBase64) throw new Error('Could not capture the SVG icon asset.');
+
+      if (!iconPngBase64) {
+        throw new Error('Could not capture the SVG icon asset. Please try again.');
+      }
 
       const result = await createShortcut({
         appPackageName: packageName,
@@ -137,6 +149,8 @@ export default function ThemeDetailScreen({
       setShortcutStates((prev) => ({ ...prev, [appId]: 'failed' }));
       const errorMessage = err instanceof Error ? err.message : String(err);
       Alert.alert('Shortcut Creation Failed', errorMessage, [{ text: 'OK' }]);
+    } finally {
+      setCapturingAppId(null);
     }
   };
 
@@ -160,14 +174,11 @@ export default function ThemeDetailScreen({
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
       <View style={styles.hiddenCaptures} pointerEvents="none">
-        {SUPPORTED_APPS.slice(0, 10).map((app) => (
-          <ShortcutIconCapture
-            key={app.id}
-            appId={app.id}
-            theme={theme}
-            onCaptureReady={registerCapture}
-          />
-        ))}
+        <ShortcutIconCapture
+          appId={capturingAppId}
+          theme={theme}
+          onCaptureReady={registerCapture}
+        />
       </View>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
