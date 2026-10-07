@@ -13,7 +13,7 @@ export type AppId =
 
 export type ThemeId =
   | 'mono-light' | 'mono-white' | 'mono-grey'
-  | 'midnight' | 'ocean' | 'rose' | 'forest' | 'lavender' | 'sunset' | 'leopard-print';
+  | 'midnight' | 'ocean' | 'rose' | 'forest' | 'lavender' | 'sunset' | 'leopard-print' | 'crimson-bloom';
 
 /**
  * Represents an installed application that can have custom icons
@@ -39,7 +39,7 @@ export interface ThemeDefinition {
   description: string;
   category: ThemeCategoryId;
   featuredApps: AppId[];
-  pattern?: 'leopard';
+  pattern?: 'leopard' | 'crimson-bloom';
   colors: {
     icon: string;
     background: string;

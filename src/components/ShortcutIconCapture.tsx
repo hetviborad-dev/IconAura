@@ -8,7 +8,7 @@ interface ShortcutIconCaptureProps {
   appId: AppId;
   iconColor: string;
   backgroundColor: string;
-  pattern?: 'leopard';
+  pattern?: 'leopard' | 'crimson-bloom';
   onCaptureReady: (appId: AppId, capture: () => Promise<string>) => void;
 }
 

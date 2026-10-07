@@ -127,18 +127,17 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
         .build()
 
       // Step 4: Request pinning
-      val callbackIntent = Intent(ACTION_SHORTCUT_ADDED)
-      callbackIntent.putExtra("shortcutId", shortcutId)
+      val callbackIntent = Intent(ACTION_SHORTCUT_ADDED).apply {
+  setPackage(context.packageName)
+  putExtra("shortcutId", shortcutId)
+}
 
-      val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-          PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
-      } else {
-          PendingIntent.FLAG_UPDATE_CURRENT
-      }
-
-      val successCallback = PendingIntent.getBroadcast(
-          context, 0, callbackIntent, flags
-      )
+val successCallback = PendingIntent.getBroadcast(
+  context,
+  shortcutId.hashCode(),
+  callbackIntent,
+  PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+)
 
       val success = ShortcutManagerCompat.requestPinShortcut(context, shortcutInfo, successCallback.intentSender)
 
@@ -202,11 +201,10 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
   /**
    * Creates an IconCompat using the high-resolution rendering pipeline.
    *
-   * Renders SVG → High-res Bitmap (512x512) → IconCompat
+   * Renders SVG → High-res Bitmap (1024x1024) → IconCompat
    *
    * @param appName App name for icon lookup (e.g., "Instagram", "WhatsApp")
-   * @param iconColor Theme icon color (hex, e.g., "#000000")
-   * @param backgroundColor Theme background color (hex, e.g., "#FFFFFF")
+   * @param iconPngBase64 Base64 encoded PNG of the icon
    * @return IconCompat or null if creation failed
    */
   private fun createIconFromBase64(iconPngBase64: String, appName: String): IconCompat {

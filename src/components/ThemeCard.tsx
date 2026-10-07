@@ -16,7 +16,7 @@ interface ThemeCardProps {
   iconColor: string;
   backgroundColor: string;
   featuredApps: AppId[];
-  pattern?: 'leopard';
+  pattern?: 'leopard' | 'crimson-bloom';
   onPress: () => void;
 }
 

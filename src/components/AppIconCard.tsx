@@ -20,7 +20,7 @@ interface AppIconCardProps {
   appId: AppId;
   iconColor: string;
   backgroundColor: string;
-  pattern?: 'leopard';
+  pattern?: 'leopard' | 'crimson-bloom';
   status?: string;
   statusColor?: string;
   onApply?: () => void;
@@ -72,7 +72,7 @@ export default function AppIconCard({
           },
         ]}
       >
-        <AppSvgIcon appId={appId} iconColor={iconColor} size={36} pattern={pattern} />
+        <AppSvgIcon appId={appId} iconColor={iconColor} size={38} pattern={pattern} />
       </View>
 
       {/* Middle: App Info */}
@@ -141,6 +141,7 @@ const styles = StyleSheet.create({
   },
   infoContainer: {
     flex: 1,
+    flexShrink: 1,
     gap: Spacing.xs,
   },
   appName: {
