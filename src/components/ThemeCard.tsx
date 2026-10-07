@@ -7,26 +7,16 @@ import {
   useColorScheme,
 } from 'react-native';
 import { Colors, Radius, Spacing, Typography } from '../constants/design';
-import type { AppId } from '../types/data';
-import AppSvgIcon from './AppSvgIcon';
+import type { ThemeDefinition } from '../types/data';
+import IconCanvas from './IconCanvas';
 
 interface ThemeCardProps {
-  themeName: string;
-  description: string;
-  iconColor: string;
-  backgroundColor: string;
-  featuredApps: AppId[];
-  pattern?: 'leopard' | 'crimson-bloom';
+  theme: ThemeDefinition;
   onPress: () => void;
 }
 
 export default function ThemeCard({
-  themeName,
-  description,
-  iconColor,
-  backgroundColor,
-  featuredApps,
-  pattern,
+  theme,
   onPress,
 }: ThemeCardProps) {
   const isDarkMode = useColorScheme() === 'dark';
@@ -40,20 +30,28 @@ export default function ThemeCard({
       onPress={onPress}
       activeOpacity={0.8}
       accessibilityRole="button"
-      accessibilityLabel={`${themeName} icon pack`}
+      accessibilityLabel={`${theme.name} icon pack`}
     >
-      <View style={[styles.preview, { backgroundColor, borderColor }]}>
-        {featuredApps.slice(0, 4).map((appId) => (
-          <View key={appId} style={[styles.iconTile, { backgroundColor, borderColor }]}>
-            <AppSvgIcon appId={appId} iconColor={iconColor} size={28} pattern={pattern} />
+      <View
+        style={[
+          styles.preview,
+          {
+            backgroundColor: theme.background.type === 'color' ? theme.background.value : 'transparent',
+            borderColor,
+          },
+        ]}
+      >
+        {theme.featuredApps.slice(0, 4).map((appId) => (
+          <View key={appId} style={styles.iconTile}>
+            <IconCanvas appId={appId} theme={theme} size={52} />
           </View>
         ))}
       </View>
       <Text style={[styles.name, { color: isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary }]} numberOfLines={1}>
-        {themeName}
+        {theme.name}
       </Text>
       <Text style={[styles.description, { color: secondaryTextColor }]} numberOfLines={1}>
-        {description}
+        {theme.description}
       </Text>
     </TouchableOpacity>
   );
@@ -81,10 +79,10 @@ const styles = StyleSheet.create({
   iconTile: {
     width: 52,
     height: 52,
-    borderWidth: StyleSheet.hairlineWidth,
     borderRadius: Radius.md,
     alignItems: 'center',
     justifyContent: 'center',
+    overflow: 'hidden',
   },
   name: {
     marginTop: Spacing.md,

@@ -28,7 +28,7 @@ import { createThemedIcon } from '../data/themed-icons';
 import { useAppDetection } from '../hooks/useAppDetection';
 import { createShortcut, generateShortcutId, onShortcutPinned } from '../services/shortcutCreation';
 import AppIconCard from '../components/AppIconCard';
-import AppSvgIcon from '../components/AppSvgIcon';
+import IconCanvas from '../components/IconCanvas';
 import PrimaryButton from '../components/PrimaryButton';
 
 type ShortcutState = 'idle' | 'applying' | 'waiting_confirmation' | 'retry' | 'applied' | 'failed';
@@ -71,8 +71,6 @@ export default function ThemeDetailScreen({
   // Listen for native shortcut confirmations
   useEffect(() => {
     const subscription = onShortcutPinned((event) => {
-      // event.shortcutId format: "appId_themeId" or "packageName_themeId"
-      // find the app that matches this shortcutId
       const app = SUPPORTED_APPS.find((a) => generateShortcutId(a.packageName, themeId) === event.shortcutId);
 
       if (app) {
@@ -99,7 +97,6 @@ export default function ThemeDetailScreen({
   const borderColor = isDarkMode ? '#333333' : Colors.border;
 
   const handleCreateShortcut = async (appId: string, appName: string, packageName: string) => {
-    // Only allow applying if it's idle or failed
     const currentState = shortcutStates[appId] || 'idle';
     if (currentState === 'applying' || currentState === 'waiting_confirmation') {
       return;
@@ -109,18 +106,16 @@ export default function ThemeDetailScreen({
       setShortcutStates((prev) => ({ ...prev, [appId]: 'applying' }));
       console.log(`Creating shortcut for ${appName}...`);
 
-      // Generate stable shortcut ID
       const shortcutId = generateShortcutId(packageName, themeId);
       const iconPngBase64 = await captureIcons.current[appId as AppId]?.();
       if (!iconPngBase64) throw new Error('Could not capture the SVG icon asset.');
 
-      // Create shortcut
       const result = await createShortcut({
         appPackageName: packageName,
         shortcutId,
         label: appName,
-        iconColor: theme.colors.icon,
-        backgroundColor: theme.colors.background,
+        iconColor: theme.icon.value,
+        backgroundColor: theme.background.value,
         iconPngBase64,
         themeId,
       });
@@ -158,17 +153,13 @@ export default function ThemeDetailScreen({
       return;
     }
 
-    // Create shortcuts one at a time sequentially
     for (const app of appsToApply) {
       const currentState = shortcutStates[app.id] || 'idle';
-      // Skip if already applied or in progress
       if (currentState === 'applied' || currentState === 'applying' || currentState === 'waiting_confirmation') {
         continue;
       }
 
       await handleCreateShortcut(app.id, app.name, app.packageName);
-
-      // Wait 1 second between shortcuts to allow Android to process each one
       await new Promise<void>((resolve) => setTimeout(resolve, 1000));
     }
   };
@@ -180,9 +171,7 @@ export default function ThemeDetailScreen({
           <ShortcutIconCapture
             key={app.id}
             appId={app.id}
-            iconColor={theme.colors.icon}
-            backgroundColor={theme.colors.background}
-            pattern={theme.pattern}
+            theme={theme}
             onCaptureReady={registerCapture}
           />
         ))}
@@ -191,7 +180,6 @@ export default function ThemeDetailScreen({
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header with Back Button */}
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
@@ -205,17 +193,15 @@ export default function ThemeDetailScreen({
           <View style={{ width: 28 }} />
         </View>
 
-        {/* Theme Description */}
         <Text style={[styles.description, { color: secondaryTextColor }]}>
           {theme.description}
         </Text>
 
-        {/* Large Preview */}
         <View
           style={[
             styles.largePreview,
             {
-              backgroundColor: theme.colors.background,
+              backgroundColor: theme.background.type === 'color' ? theme.background.value : 'transparent',
               borderColor,
             },
           ]}
@@ -232,12 +218,12 @@ export default function ThemeDetailScreen({
               ]}
             >
               <View style={styles.largeIcon}>
-                <AppSvgIcon appId={app.id} iconColor={theme.colors.icon} size={56} pattern={theme.pattern} />
+                <IconCanvas appId={app.id} theme={theme} size={56} />
               </View>
               <Text
                 style={[
                   styles.previewLabel,
-                  { color: theme.colors.icon },
+                  { color: theme.icon.value },
                 ]}
               >
                 {app.name}
@@ -246,7 +232,6 @@ export default function ThemeDetailScreen({
           ))}
         </View>
 
-        {/* Apps Section */}
         <View style={styles.appsSection}>
           <Text style={[styles.sectionTitle, { color: textColor }]}>
             Apply to Apps
@@ -284,15 +269,14 @@ export default function ThemeDetailScreen({
               const shortcutState = shortcutStates[app.id] || 'idle';
               const isBusy = shortcutState === 'applying' || shortcutState === 'waiting_confirmation';
 
-              // Determine UI status based on shortcut state
               let displayStatus = 'Not installed';
-              let displayColor = '#FF9800'; // Orange
+              let displayColor = '#FF9800';
 
               if (isInstalled) {
                 switch (shortcutState) {
                   case 'idle':
                     displayStatus = 'Installed - Ready to apply';
-                    displayColor = '#4CAF50'; // Green
+                    displayColor = '#4CAF50';
                     break;
                   case 'retry':
                     displayStatus = 'Not added - Tap to retry';
@@ -300,19 +284,19 @@ export default function ThemeDetailScreen({
                     break;
                   case 'applying':
                     displayStatus = 'Preparing icon...';
-                    displayColor = Colors.primary; // Blue
+                    displayColor = Colors.primary;
                     break;
                   case 'waiting_confirmation':
                     displayStatus = 'Waiting for Android confirmation...';
-                    displayColor = '#FFC107'; // Amber
+                    displayColor = '#FFC107';
                     break;
                   case 'applied':
                     displayStatus = 'Applied successfully';
-                    displayColor = '#4CAF50'; // Green
+                    displayColor = '#4CAF50';
                     break;
                   case 'failed':
                     displayStatus = 'Failed to apply';
-                    displayColor = '#F44336'; // Red
+                    displayColor = '#F44336';
                     break;
                 }
               }
@@ -322,9 +306,7 @@ export default function ThemeDetailScreen({
                   <AppIconCard
                     appName={app.name}
                     appId={app.id}
-                    iconColor={themedIcon.iconColor}
-                    backgroundColor={themedIcon.backgroundColor}
-                    pattern={theme.pattern}
+                    theme={theme}
                     status={displayStatus}
                     statusColor={displayColor}
                     onApply={() => {
@@ -339,7 +321,6 @@ export default function ThemeDetailScreen({
               );
             })}
 
-          {/* Apply All Button */}
           <PrimaryButton
             title="Apply All"
             onPress={handleApplyAll}

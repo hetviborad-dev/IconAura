@@ -26,12 +26,7 @@ export default function ThemeCategoryScreen({ navigation, route }: ThemeCategory
           {themes.map((theme) => (
             <ThemeCard
               key={theme.id}
-              themeName={theme.name}
-              description={theme.description}
-              iconColor={theme.colors.icon}
-              backgroundColor={theme.colors.background}
-              featuredApps={theme.featuredApps}
-              pattern={theme.pattern}
+              theme={theme}
               onPress={() => navigation.navigate('ThemeDetail', { themeId: theme.id })}
             />
           ))}

@@ -12,15 +12,13 @@ import {
   useColorScheme,
 } from 'react-native';
 import { Colors, Spacing, Typography, Radius, TouchTarget } from '../constants/design';
-import AppSvgIcon from './AppSvgIcon';
-import type { AppId } from '../types/data';
+import IconCanvas from './IconCanvas';
+import type { AppId, ThemeDefinition } from '../types/data';
 
 interface AppIconCardProps {
   appName: string;
   appId: AppId;
-  iconColor: string;
-  backgroundColor: string;
-  pattern?: 'leopard' | 'crimson-bloom';
+  theme: ThemeDefinition;
   status?: string;
   statusColor?: string;
   onApply?: () => void;
@@ -31,9 +29,7 @@ interface AppIconCardProps {
 export default function AppIconCard({
   appName,
   appId,
-  iconColor,
-  backgroundColor,
-  pattern,
+  theme,
   status = 'Ready',
   statusColor,
   onApply,
@@ -63,16 +59,8 @@ export default function AppIconCard({
       ]}
     >
       {/* Left: Icon Preview */}
-      <View
-        style={[
-          styles.iconPreview,
-          {
-            backgroundColor,
-            borderColor,
-          },
-        ]}
-      >
-        <AppSvgIcon appId={appId} iconColor={iconColor} size={38} pattern={pattern} />
+      <View style={styles.iconPreview}>
+        <IconCanvas appId={appId} theme={theme} size={56} />
       </View>
 
       {/* Middle: App Info */}
@@ -135,7 +123,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: Radius.md,
-    borderWidth: 1,
+    overflow: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
   },

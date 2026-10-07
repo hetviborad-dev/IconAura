@@ -35,12 +35,7 @@ export default function ThemeCategorySection({
         {themes.map((theme) => (
           <ThemeCard
             key={theme.id}
-            themeName={theme.name}
-            description={theme.description}
-            iconColor={theme.colors.icon}
-            backgroundColor={theme.colors.background}
-            featuredApps={theme.featuredApps}
-            pattern={theme.pattern}
+            theme={theme}
             onPress={() => onThemePress(theme)}
           />
         ))}
