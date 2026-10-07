@@ -17,7 +17,8 @@ export default function PatternedIcon({ appId, patternImage, size }: PatternedIc
     return null;
   }
 
-  const patternSize = size * 0.2;
+  // Use full icon size to prevent tiling and show the image as-is
+  const patternSize = size;
 
   // Memoize IDs to prevent unnecessary re-renders that can lead to ANRs
   const uniqueId = useMemo(() => `pattern-${appId}`, [appId]);
