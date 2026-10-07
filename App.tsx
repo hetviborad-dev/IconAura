@@ -11,18 +11,21 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 // @ts-ignore - gesture-handler doesn't have TS types but is required by React Navigation
 import 'react-native-gesture-handler';
 import RootNavigator from './src/navigation/RootNavigator';
+import { AppDetectionProvider } from './src/context/AppDetectionContext';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
   return (
     <SafeAreaProvider>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor="transparent"
-        translucent={true}
-      />
-      <RootNavigator />
+      <AppDetectionProvider>
+        <StatusBar
+          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+          backgroundColor="transparent"
+          translucent={true}
+        />
+        <RootNavigator />
+      </AppDetectionProvider>
     </SafeAreaProvider>
   );
 }
