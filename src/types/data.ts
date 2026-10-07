@@ -33,17 +33,19 @@ export interface AppDefinition {
  */
 export type ThemeCategoryId = 'popular' | 'simple' | 'colorful' | 'light' | 'animal-print';
 
+export interface ThemeLayer {
+  type: 'color' | 'pattern';
+  value: string; // Hex color code or Pattern ID
+}
+
 export interface ThemeDefinition {
   id: ThemeId;
   name: string;
   description: string;
   category: ThemeCategoryId;
   featuredApps: AppId[];
-  pattern?: 'leopard' | 'crimson-bloom';
-  colors: {
-    icon: string;
-    background: string;
-  };
+  icon: ThemeLayer;
+  background: ThemeLayer;
   preview: {
     /**
      * Which apps to show in theme previews

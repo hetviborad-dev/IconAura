@@ -15,10 +15,8 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
     description: 'Clean black icons on white.',
     category: 'simple',
     featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'],
-    colors: {
-      icon: '#000000',
-      background: '#FFFFFF',
-    },
+    icon: { type: 'color', value: '#000000' },
+    background: { type: 'color', value: '#FFFFFF' },
     preview: {
       featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'],
       subtitle: 'Black on white',
@@ -30,10 +28,8 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
     description: 'White icons on a deep charcoal background.',
     category: 'light',
     featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'],
-    colors: {
-      icon: '#FFFFFF',
-      background: '#1A1A1A',
-    },
+    icon: { type: 'color', value: '#FFFFFF' },
+    background: { type: 'color', value: '#1A1A1A' },
     preview: {
       featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'],
       subtitle: 'White on dark',
@@ -45,10 +41,8 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
     description: 'Bold black icons on soft grey.',
     category: 'simple',
     featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'],
-    colors: {
-      icon: '#000000',
-      background: '#bebebe',
-    },
+    icon: { type: 'color', value: '#000000' },
+    background: { type: 'color', value: '#bebebe' },
     preview: {
       featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'],
       subtitle: 'Black on grey',
@@ -60,7 +54,8 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
     description: 'Crisp white icons on true black.',
     category: 'popular',
     featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'],
-    colors: { icon: '#F7F7F7', background: '#08090D' },
+    icon: { type: 'color', value: '#F7F7F7' },
+    background: { type: 'color', value: '#08090D' },
     preview: { featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'], subtitle: 'White on black' },
   },
   'crimson-bloom': {
@@ -69,8 +64,8 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
     description: 'A floral collage background with a white app mark.',
     category: 'colorful',
     featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'],
-    pattern: 'crimson-bloom',
-    colors: { icon: '#FFFFFF', background: '#1F0B10' },
+    icon: { type: 'color', value: '#FFFFFF' },
+    background: { type: 'pattern', value: 'crimson-bloom' },
     preview: { featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'], subtitle: 'Flowers behind white icons' },
   },
   ocean: {
@@ -79,7 +74,8 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
     description: 'Cool blue icons on a deep ocean backdrop.',
     category: 'colorful',
     featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'],
-    colors: { icon: '#77D7FF', background: '#102B46' },
+    icon: { type: 'color', value: '#77D7FF' },
+    background: { type: 'color', value: '#102B46' },
     preview: { featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'], subtitle: 'Cool blue' },
   },
   rose: {
@@ -88,7 +84,8 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
     description: 'Soft rose icons with a warm blush background.',
     category: 'popular',
     featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'],
-    colors: { icon: '#8B344F', background: '#F7DDE5' },
+    icon: { type: 'color', value: '#8B344F' },
+    background: { type: 'color', value: '#F7DDE5' },
     preview: { featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'], subtitle: 'Soft rose' },
   },
   forest: {
@@ -97,7 +94,8 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
     description: 'Fresh mint icons on a dark green base.',
     category: 'colorful',
     featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'],
-    colors: { icon: '#A8F0C6', background: '#173A30' },
+    icon: { type: 'color', value: '#A8F0C6' },
+    background: { type: 'color', value: '#173A30' },
     preview: { featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'], subtitle: 'Mint on green' },
   },
   lavender: {
@@ -106,7 +104,8 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
     description: 'Lavender icons on a soft lilac background.',
     category: 'colorful',
     featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'],
-    colors: { icon: '#6849A8', background: '#E9E0FF' },
+    icon: { type: 'color', value: '#6849A8' },
+    background: { type: 'color', value: '#E9E0FF' },
     preview: { featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'], subtitle: 'Lilac' },
   },
   sunset: {
@@ -115,7 +114,8 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
     description: 'Warm coral icons against a rich plum background.',
     category: 'colorful',
     featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'],
-    colors: { icon: '#FFB38A', background: '#48223D' },
+    icon: { type: 'color', value: '#FFB38A' },
+    background: { type: 'color', value: '#48223D' },
     preview: { featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'], subtitle: 'Warm sunset' },
   },
   'leopard-print': {
@@ -124,8 +124,8 @@ export const THEMES: Record<ThemeId, ThemeDefinition> = {
     description: 'Leopard texture inside icons on blush pink.',
     category: 'animal-print',
     featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'],
-    pattern: 'leopard',
-    colors: { icon: '#422515', background: '#FFC5DC' },
+    icon: { type: 'pattern', value: 'leopard' },
+    background: { type: 'color', value: '#FFC5DC' },
     preview: { featuredApps: ['instagram', 'whatsapp', 'spotify', 'youtube'], subtitle: 'Leopard on blush' },
   },
 };

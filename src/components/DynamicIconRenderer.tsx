@@ -7,8 +7,8 @@ import React from 'react';
 import { findNodeHandle, View } from 'react-native';
 import ViewShot, { captureRef, type ViewShotRef } from 'react-native-view-shot';
 import type { AppId } from '../types/data';
-import AppSvgIcon from './AppSvgIcon';
 import type { ThemeDefinition } from '../types/data';
+import IconCanvas from './IconCanvas';
 
 interface DynamicIconRendererProps {
   appId: AppId;
@@ -37,35 +37,17 @@ export default function DynamicIconRenderer({
     });
   }, [appId, theme, onReady]);
 
-  const bgColor = theme.pattern === 'crimson-bloom' ? 'transparent' : theme.colors.background;
-
   return (
     <ViewShot ref={viewRef} style={styles.capture}>
-      <View
-        style={[
-          styles.canvas,
-          { backgroundColor: bgColor },
-        ]}
-      >
-        <AppSvgIcon
-          appId={appId}
-          iconColor={theme.colors.icon}
-          size={1024}
-          pattern={theme.pattern}
-        />
-      </View>
+      <IconCanvas
+        appId={appId}
+        theme={theme}
+        size={1024}
+      />
     </ViewShot>
   );
 }
 
 const styles = {
   capture: { position: 'absolute' as const, left: -2000, top: 0, width: 1024, height: 1024 },
-  canvas: {
-    width: 1024,
-    height: 1024,
-    padding: 0,
-    margin: 0,
-    alignItems: 'center' as const,
-    justifyContent: 'center' as const,
-  },
 };
