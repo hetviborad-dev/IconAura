@@ -149,13 +149,6 @@ export function getAllThemes(): ThemeDefinition[] {
   return Object.values(THEMES);
 }
 
-/**
- * Get MVP themes (all 3 themes for MVP)
- */
-export function getMvpThemes(): ThemeDefinition[] {
-  return getAllThemes();
-}
-
 export const THEME_CATEGORIES: { id: ThemeCategoryId; title: string }[] = [
   { id: 'popular', title: 'Popular Icon Packs' },
   { id: 'simple', title: 'Simple' },
