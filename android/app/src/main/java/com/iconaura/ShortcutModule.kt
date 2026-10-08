@@ -192,7 +192,7 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
         ?: throw IllegalStateException("Target app ($appPackageName) is not installed or does not have a launch activity")
 
       // Step 2: Create high-resolution icon using new rendering pipeline
-      val iconCompat = createIconFromBase64(iconPngBase64, label, background)
+      val iconCompat = createIconFromBase64(iconPngBase64, label)
 
       // Step 3: Create ShortcutInfo
       val shortcutInfo = ShortcutInfoCompat.Builder(context, shortcutId)
