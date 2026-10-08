@@ -50,9 +50,6 @@ export default function ThemeCard({
       <Text style={[styles.name, { color: isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary }]} numberOfLines={1}>
         {theme.name}
       </Text>
-      <Text style={[styles.description, { color: secondaryTextColor }]} numberOfLines={1}>
-        {theme.description}
-      </Text>
     </TouchableOpacity>
   );
 }
