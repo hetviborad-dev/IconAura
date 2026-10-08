@@ -169,8 +169,10 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
         ?: throw IllegalArgumentException("appPackageName is required")
       val shortcutId = config.getString("shortcutId")
         ?: throw IllegalArgumentException("shortcutId is required")
-      val label = config.getString("label")
-        ?: throw IllegalArgumentException("label is required")
+
+      // FIX: Allow empty label for "without app name" preference
+      val label = config.getString("label") ?: ""
+
       val iconColor = config.getString("iconColor")
         ?: throw IllegalArgumentException("iconColor is required")
       val backgroundColor = config.getString("backgroundColor")
