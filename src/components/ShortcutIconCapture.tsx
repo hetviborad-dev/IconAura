@@ -6,10 +6,10 @@ import type { ThemeDefinition } from '../types/data';
 import IconCanvas from './IconCanvas';
 
 interface ShortcutIconCaptureProps {
-  appId: AppId;
+  appId: AppId | null;
   theme: ThemeDefinition;
   shape?: 'round' | 'square';
-  onCaptureReady: (appId: AppId, capture: () => Promise<string>) => void;
+  onCaptureReady: (captureKey: string, capture: () => Promise<string>) => void;
 }
 
 export default function ShortcutIconCapture({
@@ -21,13 +21,18 @@ export default function ShortcutIconCapture({
   const viewRef = React.useRef<ViewShotRef>(null);
 
   React.useEffect(() => {
-    onCaptureReady(appId, () => {
+    if (!appId) return;
+
+    const captureKey = `${appId}:${shape}`;
+    onCaptureReady(captureKey, () => {
       if (!viewRef.current) return Promise.reject(new Error('Icon view is not ready'));
       const viewHandle = findNodeHandle(viewRef.current);
       if (!viewHandle) return Promise.reject(new Error('Icon view is not attached to the native tree'));
       return captureRef(viewHandle, { format: 'png', result: 'base64', width: 1024, height: 1024 });
     });
   }, [appId, theme, shape, onCaptureReady]);
+
+  if (!appId) return null;
 
   return (
     <ViewShot ref={viewRef} style={styles.capture}>
