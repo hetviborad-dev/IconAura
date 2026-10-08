@@ -205,16 +205,16 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
 
       // Step 4: Request pinning
       val callbackIntent = Intent(ACTION_SHORTCUT_ADDED).apply {
-  setPackage(context.packageName)
-  putExtra("shortcutId", shortcutId)
-}
+        setPackage(context.packageName)
+        putExtra("shortcutId", shortcutId)
+      }
 
-val successCallback = PendingIntent.getBroadcast(
-  context,
-  shortcutId.hashCode(),
-  callbackIntent,
-  PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-)
+      val successCallback = PendingIntent.getBroadcast(
+        context,
+        shortcutId.hashCode(),
+        callbackIntent,
+        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+      )
 
       val success = ShortcutManagerCompat.requestPinShortcut(context, shortcutInfo, successCallback.intentSender)
 
