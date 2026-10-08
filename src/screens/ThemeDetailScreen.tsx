@@ -48,10 +48,24 @@ export default function ThemeDetailScreen({
   route,
 }: ThemeDetailScreenProps) {
   const isDarkMode = useColorScheme() === 'dark';
+  const isMounted = React.useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMounted.current = false;
+    };
+  }, []);
+
   const { themeId } = route.params;
   const theme = getTheme(themeId);
   const { appStatus, loading, error, refresh } = useAppDetection();
   const installedApps = SUPPORTED_APPS.filter((app) => appStatus[app.id]?.installed);
+
+  const safeAlert = (title: string, message: string, options?: any[]) => {
+    if (isMounted.current) {
+      Alert.alert(title, message, options);
+    }
+  };
 
   // Track shortcut states per app ID
   const [shortcutStates, setShortcutStates] = useState<Record<string, ShortcutState>>({});
@@ -93,27 +107,35 @@ export default function ThemeDetailScreen({
 
   const promptUserPreferences = async (): Promise<{ shape: 'round' | 'square', withAppName: boolean }> => {
     const shape = await new Promise<'round' | 'square'>((resolve) => {
-      Alert.alert(
-        'Icon Shape',
-        'Choose the shape for your icons',
-        [
-          { text: 'Round', onPress: () => resolve('round') },
-          { text: 'Square', onPress: () => resolve('square') },
-        ],
-        { cancelable: false }
-      );
+      if (isMounted.current) {
+        Alert.alert(
+          'Icon Shape',
+          'Choose the shape for your icons',
+          [
+            { text: 'Round', onPress: () => resolve('round') },
+            { text: 'Square', onPress: () => resolve('square') },
+          ],
+          { cancelable: false }
+        );
+      } else {
+        resolve('round');
+      }
     });
 
     const withAppName = await new Promise<boolean>((resolve) => {
-      Alert.alert(
-        'App Name',
-        'Do you want to include the app name?',
-        [
-          { text: 'Yes', onPress: () => resolve(true) },
-          { text: 'No', onPress: () => resolve(false) },
-        ],
-        { cancelable: false }
-      );
+      if (isMounted.current) {
+        Alert.alert(
+          'App Name',
+          'Do you want to include the app name?',
+          [
+            { text: 'Yes', onPress: () => resolve(true) },
+            { text: 'No', onPress: () => resolve(false) },
+          ],
+          { cancelable: false }
+        );
+      } else {
+        resolve(true);
+      }
     });
 
     return { shape, withAppName };
@@ -202,7 +224,7 @@ export default function ThemeDetailScreen({
       } else {
         console.log(`[Apply] createShortcut failed: ${result.message}`);
         setShortcutStates((prev) => ({ ...prev, [appId]: 'failed' }));
-        Alert.alert(
+        safeAlert(
           'Shortcut Creation Failed',
           result.message || 'Could not create shortcut. Your launcher may not support this feature.',
           [{ text: 'OK' }]
@@ -212,7 +234,7 @@ export default function ThemeDetailScreen({
       console.error(`[Apply] ERROR during shortcut creation for ${appId}:`, err);
       setShortcutStates((prev) => ({ ...prev, [appId]: 'failed' }));
       const errorMessage = err instanceof Error ? err.message : String(err);
-      Alert.alert('Shortcut Creation Failed', errorMessage, [{ text: 'OK' }]);
+      safeAlert('Shortcut Creation Failed', errorMessage, [{ text: 'OK' }]);
     } finally {
       console.log(`[Apply] Cleaning up capturingAppId for ${appId}`);
       setCapturingAppId(null);
