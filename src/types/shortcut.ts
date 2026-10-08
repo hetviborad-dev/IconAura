@@ -15,6 +15,8 @@ export interface ShortcutConfig {
   iconColor: string;
   backgroundColor: string;
   iconPngBase64: string;
+  shape: 'round' | 'square';
+  withAppIcon: boolean;
   themeId?: string;
 }
 

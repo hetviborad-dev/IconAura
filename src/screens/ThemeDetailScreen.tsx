@@ -90,13 +90,49 @@ export default function ThemeDetailScreen({
   const cardBackground = isDarkMode ? '#1E1E1E' : Colors.backgroundSecondary;
   const borderColor = isDarkMode ? '#333333' : Colors.border;
 
-  const handleCreateShortcut = async (appId: string, appName: string, packageName: string) => {
+  const promptUserPreferences = async (): Promise<{ shape: 'round' | 'square', withAppIcon: boolean }> => {
+    const shape = await new Promise<'round' | 'square'>((resolve) => {
+      Alert.alert(
+        'Icon Shape',
+        'Choose the shape for your icons',
+        [
+          { text: 'Round', onPress: () => resolve('round') },
+          { text: 'Square', onPress: () => resolve('square') },
+        ],
+        { cancelable: false }
+      );
+    });
+
+    const withAppIcon = await new Promise<boolean>((resolve) => {
+      Alert.alert(
+        'App Icon',
+        'Do you want to include the app icon?',
+        [
+          { text: 'Yes', onPress: () => resolve(true) },
+          { text: 'No', onPress: () => resolve(false) },
+        ],
+        { cancelable: false }
+      );
+    });
+
+    return { shape, withAppIcon };
+  };
+
+  const handleCreateShortcut = async (
+    appId: string,
+    appName: string,
+    packageName: string,
+    preferences?: { shape: 'round' | 'square', withAppIcon: boolean }
+  ) => {
     const currentState = shortcutStates[appId] || 'idle';
     if (currentState === 'applying' || currentState === 'waiting_confirmation') {
       return;
     }
 
     try {
+      // If preferences are not provided (single apply), prompt the user
+      const prefs = preferences || await promptUserPreferences();
+
       setShortcutStates((prev) => ({ ...prev, [appId]: 'applying' }));
       console.log(`Creating shortcut for ${appName}...`);
 
@@ -126,6 +162,8 @@ export default function ThemeDetailScreen({
         iconColor: theme.icon.value,
         backgroundColor: theme.background.value,
         iconPngBase64,
+        shape: prefs.shape,
+        withAppIcon: prefs.withAppIcon,
         themeId,
       });
 
@@ -164,13 +202,16 @@ export default function ThemeDetailScreen({
       return;
     }
 
+    // Prompt for preferences once for all apps
+    const prefs = await promptUserPreferences();
+
     for (const app of appsToApply) {
       const currentState = shortcutStates[app.id] || 'idle';
       if (currentState === 'applied' || currentState === 'applying' || currentState === 'waiting_confirmation') {
         continue;
       }
 
-      await handleCreateShortcut(app.id, app.name, app.packageName);
+      await handleCreateShortcut(app.id, app.name, app.packageName, prefs);
       await new Promise<void>((resolve) => setTimeout(resolve, 1000));
     }
   };
