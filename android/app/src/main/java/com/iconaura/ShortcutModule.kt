@@ -191,8 +191,10 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
       val launchIntent = getLaunchIntentForApp(appPackageName)
         ?: throw IllegalStateException("Target app ($appPackageName) is not installed or does not have a launch activity")
 
-      // Step 2: Create high-resolution icon using new rendering pipeline
-      val iconCompat = createIconFromBase64(iconPngBase64, label, backgroundColor, shape)
+      // Step 2: Use the bitmap exactly as rendered by React Native.
+      // The selected shape is already encoded in the captured PNG.
+      // Do not wrap it in an adaptive icon or apply a second mask.
+      val iconCompat = createIconFromBase64(iconPngBase64, label)
 
 
       // Step 3: Create ShortcutInfo
@@ -286,42 +288,36 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
    */
   private fun createIconFromBase64(
     iconPngBase64: String,
-    appName: String,
-    backgroundColor: String,
-    shape: String
+    appName: String
   ): IconCompat {
     val decodedBytes =
       android.util.Base64.decode(iconPngBase64, android.util.Base64.DEFAULT)
 
-    val foregroundBitmap =
+    val bitmap =
       android.graphics.BitmapFactory.decodeByteArray(
         decodedBytes,
         0,
         decodedBytes.size
       ) ?: throw IllegalStateException(
-        "Could not decode captured SVG icon for $appName"
+        "Could not decode captured PNG icon for $appName"
       )
+
+    require(bitmap.width == bitmap.height) {
+      "Captured icon must be square, got " +
+        "${bitmap.width}x${bitmap.height}px for $appName"
+    }
 
     Log.i(
       TAG,
-      "Captured SVG icon created: ${foregroundBitmap.width}x${foregroundBitmap.height}px for $appName"
+      "Using captured ${bitmap.width}x${bitmap.height}px bitmap directly for $appName"
     )
 
-    if (shape == "square") {
-      // For square icons, we provide the full bitmap.
-      // Note: Most launchers will still mask this, but this is the best we can do with a raw bitmap.
-      return IconCompat.createWithBitmap(foregroundBitmap)
-    } else {
-      // For round icons, we can try to create an adaptive icon.
-      // Since our foregroundBitmap already contains the background,
-      // we can use it as both foreground and background, or create a solid background.
-      val backgroundBitmap = android.graphics.Bitmap.createBitmap(1024, 1024, android.graphics.Bitmap.Config.ARGB_8888)
-      val bgCanvas = android.graphics.Canvas(backgroundBitmap)
-      bgCanvas.drawColor(android.graphics.Color.parseColor(backgroundColor))
-
-      return IconCompat.createWithAdaptiveBitmap(foregroundBitmap, backgroundBitmap)
-    }
+    // IconCanvas has already rendered the selected shape.
+    // Keep this as a normal bitmap so Android does not apply an
+    // adaptive-icon mask on top of the artwork.
+    return IconCompat.createWithBitmap(bitmap)
   }
+
   /**
    * Gets a display name for the target package.
    *
