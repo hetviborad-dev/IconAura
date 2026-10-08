@@ -72,9 +72,9 @@ export default function ThemeDetailScreen({
   const [capturingAppId, setCapturingAppId] = useState<AppId | null>(null);
   const [currentPrefs, setCurrentPrefs] = useState<{ shape: 'round' | 'square', withAppName: boolean } | null>(null);
   const confirmationTimers = React.useRef<Record<string, ReturnType<typeof setTimeout>>>({});
-  const captureIcons = React.useRef<Partial<Record<AppId, () => Promise<string>>>>({});
-  const registerCapture = React.useCallback((appId: AppId, capture: () => Promise<string>) => {
-    captureIcons.current[appId] = capture;
+  const captureIcons = React.useRef<Partial<Record<string, () => Promise<string>>>>({});
+  const registerCapture = React.useCallback((captureKey: string, capture: () => Promise<string>) => {
+    captureIcons.current[captureKey] = capture;
   }, []);
 
   // Listen for native shortcut confirmations
@@ -166,27 +166,36 @@ export default function ThemeDetailScreen({
       setCurrentPrefs(prefs);
 
       const shortcutId = generateShortcutId(packageName, themeId);
+      const captureKey = `${appId}:${prefs.shape}`;
       console.log(`[Apply] Generated shortcutId: ${shortcutId}`);
 
-      // 1. Trigger the capture component to render this specific app
-      console.log(`[Apply] Setting capturingAppId to ${appId}`);
+      // Invalidate any previous capture for this exact app/shape combination.
+      // This prevents a previous Round capture from being reused for Square.
+      delete captureIcons.current[captureKey];
+
+      // 1. Trigger the capture component to render this specific app and shape.
+      console.log(`[Apply] Setting capture target to ${captureKey}`);
       setCapturingAppId(appId as AppId);
 
-      // 2. Wait for the component to render and register its capture function
-      console.log(`[Apply] Waiting for capture registration...`);
+      // 2. Wait for a capture registered for the CURRENT app + CURRENT shape.
+      console.log(`[Apply] Waiting for capture registration for ${captureKey}...`);
       let attempts = 0;
-      while (!captureIcons.current[appId as AppId] && attempts < 20) {
+      while (!captureIcons.current[captureKey] && attempts < 40) {
         await new Promise((resolve) => setTimeout(resolve, 50));
         attempts++;
       }
-      console.log(`[Apply] Capture registration attempt ${attempts}/20. Registered: ${!!captureIcons.current[appId as AppId]}`);
+      console.log(`[Apply] Capture registration attempt ${attempts}/40. Registered: ${!!captureIcons.current[captureKey]}`);
 
-      if (!captureIcons.current[appId as AppId]) {
-         throw new Error('Capture function not registered in time');
+      if (!captureIcons.current[captureKey]) {
+        throw new Error(`Capture function not registered for ${captureKey}`);
       }
 
-      console.log(`[Apply] Capturing icon...`);
-      const iconPngBase64 = await captureIcons.current[appId as AppId]?.();
+      console.log(`[Apply] Capturing icon for ${captureKey}...`);
+      const capture = captureIcons.current[captureKey];
+      const iconPngBase64 = await capture();
+
+      // Do not leave a stale renderer around for the next attempt.
+      delete captureIcons.current[captureKey];
 
       if (!iconPngBase64) {
         console.log(`[Apply] Icon capture returned null`);
