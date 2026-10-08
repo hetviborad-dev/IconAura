@@ -56,15 +56,15 @@ export default function ThemeCard({
 
 const styles = StyleSheet.create({
   card: {
-    width: 158,
+    width: 130,
     padding: Spacing.sm,
     borderRadius: Radius.lg,
     borderWidth: 1,
     marginRight: Spacing.md,
   },
   preview: {
-    width: 140,
-    height: 140,
+    width: 110,
+    height: 110,
     padding: Spacing.md,
     borderRadius: Radius.md,
     borderWidth: 1,
@@ -74,8 +74,8 @@ const styles = StyleSheet.create({
     alignContent: 'space-between',
   },
   iconTile: {
-    width: 52,
-    height: 52,
+    width: 40,
+    height: 40,
     borderRadius: Radius.md,
     alignItems: 'center',
     justifyContent: 'center',

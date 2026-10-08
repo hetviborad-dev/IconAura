@@ -29,21 +29,19 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
+      <View style={styles.header}>
+        <Text style={[styles.eyebrow, { color: secondaryTextColor }]}>ICON PACKS</Text>
+        <Text style={[styles.appName, { color: textColor }]}>
+          IconAura
+        </Text>
+        <Text style={[styles.tagline, { color: secondaryTextColor }]}>
+          Find an icon style that feels like you
+        </Text>
+      </View>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={[styles.eyebrow, { color: secondaryTextColor }]}>ICON PACKS</Text>
-          <Text style={[styles.appName, { color: textColor }]}>
-            IconAura
-          </Text>
-          <Text style={[styles.tagline, { color: secondaryTextColor }]}>
-            Find an icon style that feels like you
-          </Text>
-        </View>
-
         {THEME_CATEGORIES.map((category) => (
           <ThemeCategorySection
             key={category.id}
@@ -70,6 +68,8 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: Spacing.xxl,
+    paddingHorizontal: Layout.screenPadding,
+    paddingTop: Spacing.xxl,
   },
   eyebrow: {
     fontSize: Typography.sizes.caption,

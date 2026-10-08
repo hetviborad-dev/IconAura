@@ -205,40 +205,6 @@ export default function ThemeDetailScreen({
           {theme.description}
         </Text>
 
-        <View
-          style={[
-            styles.largePreview,
-            {
-              backgroundColor: theme.background.type === 'color' ? theme.background.value : 'transparent',
-              borderColor,
-            },
-          ]}
-        >
-          {loading ? null : !error && theme.preview.featuredApps
-            .map((appId) => SUPPORTED_APPS.find((app) => app.id === appId))
-            .filter((app) => app && appStatus[app.id]?.installed)
-            .map((app, index) => app && (
-            <View
-              key={app.id}
-              style={[
-                styles.previewIconContainer,
-                index > 0 && { marginLeft: Spacing.lg },
-              ]}
-            >
-              <View style={styles.largeIcon}>
-                <IconCanvas appId={app.id} theme={theme} size={56} />
-              </View>
-              <Text
-                style={[
-                  styles.previewLabel,
-                  { color: theme.icon.value },
-                ]}
-              >
-                {app.name}
-              </Text>
-            </View>
-          ))}
-        </View>
 
         <View style={styles.appsSection}>
           <Text style={[styles.sectionTitle, { color: textColor }]}>
