@@ -41,11 +41,14 @@ export default function ThemeCard({
           },
         ]}
       >
-        {theme.featuredApps.slice(0, 4).map((appId) => (
-          <View key={appId} style={styles.iconTile}>
-            <IconCanvas appId={appId} theme={theme} size={52} />
-          </View>
-        ))}
+        {[...theme.featuredApps]
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 4)
+          .map((appId) => (
+            <View key={appId} style={styles.iconTile}>
+              <IconCanvas appId={appId} theme={theme} size={55} />
+            </View>
+          ))}
       </View>
       <Text style={[styles.name, { color: isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary }]} numberOfLines={1}>
         {theme.name}
@@ -65,7 +68,7 @@ const styles = StyleSheet.create({
   preview: {
     width: 110,
     height: 110,
-    padding: Spacing.md,
+    padding: Spacing.sm,
     borderRadius: Radius.md,
     borderWidth: 1,
     flexDirection: 'row',
@@ -74,8 +77,8 @@ const styles = StyleSheet.create({
     alignContent: 'space-between',
   },
   iconTile: {
-    width: 40,
-    height: 40,
+    width: 45,
+    height: 45,
     borderRadius: Radius.md,
     alignItems: 'center',
     justifyContent: 'center',
