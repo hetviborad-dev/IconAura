@@ -13,6 +13,7 @@ import HomeScreen from '../screens/HomeScreen';
 import ThemeDetailScreen from '../screens/ThemeDetailScreen';
 import ThemeCategoryScreen from '../screens/ThemeCategoryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import CustomTabBar from '../components/CustomTabBar';
 import { RootStackParamList } from '../types/navigation';
 import { Colors } from '../constants/design';
 
@@ -49,49 +50,13 @@ export default function RootNavigator() {
   const isDarkMode = useColorScheme() === 'dark';
   const insets = useSafeAreaInsets();
 
-  const backgroundColor = isDarkMode ? '#1E1E1E' : Colors.background;
-  const activeColor = isDarkMode ? '#FFFFFF' : Colors.textPrimary;
-  const inactiveColor = isDarkMode ? '#888888' : Colors.textTertiary;
-  const borderTopColor = isDarkMode ? '#333333' : Colors.border;
-
   return (
     <NavigationContainer>
       <Tab.Navigator
-        screenOptions={({ route }) => ({
+        tabBar={(props) => <CustomTabBar {...props} />}
+        screenOptions={{
           headerShown: false,
-          tabBarStyle: {
-            backgroundColor,
-            borderTopColor,
-            borderTopWidth: 1,
-            paddingBottom: insets.bottom + 8,
-            paddingTop: 8,
-            height: 60 + insets.bottom,
-          },
-          tabBarActiveTintColor: activeColor,
-          tabBarInactiveTintColor: inactiveColor,
-          tabBarLabelStyle: {
-            fontSize: 12,
-            fontWeight: '500',
-            marginTop: -2,
-          },
-          tabBarIcon: ({ color, size }) => {
-            let iconName: string = '';
-
-            if (route.name === 'HomeStack') {
-              iconName = 'home';
-            } else if (route.name === 'Settings') {
-              iconName = 'settings';
-            }
-
-            return (
-              <Ionicons
-                name={iconName}
-                size={size}
-                color={color}
-              />
-            );
-          },
-        })}
+        }}
       >
         <Tab.Screen
           name="HomeStack"

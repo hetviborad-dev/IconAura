@@ -1,10 +1,11 @@
 import React from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, useColorScheme, View } from 'react-native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Colors, Layout, Spacing, Typography } from '../constants/design';
 import ThemeCard from '../components/ThemeCard';
 import { getThemesByCategory, THEME_CATEGORIES } from '../data/themes';
 import type { RootStackParamList } from '../types/navigation';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface ThemeCategoryScreenProps {
   navigation: NativeStackNavigationProp<RootStackParamList, 'ThemeCategory'>;

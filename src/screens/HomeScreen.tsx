@@ -6,7 +6,6 @@ import React from 'react';
 import {
   View,
   ScrollView,
-  SafeAreaView,
   useColorScheme,
   Text,
   StyleSheet,
@@ -16,6 +15,7 @@ import { Colors, Spacing, Typography, Layout } from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
 import { getThemesByCategory, THEME_CATEGORIES } from '../data/themes';
 import ThemeCategorySection from '../components/ThemeCategorySection';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface HomeScreenProps {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home'>;
@@ -29,15 +29,6 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
-      <View style={styles.header}>
-        <Text style={[styles.eyebrow, { color: secondaryTextColor }]}>ICON PACKS</Text>
-        <Text style={[styles.appName, { color: textColor }]}>
-          IconAura
-        </Text>
-        <Text style={[styles.tagline, { color: secondaryTextColor }]}>
-          Find an icon style that feels like you
-        </Text>
-      </View>
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}

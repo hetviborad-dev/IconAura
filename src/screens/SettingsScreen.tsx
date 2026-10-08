@@ -6,7 +6,6 @@ import React from 'react';
 import {
   View,
   ScrollView,
-  SafeAreaView,
   useColorScheme,
   Text,
   StyleSheet,
@@ -15,6 +14,7 @@ import { Colors, Spacing, Typography, Radius, Layout } from '../constants/design
 import SectionHeader from '../components/SectionHeader';
 import SettingsRow from '../components/SettingsRow';
 import { APP_NAME, APP_VERSION } from '../data/config';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function SettingsScreen() {
   const isDarkMode = useColorScheme() === 'dark';
