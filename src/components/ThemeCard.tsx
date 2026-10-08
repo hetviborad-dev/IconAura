@@ -56,8 +56,8 @@ export default function ThemeCard({
 
 const styles = StyleSheet.create({
   card: {
-    width: 130,
-    padding: Spacing.sm,
+    width: 120,
+    padding: Spacing.xs,
     borderRadius: Radius.lg,
     borderWidth: 1,
     marginRight: Spacing.md,
@@ -82,9 +82,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   name: {
-    marginTop: Spacing.md,
-    fontSize: Typography.sizes.bodySmall,
+    marginTop: Spacing.sm,
+    fontSize: Typography.sizes.caption,
     fontWeight: Typography.weights.semibold,
+    left: 4,
   },
   description: {
     marginTop: Spacing.xs,
