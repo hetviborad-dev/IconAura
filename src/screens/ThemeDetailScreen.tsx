@@ -125,38 +125,54 @@ export default function ThemeDetailScreen({
     packageName: string,
     preferences?: { shape: 'round' | 'square', withAppName: boolean }
   ) => {
+    console.log(`[Apply] Starting shortcut creation for ${appName} (${appId})`);
     const currentState = shortcutStates[appId] || 'idle';
     if (currentState === 'applying' || currentState === 'waiting_confirmation') {
+      console.log(`[Apply] App ${appId} is already busy (${currentState}), skipping`);
       return;
     }
 
     try {
-      // If preferences are not provided (single apply), prompt the user
+      // Immediate visual feedback
+      console.log(`[Apply] Setting state to applying for ${appId} immediately`);
+      setShortcutStates((prev) => ({ ...prev, [appId]: 'applying' }));
+
+      // Now prompt for preferences
+      console.log(`[Apply] Prompting for preferences...`);
       const prefs = preferences || await promptUserPreferences();
+      console.log(`[Apply] Preferences received:`, prefs);
       setCurrentPrefs(prefs);
 
-      setShortcutStates((prev) => ({ ...prev, [appId]: 'applying' }));
-      console.log(`Creating shortcut for ${appName}...`);
-
       const shortcutId = generateShortcutId(packageName, themeId);
+      console.log(`[Apply] Generated shortcutId: ${shortcutId}`);
 
       // 1. Trigger the capture component to render this specific app
+      console.log(`[Apply] Setting capturingAppId to ${appId}`);
       setCapturingAppId(appId as AppId);
 
       // 2. Wait for the component to render and register its capture function
-      // Poll every 50ms until the capture function is registered (up to 1 second)
+      console.log(`[Apply] Waiting for capture registration...`);
       let attempts = 0;
       while (!captureIcons.current[appId as AppId] && attempts < 20) {
         await new Promise((resolve) => setTimeout(resolve, 50));
         attempts++;
       }
+      console.log(`[Apply] Capture registration attempt ${attempts}/20. Registered: ${!!captureIcons.current[appId as AppId]}`);
 
+      if (!captureIcons.current[appId as AppId]) {
+         throw new Error('Capture function not registered in time');
+      }
+
+      console.log(`[Apply] Capturing icon...`);
       const iconPngBase64 = await captureIcons.current[appId as AppId]?.();
 
       if (!iconPngBase64) {
+        console.log(`[Apply] Icon capture returned null`);
         throw new Error('Could not capture the SVG icon asset. Please try again.');
       }
+      console.log(`[Apply] Icon captured successfully (length: ${iconPngBase64.length})`);
 
+      console.log(`[Apply] Calling createShortcut service...`);
       const result = await createShortcut({
         appPackageName: packageName,
         shortcutId,
@@ -168,11 +184,14 @@ export default function ThemeDetailScreen({
         withAppName: prefs.withAppName,
         themeId,
       });
+      console.log(`[Apply] createShortcut result:`, result);
 
       if (result.success) {
+        console.log(`[Apply] Success! Setting state to waiting_confirmation`);
         setShortcutStates((prev) => ({ ...prev, [appId]: 'waiting_confirmation' }));
         clearTimeout(confirmationTimers.current[appId]);
         confirmationTimers.current[appId] = setTimeout(() => {
+          console.log(`[Apply] Confirmation timeout reached for ${appId}`);
           setShortcutStates((prev) =>
             prev[appId] === 'waiting_confirmation'
               ? { ...prev, [appId]: 'retry' }
@@ -181,6 +200,7 @@ export default function ThemeDetailScreen({
           delete confirmationTimers.current[appId];
         }, 15000);
       } else {
+        console.log(`[Apply] createShortcut failed: ${result.message}`);
         setShortcutStates((prev) => ({ ...prev, [appId]: 'failed' }));
         Alert.alert(
           'Shortcut Creation Failed',
@@ -189,11 +209,12 @@ export default function ThemeDetailScreen({
         );
       }
     } catch (err) {
-      console.error('Shortcut creation error:', err);
+      console.error(`[Apply] ERROR during shortcut creation for ${appId}:`, err);
       setShortcutStates((prev) => ({ ...prev, [appId]: 'failed' }));
       const errorMessage = err instanceof Error ? err.message : String(err);
       Alert.alert('Shortcut Creation Failed', errorMessage, [{ text: 'OK' }]);
     } finally {
+      console.log(`[Apply] Cleaning up capturingAppId for ${appId}`);
       setCapturingAppId(null);
     }
   };
