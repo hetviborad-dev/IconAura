@@ -196,8 +196,8 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
 
       // Step 3: Create ShortcutInfo
       val shortcutInfo = ShortcutInfoCompat.Builder(context, shortcutId)
-        .setShortLabel(label)
-        .setLongLabel("$label")
+        .setShortLabel(if (label.isEmpty()) " " else label)
+        .setLongLabel(if (label.isEmpty()) " " else "$label")
         .setIcon(iconCompat)
         .setIntent(launchIntent)
         .build()
