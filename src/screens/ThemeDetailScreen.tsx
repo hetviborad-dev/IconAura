@@ -107,27 +107,35 @@ export default function ThemeDetailScreen({
 
   const promptUserPreferences = async (): Promise<{ shape: 'round' | 'square', withAppName: boolean }> => {
     const shape = await new Promise<'round' | 'square'>((resolve) => {
-      Alert.alert(
-        'Icon Shape',
-        'Choose the shape for your icons',
-        [
-          { text: 'Round', onPress: () => resolve('round') },
-          { text: 'Square', onPress: () => resolve('square') },
-        ],
-        { cancelable: false }
-      );
+      if (isMounted.current) {
+        Alert.alert(
+          'Icon Shape',
+          'Choose the shape for your icons',
+          [
+            { text: 'Round', onPress: () => resolve('round') },
+            { text: 'Square', onPress: () => resolve('square') },
+          ],
+          { cancelable: false }
+        );
+      } else {
+        resolve('round');
+      }
     });
 
     const withAppName = await new Promise<boolean>((resolve) => {
-      Alert.alert(
-        'App Name',
-        'Do you want to include the app name?',
-        [
-          { text: 'Yes', onPress: () => resolve(true) },
-          { text: 'No', onPress: () => resolve(false) },
-        ],
-        { cancelable: false }
-      );
+      if (isMounted.current) {
+        Alert.alert(
+          'App Name',
+          'Do you want to include the app name?',
+          [
+            { text: 'Yes', onPress: () => resolve(true) },
+            { text: 'No', onPress: () => resolve(false) },
+          ],
+          { cancelable: false }
+        );
+      } else {
+        resolve(true);
+      }
     });
 
     return { shape, withAppName };
