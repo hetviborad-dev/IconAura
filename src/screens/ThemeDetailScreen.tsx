@@ -56,6 +56,7 @@ export default function ThemeDetailScreen({
   // Track shortcut states per app ID
   const [shortcutStates, setShortcutStates] = useState<Record<string, ShortcutState>>({});
   const [capturingAppId, setCapturingAppId] = useState<AppId | null>(null);
+  const [currentPrefs, setCurrentPrefs] = useState<{ shape: 'round' | 'square', withAppName: boolean } | null>(null);
   const confirmationTimers = React.useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const captureIcons = React.useRef<Partial<Record<AppId, () => Promise<string>>>>({});
   const registerCapture = React.useCallback((appId: AppId, capture: () => Promise<string>) => {
@@ -90,7 +91,7 @@ export default function ThemeDetailScreen({
   const cardBackground = isDarkMode ? '#1E1E1E' : Colors.backgroundSecondary;
   const borderColor = isDarkMode ? '#333333' : Colors.border;
 
-  const promptUserPreferences = async (): Promise<{ shape: 'round' | 'square', withAppIcon: boolean }> => {
+  const promptUserPreferences = async (): Promise<{ shape: 'round' | 'square', withAppName: boolean }> => {
     const shape = await new Promise<'round' | 'square'>((resolve) => {
       Alert.alert(
         'Icon Shape',
@@ -103,10 +104,10 @@ export default function ThemeDetailScreen({
       );
     });
 
-    const withAppIcon = await new Promise<boolean>((resolve) => {
+    const withAppName = await new Promise<boolean>((resolve) => {
       Alert.alert(
-        'App Icon',
-        'Do you want to include the app icon?',
+        'App Name',
+        'Do you want to include the app name?',
         [
           { text: 'Yes', onPress: () => resolve(true) },
           { text: 'No', onPress: () => resolve(false) },
@@ -115,14 +116,14 @@ export default function ThemeDetailScreen({
       );
     });
 
-    return { shape, withAppIcon };
+    return { shape, withAppName };
   };
 
   const handleCreateShortcut = async (
     appId: string,
     appName: string,
     packageName: string,
-    preferences?: { shape: 'round' | 'square', withAppIcon: boolean }
+    preferences?: { shape: 'round' | 'square', withAppName: boolean }
   ) => {
     const currentState = shortcutStates[appId] || 'idle';
     if (currentState === 'applying' || currentState === 'waiting_confirmation') {
@@ -132,6 +133,7 @@ export default function ThemeDetailScreen({
     try {
       // If preferences are not provided (single apply), prompt the user
       const prefs = preferences || await promptUserPreferences();
+      setCurrentPrefs(prefs);
 
       setShortcutStates((prev) => ({ ...prev, [appId]: 'applying' }));
       console.log(`Creating shortcut for ${appName}...`);
@@ -163,7 +165,7 @@ export default function ThemeDetailScreen({
         backgroundColor: theme.background.value,
         iconPngBase64,
         shape: prefs.shape,
-        withAppIcon: prefs.withAppIcon,
+        withAppName: prefs.withAppName,
         themeId,
       });
 
@@ -204,6 +206,7 @@ export default function ThemeDetailScreen({
 
     // Prompt for preferences once for all apps
     const prefs = await promptUserPreferences();
+    setCurrentPrefs(prefs);
 
     for (const app of appsToApply) {
       const currentState = shortcutStates[app.id] || 'idle';
@@ -222,6 +225,7 @@ export default function ThemeDetailScreen({
         <ShortcutIconCapture
           appId={capturingAppId}
           theme={theme}
+          shape={currentPrefs?.shape}
           onCaptureReady={registerCapture}
         />
       </View>

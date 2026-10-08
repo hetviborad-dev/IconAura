@@ -9,12 +9,20 @@ interface IconCanvasProps {
   appId: AppId;
   theme: ThemeDefinition;
   size: number;
+  shape?: 'round' | 'square';
 }
 
-export default function IconCanvas({ appId, theme, size }: IconCanvasProps) {
+export default function IconCanvas({ appId, theme, size, shape = 'round' }: IconCanvasProps) {
   // We use a fixed size for the capture canvas (e.g., 1024)
   return (
-    <View style={[styles.container, { width: size, height: size }]}>
+    <View style={[
+      styles.container,
+      {
+        width: size,
+        height: size,
+        borderRadius: shape === 'round' ? size / 2 : 0
+      }
+    ]}>
       <BackgroundLayer layer={theme.background} size={size} />
       <View style={styles.iconWrapper}>
         <IconLayer
@@ -25,6 +33,7 @@ export default function IconCanvas({ appId, theme, size }: IconCanvasProps) {
       </View>
     </View>
   );
+}
 }
 
 const styles = StyleSheet.create({
