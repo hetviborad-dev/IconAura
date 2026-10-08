@@ -20,59 +20,44 @@ import { Colors } from '../constants/design';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
 
-function HomeStackNavigator() {
+function MainTabs() {
   return (
-    <Stack.Navigator
+    <Tab.Navigator
+      tabBar={(props) => <CustomTabBar {...props} />}
       screenOptions={{
         headerShown: false,
       }}
     >
-      <Stack.Screen
+      <Tab.Screen
         name="Home"
         component={HomeScreen}
         options={{
-          gestureEnabled: false,
+          tabBarLabel: 'Home',
         }}
       />
-      <Stack.Screen
-        name="ThemeDetail"
-        component={ThemeDetailScreen}
+      <Tab.Screen
+        name="Settings"
+        component={SettingsScreen}
         options={{
-          gestureEnabled: true,
+          tabBarLabel: 'Settings',
         }}
       />
-      <Stack.Screen name="ThemeCategory" component={ThemeCategoryScreen} />
-    </Stack.Navigator>
+    </Tab.Navigator>
   );
 }
 
 export default function RootNavigator() {
-  const isDarkMode = useColorScheme() === 'dark';
-  const insets = useSafeAreaInsets();
-
   return (
     <NavigationContainer>
-      <Tab.Navigator
-        tabBar={(props) => <CustomTabBar {...props} />}
+      <Stack.Navigator
         screenOptions={{
           headerShown: false,
         }}
       >
-        <Tab.Screen
-          name="HomeStack"
-          component={HomeStackNavigator}
-          options={{
-            tabBarLabel: 'Home',
-          }}
-        />
-        <Tab.Screen
-          name="Settings"
-          component={SettingsScreen}
-          options={{
-            tabBarLabel: 'Settings',
-          }}
-        />
-      </Tab.Navigator>
+        <Stack.Screen name="HomeStack" component={MainTabs} />
+        <Stack.Screen name="ThemeDetail" component={ThemeDetailScreen} />
+        <Stack.Screen name="ThemeCategory" component={ThemeCategoryScreen} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }

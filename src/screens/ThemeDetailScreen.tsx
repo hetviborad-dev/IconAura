@@ -17,7 +17,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Colors, Spacing, Typography, Radius, Layout } from '../constants/design';
+import {
+  Colors,
+  Spacing,
+  Typography,
+  Radius,
+  Layout,
+} from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
 import { Theme } from '../types/index';
 import type { AppId } from '../types/data';
@@ -25,12 +31,22 @@ import { getTheme } from '../data/themes';
 import { getAllApps } from '../data/apps';
 import ShortcutIconCapture from '../components/ShortcutIconCapture';
 import { useAppDetection } from '../hooks/useAppDetection';
-import { createShortcut, generateShortcutId, onShortcutPinned } from '../services/shortcutCreation';
+import {
+  createShortcut,
+  generateShortcutId,
+  onShortcutPinned,
+} from '../services/shortcutCreation';
 import AppIconCard from '../components/AppIconCard';
 import IconCanvas from '../components/IconCanvas';
 import PrimaryButton from '../components/PrimaryButton';
 
-type ShortcutState = 'idle' | 'applying' | 'waiting_confirmation' | 'retry' | 'applied' | 'failed';
+type ShortcutState =
+  | 'idle'
+  | 'applying'
+  | 'waiting_confirmation'
+  | 'retry'
+  | 'applied'
+  | 'failed';
 
 const SUPPORTED_APPS = getAllApps();
 
@@ -51,26 +67,39 @@ export default function ThemeDetailScreen({
   const { themeId } = route.params;
   const theme = getTheme(themeId);
   const { appStatus, loading, error, refresh } = useAppDetection();
-  const installedApps = SUPPORTED_APPS.filter((app) => appStatus[app.id]?.installed);
+  const installedApps = SUPPORTED_APPS.filter(
+    app => appStatus[app.id]?.installed,
+  );
 
   // Track shortcut states per app ID
-  const [shortcutStates, setShortcutStates] = useState<Record<string, ShortcutState>>({});
+  const [shortcutStates, setShortcutStates] = useState<
+    Record<string, ShortcutState>
+  >({});
   const [capturingAppId, setCapturingAppId] = useState<AppId | null>(null);
-  const confirmationTimers = React.useRef<Record<string, ReturnType<typeof setTimeout>>>({});
-  const captureIcons = React.useRef<Partial<Record<AppId, () => Promise<string>>>>({});
-  const registerCapture = React.useCallback((appId: AppId, capture: () => Promise<string>) => {
-    captureIcons.current[appId] = capture;
-  }, []);
+  const confirmationTimers = React.useRef<
+    Record<string, ReturnType<typeof setTimeout>>
+  >({});
+  const captureIcons = React.useRef<
+    Partial<Record<AppId, () => Promise<string>>>
+  >({});
+  const registerCapture = React.useCallback(
+    (appId: AppId, capture: () => Promise<string>) => {
+      captureIcons.current[appId] = capture;
+    },
+    [],
+  );
 
   // Listen for native shortcut confirmations
   useEffect(() => {
-    const subscription = onShortcutPinned((event) => {
-      const app = SUPPORTED_APPS.find((a) => generateShortcutId(a.packageName, themeId) === event.shortcutId);
+    const subscription = onShortcutPinned(event => {
+      const app = SUPPORTED_APPS.find(
+        a => generateShortcutId(a.packageName, themeId) === event.shortcutId,
+      );
 
       if (app) {
         clearTimeout(confirmationTimers.current[app.id]);
         delete confirmationTimers.current[app.id];
-        setShortcutStates((prev) => ({
+        setShortcutStates(prev => ({
           ...prev,
           [app.id]: event.status === 'success' ? 'applied' : 'failed',
         }));
@@ -90,14 +119,21 @@ export default function ThemeDetailScreen({
   const cardBackground = isDarkMode ? '#1E1E1E' : Colors.backgroundSecondary;
   const borderColor = isDarkMode ? '#333333' : Colors.border;
 
-  const handleCreateShortcut = async (appId: string, appName: string, packageName: string) => {
+  const handleCreateShortcut = async (
+    appId: string,
+    appName: string,
+    packageName: string,
+  ) => {
     const currentState = shortcutStates[appId] || 'idle';
-    if (currentState === 'applying' || currentState === 'waiting_confirmation') {
+    if (
+      currentState === 'applying' ||
+      currentState === 'waiting_confirmation'
+    ) {
       return;
     }
 
     try {
-      setShortcutStates((prev) => ({ ...prev, [appId]: 'applying' }));
+      setShortcutStates(prev => ({ ...prev, [appId]: 'applying' }));
       console.log(`Creating shortcut for ${appName}...`);
 
       const shortcutId = generateShortcutId(packageName, themeId);
@@ -109,14 +145,16 @@ export default function ThemeDetailScreen({
       // Poll every 50ms until the capture function is registered (up to 1 second)
       let attempts = 0;
       while (!captureIcons.current[appId as AppId] && attempts < 20) {
-        await new Promise((resolve) => setTimeout(resolve, 50));
+        await new Promise(resolve => setTimeout(resolve, 50));
         attempts++;
       }
 
       const iconPngBase64 = await captureIcons.current[appId as AppId]?.();
 
       if (!iconPngBase64) {
-        throw new Error('Could not capture the SVG icon asset. Please try again.');
+        throw new Error(
+          'Could not capture the SVG icon asset. Please try again.',
+        );
       }
 
       const result = await createShortcut({
@@ -130,10 +168,13 @@ export default function ThemeDetailScreen({
       });
 
       if (result.success) {
-        setShortcutStates((prev) => ({ ...prev, [appId]: 'waiting_confirmation' }));
+        setShortcutStates(prev => ({
+          ...prev,
+          [appId]: 'waiting_confirmation',
+        }));
         clearTimeout(confirmationTimers.current[appId]);
         confirmationTimers.current[appId] = setTimeout(() => {
-          setShortcutStates((prev) =>
+          setShortcutStates(prev =>
             prev[appId] === 'waiting_confirmation'
               ? { ...prev, [appId]: 'retry' }
               : prev,
@@ -141,16 +182,17 @@ export default function ThemeDetailScreen({
           delete confirmationTimers.current[appId];
         }, 15000);
       } else {
-        setShortcutStates((prev) => ({ ...prev, [appId]: 'failed' }));
+        setShortcutStates(prev => ({ ...prev, [appId]: 'failed' }));
         Alert.alert(
           'Shortcut Creation Failed',
-          result.message || 'Could not create shortcut. Your launcher may not support this feature.',
-          [{ text: 'OK' }]
+          result.message ||
+            'Could not create shortcut. Your launcher may not support this feature.',
+          [{ text: 'OK' }],
         );
       }
     } catch (err) {
       console.error('Shortcut creation error:', err);
-      setShortcutStates((prev) => ({ ...prev, [appId]: 'failed' }));
+      setShortcutStates(prev => ({ ...prev, [appId]: 'failed' }));
       const errorMessage = err instanceof Error ? err.message : String(err);
       Alert.alert('Shortcut Creation Failed', errorMessage, [{ text: 'OK' }]);
     } finally {
@@ -159,19 +201,25 @@ export default function ThemeDetailScreen({
   };
 
   const handleApplyAll = async () => {
-    const appsToApply = SUPPORTED_APPS.filter((app) => appStatus[app.id]?.installed);
+    const appsToApply = SUPPORTED_APPS.filter(
+      app => appStatus[app.id]?.installed,
+    );
     if (appsToApply.length === 0) {
       return;
     }
 
     for (const app of appsToApply) {
       const currentState = shortcutStates[app.id] || 'idle';
-      if (currentState === 'applied' || currentState === 'applying' || currentState === 'waiting_confirmation') {
+      if (
+        currentState === 'applied' ||
+        currentState === 'applying' ||
+        currentState === 'waiting_confirmation'
+      ) {
         continue;
       }
 
       await handleCreateShortcut(app.id, app.name, app.packageName);
-      await new Promise<void>((resolve) => setTimeout(resolve, 1000));
+      await new Promise<void>(resolve => setTimeout(resolve, 1000));
     }
   };
 
@@ -184,10 +232,8 @@ export default function ThemeDetailScreen({
           onCaptureReady={registerCapture}
         />
       </View>
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+
+      <View style={styles.fixedHeader}>
         <View style={styles.header}>
           <TouchableOpacity
             onPress={() => navigation.goBack()}
@@ -200,17 +246,19 @@ export default function ThemeDetailScreen({
           </Text>
           <View style={{ width: 28 }} />
         </View>
-
         <Text style={[styles.description, { color: secondaryTextColor }]}>
           {theme.description}
         </Text>
+      </View>
 
-
+      <Text style={[styles.sectionTitle, { color: textColor }]}>
+        Apply to Apps
+      </Text>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.appsSection}>
-          <Text style={[styles.sectionTitle, { color: textColor }]}>
-            Apply to Apps
-          </Text>
-
           {loading && (
             <View style={styles.loadingContainer}>
               <ActivityIndicator size="large" color={Colors.primary} />
@@ -221,7 +269,12 @@ export default function ThemeDetailScreen({
           )}
 
           {error && (
-            <View style={[styles.errorContainer, { backgroundColor: cardBackground, borderColor }]}>
+            <View
+              style={[
+                styles.errorContainer,
+                { backgroundColor: cardBackground, borderColor },
+              ]}
+            >
               <Ionicons name="warning-outline" size={24} color="#FF6B6B" />
               <Text style={[styles.errorText, { color: secondaryTextColor }]}>
                 {error}
@@ -235,12 +288,15 @@ export default function ThemeDetailScreen({
             </Text>
           )}
 
-          {!loading && !error &&
-            installedApps.map((app) => {
+          {!loading &&
+            !error &&
+            installedApps.map(app => {
               const status = appStatus[app.id];
               const isInstalled = status?.installed ?? false;
               const shortcutState = shortcutStates[app.id] || 'idle';
-              const isBusy = shortcutState === 'applying' || shortcutState === 'waiting_confirmation';
+              const isBusy =
+                shortcutState === 'applying' ||
+                shortcutState === 'waiting_confirmation';
 
               let displayStatus = 'Not installed';
               let displayColor = '#FF9800';
@@ -293,16 +349,20 @@ export default function ThemeDetailScreen({
                 </View>
               );
             })}
-
-          <PrimaryButton
-            title="Apply All"
-            onPress={handleApplyAll}
-            disabled={!Object.values(appStatus).some((s) => s?.installed) || Object.values(shortcutStates).some(s => s === 'applying')}
-            fullWidth
-            style={styles.applyAllButton}
-          />
         </View>
       </ScrollView>
+
+      <View style={styles.footer}>
+        <PrimaryButton
+          title="Apply All"
+          onPress={handleApplyAll}
+          disabled={
+            !Object.values(appStatus).some(s => s?.installed) ||
+            Object.values(shortcutStates).some(s => s === 'applying')
+          }
+          fullWidth
+        />
+      </View>
     </SafeAreaView>
   );
 }
@@ -318,8 +378,11 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: Layout.screenPadding,
-    paddingTop: Spacing.lg,
     paddingBottom: Spacing.xl,
+  },
+  fixedHeader: {
+    paddingHorizontal: Layout.screenPadding,
+    paddingTop: Spacing.lg,
   },
   header: {
     flexDirection: 'row',
@@ -342,7 +405,7 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.body,
     fontWeight: Typography.weights.regular,
     marginBottom: Spacing.lg,
-    lineHeight: Typography.sizes.body * 1.5,
+    lineHeight: Typography.sizes.body * Typography.lineHeights.normal,
   },
   largePreview: {
     borderRadius: Radius.md,
@@ -367,12 +430,13 @@ const styles = StyleSheet.create({
     fontWeight: Typography.weights.semibold,
   },
   appsSection: {
-    marginTop: Spacing.xl,
+    // marginTop: Spacing.xl,
   },
   sectionTitle: {
     fontSize: Typography.sizes.h3,
     fontWeight: Typography.weights.semibold,
     marginBottom: Spacing.md,
+    paddingHorizontal: Layout.screenPadding,
   },
   emptyState: {
     fontSize: Typography.sizes.body,
@@ -404,7 +468,11 @@ const styles = StyleSheet.create({
     position: 'relative',
     marginBottom: Spacing.md,
   },
+  footer: {
+    padding: Spacing.lg,
+    paddingBottom: Spacing.xxl,
+  },
   applyAllButton: {
-    marginTop: Spacing.lg,
+    marginTop: 0,
   },
 });

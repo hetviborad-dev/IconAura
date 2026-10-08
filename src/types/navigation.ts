@@ -5,11 +5,10 @@
 import { Theme } from './index';
 
 export type RootStackParamList = {
-  Home: undefined;
+  HomeStack: undefined;
   ThemeDetail: { themeId: Theme };
   ThemeCategory: { categoryId: import('./data').ThemeCategoryId };
   Settings: undefined;
-  HomeStack: undefined;
 };
 
 export type HomeStackParamList = {
