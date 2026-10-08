@@ -284,27 +284,32 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
    * @param iconPngBase64 Base64 encoded PNG of the icon
    * @return IconCompat or null if creation failed
    */
-  private fun createIconFromBase64(iconPngBase64: String, appName: String, backgroundColor: String): IconCompat {
-    val decodedBytes = android.util.Base64.decode(iconPngBase64, android.util.Base64.DEFAULT)
-    val foregroundBitmap = android.graphics.BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-      ?: throw IllegalStateException("Could not decode captured SVG icon for $appName")
+  private fun createIconFromBase64(
+    iconPngBase64: String,
+    appName: String,
+    backgroundColor: String
+  ): IconCompat {
+    val decodedBytes =
+      android.util.Base64.decode(iconPngBase64, android.util.Base64.DEFAULT)
 
-    Log.i(TAG, "Captured SVG icon created: ${foregroundBitmap.width}x${foregroundBitmap.height}px for $appName")
+    val foregroundBitmap =
+      android.graphics.BitmapFactory.decodeByteArray(
+        decodedBytes,
+        0,
+        decodedBytes.size
+      ) ?: throw IllegalStateException(
+        "Could not decode captured SVG icon for $appName"
+      )
 
-    // To support the launcher's shape (Square/Round), we should use Adaptive Icons on Android 8.0+
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      // Create a solid color background bitmap for the adaptive icon
-      // Use the same size as the foreground bitmap to ensure consistency
-      val bgBitmap = android.graphics.Bitmap.createBitmap(foregroundBitmap.width, foregroundBitmap.height, android.graphics.Bitmap.Config.ARGB_8888)
-      val canvas = android.graphics.Canvas(bgBitmap)
-      canvas.drawColor(android.graphics.Color.parseColor(backgroundColor))
+    Log.i(
+      TAG,
+      "Captured SVG icon created: ${foregroundBitmap.width}x${foregroundBitmap.height}px for $appName"
+    )
 
-      return IconCompat.createAdaptiveIcon(bgBitmap, foregroundBitmap)
-    }
-
+    // Use the fully rendered bitmap directly.
+    // The launcher can apply its own icon shape/mask.
     return IconCompat.createWithBitmap(foregroundBitmap)
   }
-
   /**
    * Gets a display name for the target package.
    *
