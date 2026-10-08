@@ -26,26 +26,6 @@ export default function SettingsScreen() {
 
   const settingsSections = [
     {
-      title: 'Saved Icons',
-      items: [
-        {
-          icon: 'bookmark-outline',
-          label: 'Your custom shortcuts',
-          subtitle: 'Manage your created icons',
-        },
-      ],
-    },
-    {
-      title: 'Account',
-      items: [
-        {
-          icon: 'star-outline',
-          label: 'Plan Status',
-          subtitle: 'Free plan',
-        },
-      ],
-    },
-    {
       title: 'Support',
       items: [
         {
@@ -111,14 +91,6 @@ export default function SettingsScreen() {
             </View>
           </View>
         ))}
-
-        {/* App Info */}
-        <View style={styles.infoSection}>
-          <Text style={[styles.infoText, { color: secondaryTextColor }]}>
-            IconAura is a premium customization app for Android. Create
-            beautiful home-screen shortcuts with custom themes.
-          </Text>
-        </View>
       </ScrollView>
     </SafeAreaView>
   );
