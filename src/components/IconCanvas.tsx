@@ -20,7 +20,7 @@ export default function IconCanvas({ appId, theme, size, shape = 'round' }: Icon
       {
         width: size,
         height: size,
-        borderRadius: shape === 'round' ? size / 2 : size * 0.05
+        borderRadius: shape === 'round' ? size : size * 0.05
       }
     ]}>
       <BackgroundLayer layer={theme.background} size={size} />
