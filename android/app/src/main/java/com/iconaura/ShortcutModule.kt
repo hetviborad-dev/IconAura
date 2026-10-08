@@ -294,7 +294,8 @@ val successCallback = PendingIntent.getBroadcast(
     // To support the launcher's shape (Square/Round), we should use Adaptive Icons on Android 8.0+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       // Create a solid color background bitmap for the adaptive icon
-      val bgBitmap = android.graphics.Bitmap.createBitmap(108, 108, android.graphics.Bitmap.Config.ARGB_8888)
+      // Use the same size as the foreground bitmap to ensure consistency
+      val bgBitmap = android.graphics.Bitmap.createBitmap(foregroundBitmap.width, foregroundBitmap.height, android.graphics.Bitmap.Config.ARGB_8888)
       val canvas = android.graphics.Canvas(bgBitmap)
       canvas.drawColor(android.graphics.Color.parseColor(backgroundColor))
 
