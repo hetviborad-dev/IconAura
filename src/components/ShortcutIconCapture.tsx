@@ -35,7 +35,7 @@ export default function ShortcutIconCapture({
     </ViewShot>
   );
 }
-}
+
 
 const styles = {
   capture: { position: 'absolute' as const, left: -600, top: 0, width: 1024, height: 1024 },

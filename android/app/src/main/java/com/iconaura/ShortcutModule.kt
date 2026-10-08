@@ -179,7 +179,11 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
         ?: throw IllegalArgumentException("Rendered icon image is required")
       val themeId = config.getString("themeId") ?: "unknown"
 
-      Log.i(TAG, "Creating shortcut: id=$shortcutId, app=$appPackageName, label=$label, theme=$themeId, colors=($iconColor, $backgroundColor)")
+      // New preferences
+      val shape = config.getString("shape") ?: "round"
+      val withAppName = if (config.hasKey("withAppName")) config.getBoolean("withAppName") else true
+
+      Log.i(TAG, "Creating shortcut: id=$shortcutId, app=$appPackageName, label=$label, theme=$themeId, shape=$shape, withAppName=$withAppName")
 
       // Step 1: Verify target app exists and get its launch activity
       val launchIntent = getLaunchIntentForApp(appPackageName)

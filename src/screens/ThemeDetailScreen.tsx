@@ -190,7 +190,7 @@ export default function ThemeDetailScreen({
       const result = await createShortcut({
         appPackageName: packageName,
         shortcutId,
-        label: appName,
+        label: prefs.withAppName ? appName : '',
         iconColor: theme.icon.value,
         backgroundColor: theme.background.value,
         iconPngBase64,
