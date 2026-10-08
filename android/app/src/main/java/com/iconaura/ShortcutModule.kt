@@ -192,7 +192,7 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
         ?: throw IllegalStateException("Target app ($appPackageName) is not installed or does not have a launch activity")
 
       // Step 2: Create high-resolution icon using new rendering pipeline
-      val iconCompat = createIconFromBase64(iconPngBase64, label, backgroundColor)
+      val iconCompat = createIconFromBase64(iconPngBase64, label, backgroundColor, shape)
 
 
       // Step 3: Create ShortcutInfo
@@ -287,7 +287,8 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
   private fun createIconFromBase64(
     iconPngBase64: String,
     appName: String,
-    backgroundColor: String
+    backgroundColor: String,
+    shape: String
   ): IconCompat {
     val decodedBytes =
       android.util.Base64.decode(iconPngBase64, android.util.Base64.DEFAULT)
@@ -306,9 +307,20 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
       "Captured SVG icon created: ${foregroundBitmap.width}x${foregroundBitmap.height}px for $appName"
     )
 
-    // Use the fully rendered bitmap directly.
-    // The launcher can apply its own icon shape/mask.
-    return IconCompat.createWithBitmap(foregroundBitmap)
+    if (shape == "square") {
+      // For square icons, we provide the full bitmap.
+      // Note: Most launchers will still mask this, but this is the best we can do with a raw bitmap.
+      return IconCompat.createWithBitmap(foregroundBitmap)
+    } else {
+      // For round icons, we can try to create an adaptive icon.
+      // Since our foregroundBitmap already contains the background,
+      // we can use it as both foreground and background, or create a solid background.
+      val backgroundBitmap = android.graphics.Bitmap.createBitmap(1024, 1024, android.graphics.Bitmap.Config.ARGB_8888)
+      val bgCanvas = android.graphics.Canvas(backgroundBitmap)
+      bgCanvas.drawColor(android.graphics.Color.parseColor(backgroundColor))
+
+      return IconCompat.createWithAdaptiveBitmap(foregroundBitmap, backgroundBitmap)
+    }
   }
   /**
    * Gets a display name for the target package.
