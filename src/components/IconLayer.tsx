@@ -25,9 +25,10 @@ export default function IconLayer({ appId, layer, size }: IconLayerProps) {
   }
 
   // Handle Color-based Icons (SVGs)
+  if (!appId) return null;
   const Icon = APP_ICON_COMPONENTS[appId];
   if (typeof Icon !== 'function') {
-    console.error(`SVG icon for "${appId}" did not resolve to a component.`);
+    console.warn(`SVG icon for "${appId}" did not resolve to a component.`);
     return null;
   }
 

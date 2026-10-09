@@ -162,6 +162,42 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
    * @param promise Promise to resolve with result or error
    */
   @ReactMethod
+  fun getCurrentAppIcon(config: ReadableMap, promise: Promise) {
+    try {
+      val packageName = config.getString("packageName") ?: throw IllegalArgumentException("packageName required")
+      Log.i(TAG, "Fetching current icon for: $packageName")
+
+      val appInfo = packageManager.getApplicationInfo(packageName, 0)
+      val icon = packageManager.getApplicationIcon(appInfo)
+
+      val bitmap = if (icon is android.graphics.drawable.BitmapDrawable) {
+        icon.bitmap
+      } else {
+        val b = android.graphics.Bitmap.createBitmap(
+          icon.intrinsicWidth.coerceAtLeast(1),
+          icon.intrinsicHeight.coerceAtLeast(1),
+          android.graphics.Bitmap.Config.ARGB_8888
+        )
+        val canvas = android.graphics.Canvas(b)
+        icon.setBounds(0, 0, b.width, b.height)
+        icon.draw(canvas)
+        b
+      }
+
+      val baos = java.io.ByteArrayOutputStream()
+      bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, baos)
+      val base64 = android.util.Base64.encodeToString(baos.toByteArray(), android.util.Base64.NO_WRAP)
+
+      val result = WritableNativeMap()
+      result.putString("base64", base64)
+      promise.resolve(result)
+    } catch (e: Exception) {
+      Log.e(TAG, "Failed to get current app icon", e)
+      promise.reject("ICON_FETCH_ERROR", e.message, e)
+    }
+  }
+
+  @ReactMethod
   fun createShortcut(config: ReadableMap, promise: Promise) {
     try {
       // Extract configuration
