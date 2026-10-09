@@ -105,7 +105,10 @@ export default function ThemeDetailScreen({
   const { themeId } = route.params;
   const theme = getTheme(themeId);
   const { appStatus, loading, error, refresh } = useAppDetection();
-  const installedApps = SUPPORTED_APPS.filter((app) => appStatus[app.id]?.installed);
+  const installedApps = useMemo(() =>
+    SUPPORTED_APPS.filter((app) => appStatus[app.id]?.installed),
+    [appStatus]
+  );
 
   // Selection and Icons State
   const [selectedApps, setSelectedApps] = useState<Set<AppId>>(new Set());
@@ -116,6 +119,7 @@ export default function ThemeDetailScreen({
   const [searchQuery, setSearchQuery] = useState('');
   const [allInstalledApps, setAllInstalledApps] = useState<any[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const hasInitializedSelection = React.useRef(false);
 
   // Shortcut states
   const [shortcutStates, setShortcutStates] = useState<Record<string, ShortcutState>>({});
@@ -126,13 +130,17 @@ export default function ThemeDetailScreen({
     captureIcons.current[appId] = capture;
   }, []);
 
-  // Initialize random 4 apps and fetch current icons
+  // Initial selection
   useEffect(() => {
-    if (installedApps.length > 0 && selectedApps.size === 0) {
+    if (!hasInitializedSelection.current && installedApps.length > 0 && selectedApps.size === 0) {
       const shuffled = [...installedApps].sort(() => 0.5 - Math.random());
       setSelectedApps(new Set(shuffled.slice(0, 4).map(app => app.id)));
+      hasInitializedSelection.current = true;
     }
+  }, [installedApps]);
 
+  // Fetch current icons
+  useEffect(() => {
     const fetchIcons = async () => {
       const icons: Record<string, string> = {};
       for (const app of installedApps) {
