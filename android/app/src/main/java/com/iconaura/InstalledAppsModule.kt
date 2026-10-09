@@ -59,6 +59,37 @@ class InstalledAppsModule(reactContext: ReactApplicationContext) :
     }
   }
 
+  @ReactMethod
+  fun getAllInstalledApps(promise: Promise) {
+    try {
+      val result: WritableArray = WritableNativeArray()
+      val apps = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+      } else {
+        @Suppress("DEPRECATION")
+        packageManager.getInstalledApplications(PackageManager.GET_META_DATA)
+      }
+
+      for (appInfo in apps) {
+        val packageName = appInfo.packageName
+        val launchIntent = getLaunchIntentForApp(packageName)
+
+        if (launchIntent != null) {
+          val appMap: WritableMap = WritableNativeMap()
+          appMap.putString("id", packageName) // Use package name as ID for system apps
+          appMap.putString("packageName", packageName)
+          appMap.putString("appName", appInfo.loadLabel(packageManager).toString())
+          appMap.putBoolean("installed", true)
+          appMap.putBoolean("launchable", true)
+          result.pushMap(appMap)
+        }
+      }
+      promise.resolve(result)
+    } catch (e: Exception) {
+      promise.reject("ERROR", "Failed to get all installed apps: ${e.message}")
+    }
+  }
+
   private fun getLaunchIntentForApp(packageName: String): android.content.Intent? {
     return try {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

@@ -31,6 +31,21 @@ export async function checkInstalledApps(apps: AppToCheck[]): Promise<InstalledA
 }
 
 /**
+ * Fetches all launchable installed applications on the device.
+ *
+ * @returns Promise resolving to array of all launchable apps
+ */
+export async function fetchAllInstalledApps(): Promise<InstalledApp[]> {
+  try {
+    const result = await InstalledApps.getAllInstalledApps();
+    return result;
+  } catch (error) {
+    console.error('Failed to fetch all installed apps:', error);
+    return [];
+  }
+}
+
+/**
  * Check if a single app is installed
  *
  * @param id App identifier

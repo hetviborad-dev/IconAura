@@ -30,6 +30,7 @@ import { getAllApps } from '../data/apps';
 import ShortcutIconCapture from '../components/ShortcutIconCapture';
 import { useAppDetection } from '../hooks/useAppDetection';
 import { createShortcut, generateShortcutId, onShortcutPinned } from '../services/shortcutCreation';
+import { fetchAllInstalledApps } from '../services/appDetection';
 import AppSelectionRow from '../components/AppSelectionRow';
 import PrimaryButton from '../components/PrimaryButton';
 import { NativeModules } from 'react-native';
@@ -66,6 +67,8 @@ export default function ThemeDetailScreen({
   const [proxyAppId, setProxyAppId] = useState<AppId | null>(null);
   const [appMappings, setAppMappings] = useState<Record<AppId, AppId>>({});
   const [searchQuery, setSearchQuery] = useState('');
+  const [allInstalledApps, setAllInstalledApps] = useState<any[]>([]);
+  const [pickerLoading, setPickerLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Shortcut states
@@ -99,6 +102,8 @@ export default function ThemeDetailScreen({
 
     fetchIcons();
   }, [installedApps]);
+
+  console.log('installedApps', installedApps);
 
   // Listen for native shortcut confirmations
   useEffect(() => {
@@ -243,10 +248,40 @@ export default function ThemeDetailScreen({
   }, [appStatus]);
 
   const filteredInstalledApps = useMemo(() => {
-    return installedApps.filter(app =>
-      app.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [installedApps, searchQuery]);
+    const sourceList = isPickerVisible ? allInstalledApps : installedApps;
+    return sourceList.filter(app => {
+      const name = app?.appName || '';
+      return name.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+  }, [installedApps, allInstalledApps, searchQuery, isPickerVisible]);
+
+  const handleOpenPicker = async (appId: any) => {
+    setProxyAppId(appId);
+    setIsPickerVisible(true);
+    setSearchQuery('');
+
+    setPickerLoading(true);
+    try {
+      const apps = await fetchAllInstalledApps();
+      setAllInstalledApps(apps);
+
+      // Fetch icons for all detected apps to show them in the picker
+      const icons: Record<string, string> = {};
+      for (const app of apps) {
+        try {
+          const result = await HomeShortcut.getCurrentAppIcon({ packageName: app.packageName });
+          icons[app.id] = result.base64;
+        } catch (e) {
+          // Skip apps where icon cannot be fetched
+        }
+      }
+      setCurrentIcons(prev => ({ ...prev, ...icons }));
+    } catch (e) {
+      console.error('Failed to fetch all apps for picker', e);
+    } finally {
+      setPickerLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
@@ -307,10 +342,7 @@ export default function ThemeDetailScreen({
                 isSelected={selectedApps.has(app.id)}
                 onToggle={() => toggleSelection(app.id)}
                 currentIconBase64={currentIcons[mappedId || app.id]}
-                onPlusPress={() => {
-                  setProxyAppId(app.id);
-                  setIsPickerVisible(true);
-                }}
+                onPlusPress={() => handleOpenPicker(app.id)}
                 disabled={disabled}
                 isDarkMode={isDarkMode}
               />
@@ -356,7 +388,7 @@ export default function ThemeDetailScreen({
             </View>
 
             <View style={styles.modalListContainer}>
-              {loading ? (
+              {pickerLoading ? (
                 <View style={styles.loadingState}>
                   <ActivityIndicator size="large" color={Colors.primary} />
                   <Text style={[styles.loadingText, { color: secondaryTextColor }]}>
@@ -389,11 +421,11 @@ export default function ThemeDetailScreen({
                             style={styles.appOptionIcon}
                           />
                         ) : (
-                          <View style={styles.appOptionIconPlaceholder}>
+                          <View style={[styles.appOptionIconPlaceholder, { backgroundColor: isDarkMode ? '#333' : '#EEE' }]}>
                             <Ionicons name="apps" size={20} color={secondaryTextColor} />
                           </View>
                         )}
-                        <Text style={[styles.appOptionText, { color: textColor }]}>{item.name}</Text>
+                        <Text style={[styles.appOptionText, { color: textColor }]}>{item.appName}</Text>
                         <Text style={[styles.appOptionDefault, { color: secondaryTextColor }]}> (Default)</Text>
                       </View>
                     </TouchableOpacity>
