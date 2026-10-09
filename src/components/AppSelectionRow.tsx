@@ -14,7 +14,6 @@ interface AppSelectionRowProps {
   onPlusPress: () => void;
   disabled?: boolean;
   isDarkMode: boolean;
-  status?: 'idle' | 'applying' | 'waiting_confirmation' | 'retry' | 'applied' | 'failed';
 }
 
 const AppSelectionRow = memo(({
@@ -27,7 +26,6 @@ const AppSelectionRow = memo(({
   onPlusPress,
   disabled = false,
   isDarkMode,
-  status = 'idle',
 }: AppSelectionRowProps) => {
   const borderColor = isDarkMode ? Colors.dark.border : Colors.border;
 
@@ -69,26 +67,6 @@ const AppSelectionRow = memo(({
             <Ionicons name="add" size={20} color={isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary} />
           </View>
         )}
-
-        {status !== 'idle' && (
-          <View style={styles.statusOverlay}>
-            {status === 'applying' && (
-              <ActivityIndicator size="small" color={Colors.primary} />
-            )}
-            {status === 'applied' && (
-              <Ionicons name="checkmark-circle" size={24} color={Colors.success} />
-            )}
-            {status === 'failed' && (
-              <Ionicons name="alert-circle" size={24} color={Colors.error} />
-            )}
-            {status === 'waiting_confirmation' && (
-              <ActivityIndicator size="small" color={Colors.primary} />
-            )}
-            {status === 'retry' && (
-              <Ionicons name="refresh" size={20} color={Colors.warning} />
-            )}
-          </View>
-        )}
       </TouchableOpacity>
     </View>
   );
@@ -97,8 +75,7 @@ const AppSelectionRow = memo(({
     prev.isSelected === next.isSelected &&
     prev.currentIconBase64 === next.currentIconBase64 &&
     prev.disabled === next.disabled &&
-    prev.isDarkMode === next.isDarkMode &&
-    prev.status === next.status
+    prev.isDarkMode === next.isDarkMode
   );
 });
 
@@ -155,14 +132,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 8,
-  },
-  statusOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(255,255,255,0.5)',
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 2,
   },
   plusContainer: {
     width: 32,

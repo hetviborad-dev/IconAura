@@ -84,9 +84,8 @@ const PickerAppIcon = memo(({
   );
 });
 
-type ShortcutState = 'idle' | 'applying' | 'waiting_confirmation' | 'retry' | 'applied' | 'failed';
-
 const SUPPORTED_APPS = getAllApps();
+
 
 interface ThemeDetailScreenProps {
   navigation: NativeStackNavigationProp<RootStackParamList, 'ThemeDetail'>;
@@ -121,8 +120,6 @@ export default function ThemeDetailScreen({
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const hasInitializedSelection = React.useRef(false);
 
-  // Shortcut states
-  const [shortcutStates, setShortcutStates] = useState<Record<string, ShortcutState>>({});
   const [capturingAppId, setCapturingAppId] = useState<AppId | null>(null);
   const confirmationTimers = React.useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const captureIcons = React.useRef<Partial<Record<AppId, () => Promise<string>>>>({});
@@ -180,10 +177,6 @@ export default function ThemeDetailScreen({
       if (app) {
         clearTimeout(confirmationTimers.current[app.id]);
         delete confirmationTimers.current[app.id];
-        setShortcutStates((prev) => ({
-          ...prev,
-          [app.id]: event.status === 'success' ? 'applied' : 'failed',
-        }));
       }
     });
 
@@ -201,11 +194,6 @@ export default function ThemeDetailScreen({
   const borderColor = isDarkMode ? '#333333' : Colors.border;
 
   const handleCreateShortcut = async (appId: string, appName: string, packageName: string) => {
-    const currentState = shortcutStates[appId] || 'idle';
-    if (currentState === 'applying' || currentState === 'waiting_confirmation') {
-      return;
-    }
-
     try {
       console.log(`[Shortcut] Creating for appId: ${appId}, pkg: ${packageName}`);
 
@@ -221,7 +209,6 @@ export default function ThemeDetailScreen({
         console.log(`[Shortcut] No mapping for ${appId}, using original package: ${targetPackageName}`);
       }
 
-      setShortcutStates((prev) => ({ ...prev, [appId]: 'applying' }));
       const shortcutId = generateShortcutId(packageName, themeId);
       setCapturingAppId(appId as AppId);
 
@@ -231,7 +218,12 @@ export default function ThemeDetailScreen({
         attempts++;
       }
 
-      const iconPngBase64 = await captureIcons.current[appId as AppId]?.();
+      const captureFn = captureIcons.current[appId as AppId];
+      if (!captureFn) throw new Error('Capture function not ready');
+
+      // Small grace period for the native view to be mounted after capturingAppId change
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      const iconPngBase64 = await captureFn();
       if (!iconPngBase64) throw new Error('Could not capture icon');
 
       const result = await createShortcut({
@@ -245,19 +237,14 @@ export default function ThemeDetailScreen({
       });
 
       if (result.success) {
-        setShortcutStates((prev) => ({ ...prev, [appId]: 'waiting_confirmation' }));
         confirmationTimers.current[appId] = setTimeout(() => {
-          setShortcutStates((prev) =>
-            prev[appId] === 'waiting_confirmation' ? { ...prev, [appId]: 'retry' } : prev,
-          );
           delete confirmationTimers.current[appId];
         }, 15000);
       } else {
-        setShortcutStates((prev) => ({ ...prev, [appId]: 'failed' }));
+        console.error(`[Shortcut] Failed to create shortcut for ${appId}`);
       }
     } catch (err) {
       console.error(`[Shortcut] Error creating shortcut for ${appId}:`, err);
-      setShortcutStates((prev) => ({ ...prev, [appId]: 'failed' }));
     } finally {
       setCapturingAppId(null);
     }
@@ -396,7 +383,6 @@ export default function ThemeDetailScreen({
                 onPlusPress={() => handleOpenPicker(app.id)}
                 disabled={disabled}
                 isDarkMode={isDarkMode}
-                status={shortcutStates[app.id]}
               />
             );
           })}

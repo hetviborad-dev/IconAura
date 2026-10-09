@@ -17,9 +17,13 @@ export default function ShortcutIconCapture({
   onCaptureReady,
 }: ShortcutIconCaptureProps) {
   const viewRef = React.useRef<ViewShotRef>(null);
+  const [ready, setReady] = React.useState(false);
 
   React.useEffect(() => {
     if (!appId) return;
+
+    // Immediately register capture capability so the parent can see it
+    // The actual capture function checks viewRef.current at call-time
     onCaptureReady(appId, () => {
       if (!viewRef.current) return Promise.reject(new Error('Icon view is not ready'));
       const viewHandle = findNodeHandle(viewRef.current);
@@ -31,7 +35,13 @@ export default function ShortcutIconCapture({
   if (!appId) return null;
 
   return (
-    <ViewShot ref={viewRef} style={styles.capture}>
+    <ViewShot
+      ref={viewRef}
+      onLayout={() => {
+        if (viewRef.current) setReady(true);
+      }}
+      style={styles.capture}
+    >
       <IconCanvas appId={appId} theme={theme} size={1024} isCapture={true} />
     </ViewShot>
   );
