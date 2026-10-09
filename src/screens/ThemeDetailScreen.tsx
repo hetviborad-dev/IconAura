@@ -2,7 +2,7 @@
  * ThemeDetailScreen - Detailed view of a theme with app icon previews and apply buttons
  */
 
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import {
   View,
   Text,
@@ -37,6 +37,53 @@ import { NativeModules } from 'react-native';
 
 const { HomeShortcut } = NativeModules;
 
+const PickerAppIcon = memo(({
+  appId,
+  currentIcons,
+  setCurrentIcons,
+  isDarkMode
+}: {
+  appId: string,
+  currentIcons: Record<string, string>,
+  setCurrentIcons: React.Dispatch<React.SetStateAction<Record<string, string>>>,
+  isDarkMode: boolean
+}) => {
+  const [icon, setIcon] = useState(currentIcons[appId]);
+
+  useEffect(() => {
+    if (icon) return;
+    let isMounted = true;
+    async function load() {
+      try {
+        const result = await HomeShortcut.getCurrentAppIcon({ packageName: appId });
+        if (isMounted) {
+          setIcon(result.base64);
+          setCurrentIcons(prev => ({ ...prev, [appId]: result.base64 }));
+        }
+      } catch (e) {
+        // Fail silently for icons
+      }
+    }
+    load();
+    return () => { isMounted = false; };
+  }, [appId, setCurrentIcons]);
+
+  if (!icon) {
+    return (
+      <View style={[styles.appOptionIconPlaceholder, { backgroundColor: isDarkMode ? '#333' : '#EEE' }]}>
+        <Ionicons name="apps" size={20} color={isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary} />
+      </View>
+    );
+  }
+
+  return (
+    <Image
+      source={{ uri: `data:image/png;base64,${icon}` }}
+      style={styles.appOptionIcon}
+    />
+  );
+});
+
 type ShortcutState = 'idle' | 'applying' | 'waiting_confirmation' | 'retry' | 'applied' | 'failed';
 
 const SUPPORTED_APPS = getAllApps();
@@ -62,13 +109,12 @@ export default function ThemeDetailScreen({
 
   // Selection and Icons State
   const [selectedApps, setSelectedApps] = useState<Set<AppId>>(new Set());
-  const [currentIcons, setCurrentIcons] = useState<Record<AppId, string>>({});
+  const [currentIcons, setCurrentIcons] = useState<Record<string, string>>({});
   const [isPickerVisible, setIsPickerVisible] = useState(false);
   const [proxyAppId, setProxyAppId] = useState<AppId | null>(null);
   const [appMappings, setAppMappings] = useState<Record<AppId, AppId>>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [allInstalledApps, setAllInstalledApps] = useState<any[]>([]);
-  const [pickerLoading, setPickerLoading] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Shortcut states
@@ -88,20 +134,33 @@ export default function ThemeDetailScreen({
     }
 
     const fetchIcons = async () => {
-      const icons: Record<AppId, string> = {};
+      const icons: Record<string, string> = {};
       for (const app of installedApps) {
         try {
           const result = await HomeShortcut.getCurrentAppIcon({ packageName: app.packageName });
-          icons[app.id] = result.base64;
+          icons[app.packageName] = result.base64;
         } catch (e) {
           console.error(`Failed to fetch icon for ${app.id}`, e);
         }
       }
-      setCurrentIcons(icons);
+      setCurrentIcons(prev => ({ ...prev, ...icons }));
     };
 
     fetchIcons();
   }, [installedApps]);
+
+  // Preload all installed apps for the picker to avoid lag when opening
+  useEffect(() => {
+    const preloadAllApps = async () => {
+      try {
+        const apps = await fetchAllInstalledApps();
+        setAllInstalledApps(apps);
+      } catch (e) {
+        console.error('Failed to preload all apps for picker', e);
+      }
+    };
+    preloadAllApps();
+  }, []);
 
   console.log('installedApps', installedApps);
 
@@ -140,13 +199,18 @@ export default function ThemeDetailScreen({
     }
 
     try {
+      console.log(`[Shortcut] Creating for appId: ${appId}, pkg: ${packageName}`);
+
       let targetPackageName = packageName;
       const mappedId = appMappings[appId as AppId];
+
       if (mappedId) {
+        console.log(`[Shortcut] Found mapping: ${appId} -> ${mappedId}`);
         const mappedApp = SUPPORTED_APPS.find(a => a.id === mappedId);
-        if (mappedApp) {
-          targetPackageName = mappedApp.packageName;
-        }
+        targetPackageName = mappedApp ? mappedApp.packageName : mappedId;
+        console.log(`[Shortcut] Target package updated to: ${targetPackageName}`);
+      } else {
+        console.log(`[Shortcut] No mapping for ${appId}, using original package: ${targetPackageName}`);
       }
 
       setShortcutStates((prev) => ({ ...prev, [appId]: 'applying' }));
@@ -184,6 +248,7 @@ export default function ThemeDetailScreen({
         setShortcutStates((prev) => ({ ...prev, [appId]: 'failed' }));
       }
     } catch (err) {
+      console.error(`[Shortcut] Error creating shortcut for ${appId}:`, err);
       setShortcutStates((prev) => ({ ...prev, [appId]: 'failed' }));
     } finally {
       setCapturingAppId(null);
@@ -255,32 +320,10 @@ export default function ThemeDetailScreen({
     });
   }, [installedApps, allInstalledApps, searchQuery, isPickerVisible]);
 
-  const handleOpenPicker = async (appId: any) => {
+  const handleOpenPicker = (appId: any) => {
     setProxyAppId(appId);
     setIsPickerVisible(true);
     setSearchQuery('');
-
-    setPickerLoading(true);
-    try {
-      const apps = await fetchAllInstalledApps();
-      setAllInstalledApps(apps);
-
-      // Fetch icons for all detected apps to show them in the picker
-      const icons: Record<string, string> = {};
-      for (const app of apps) {
-        try {
-          const result = await HomeShortcut.getCurrentAppIcon({ packageName: app.packageName });
-          icons[app.id] = result.base64;
-        } catch (e) {
-          // Skip apps where icon cannot be fetched
-        }
-      }
-      setCurrentIcons(prev => ({ ...prev, ...icons }));
-    } catch (e) {
-      console.error('Failed to fetch all apps for picker', e);
-    } finally {
-      setPickerLoading(false);
-    }
   };
 
   return (
@@ -341,10 +384,11 @@ export default function ThemeDetailScreen({
                 theme={theme}
                 isSelected={selectedApps.has(app.id)}
                 onToggle={() => toggleSelection(app.id)}
-                currentIconBase64={currentIcons[mappedId || app.id]}
+                currentIconBase64={currentIcons[mappedId || app.packageName]}
                 onPlusPress={() => handleOpenPicker(app.id)}
                 disabled={disabled}
                 isDarkMode={isDarkMode}
+                status={shortcutStates[app.id]}
               />
             );
           })}
@@ -388,7 +432,7 @@ export default function ThemeDetailScreen({
             </View>
 
             <View style={styles.modalListContainer}>
-              {pickerLoading ? (
+              {allInstalledApps.length === 0 ? (
                 <View style={styles.loadingState}>
                   <ActivityIndicator size="large" color={Colors.primary} />
                   <Text style={[styles.loadingText, { color: secondaryTextColor }]}>
@@ -399,37 +443,54 @@ export default function ThemeDetailScreen({
                 <FlatList
                   data={filteredInstalledApps}
                   keyExtractor={(item) => item.id}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity
-                      style={styles.appOption}
-                      onPress={() => {
-                        if (proxyAppId) {
-                          setAppMappings(prev => ({ ...prev, [proxyAppId]: item.id }));
-                          setSelectedApps(prev => {
-                            const next = new Set(prev);
-                            next.add(item.id);
-                            return next;
-                          });
-                        }
-                        setIsPickerVisible(false);
-                      }}
-                    >
-                      <View style={styles.appOptionContent}>
-                        {currentIcons[item.id] ? (
-                          <Image
-                            source={{ uri: `data:image/png;base64,${currentIcons[item.id]}` }}
-                            style={styles.appOptionIcon}
+                  renderItem={({ item }) => {
+                    // For installed apps from SUPPORTED_APPS, we use their packageName.
+                    // For apps from fetchAllInstalledApps, id is already the packageName.
+                    const pkgName = item.packageName || item.id;
+
+                    return (
+                      <TouchableOpacity
+                        style={styles.appOption}
+                        onPress={async () => {
+                          if (proxyAppId) {
+                            let iconBase64 = currentIcons[pkgName];
+
+                            if (!iconBase64) {
+                              try {
+                                const result = await HomeShortcut.getCurrentAppIcon({ packageName: pkgName });
+                                iconBase64 = result.base64;
+                                setCurrentIcons(prev => ({ ...prev, [pkgName]: iconBase64 }));
+                              } catch (e) {
+                                console.error('Failed to fetch selected app icon', e);
+                              }
+                            }
+
+                            // We map the proxy app (slug) to the selected app's ID
+                            // If the selected app is a system app, we use its package name as the ID
+                            const selectedAppId = item.id;
+                            setAppMappings(prev => ({ ...prev, [proxyAppId]: selectedAppId }));
+                            setSelectedApps(prev => {
+                              const next = new Set(prev);
+                              next.add(selectedAppId);
+                              return next;
+                            });
+                          }
+                          setIsPickerVisible(false);
+                        }}
+                      >
+                        <View style={styles.appOptionContent}>
+                          <PickerAppIcon
+                            appId={pkgName}
+                            currentIcons={currentIcons}
+                            setCurrentIcons={setCurrentIcons}
+                            isDarkMode={isDarkMode}
                           />
-                        ) : (
-                          <View style={[styles.appOptionIconPlaceholder, { backgroundColor: isDarkMode ? '#333' : '#EEE' }]}>
-                            <Ionicons name="apps" size={20} color={secondaryTextColor} />
-                          </View>
-                        )}
-                        <Text style={[styles.appOptionText, { color: textColor }]}>{item.appName}</Text>
-                        <Text style={[styles.appOptionDefault, { color: secondaryTextColor }]}> (Default)</Text>
-                      </View>
-                    </TouchableOpacity>
-                  )}
+                          <Text style={[styles.appOptionText, { color: textColor }]}>{item.appName}</Text>
+                          <Text style={[styles.appOptionDefault, { color: secondaryTextColor }]}> (Default)</Text>
+                        </View>
+                      </TouchableOpacity>
+                    );
+                  }}
                 />
               )}
             </View>

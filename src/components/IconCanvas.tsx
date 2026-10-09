@@ -9,12 +9,20 @@ interface IconCanvasProps {
   appId: AppId;
   theme: ThemeDefinition;
   size: number;
+  isCapture?: boolean;
 }
 
-export default function IconCanvas({ appId, theme, size }: IconCanvasProps) {
+export default function IconCanvas({ appId, theme, size, isCapture = false }: IconCanvasProps) {
   // We use a fixed size for the capture canvas (e.g., 1024)
   return (
-    <View style={[styles.container, { width: size, height: size }]}>
+    <View style={[
+      styles.container,
+      {
+        width: size,
+        height: size,
+        borderRadius: isCapture ? 0 : size * 0.22
+      }
+    ]}>
       <BackgroundLayer layer={theme.background} size={size} />
       <View style={styles.iconWrapper}>
         <IconLayer

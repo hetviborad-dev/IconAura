@@ -32,7 +32,7 @@ export default function ShortcutIconCapture({
 
   return (
     <ViewShot ref={viewRef} style={styles.capture}>
-      <IconCanvas appId={appId} theme={theme} size={1024} />
+      <IconCanvas appId={appId} theme={theme} size={1024} isCapture={true} />
     </ViewShot>
   );
 }
