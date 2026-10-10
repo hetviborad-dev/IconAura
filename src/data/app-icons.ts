@@ -19,7 +19,7 @@ import Uber from '../assets/icons/simple-icons--uber.svg';
 import PayPal from '../assets/icons/simple-icons--paypal.svg';
 import GoogleMaps from '../assets/icons/simple-icons--googlemaps.svg';
 import GoogleDrive from '../assets/icons/simple-icons--googledrive.svg';
-import GooglePhotos from '../assets/icons/simple-icons--googlephotos.svg';
+import GooglePhotos from '../assets/icons/Google-Photos-Logo--Streamline-Ultimate.svg';
 import GooglePlay from '../assets/icons/simple-icons--googleplay.svg';
 import GoogleCalendar from '../assets/icons/simple-icons--googlecalendar.svg';
 import GoogleMeet from '../assets/icons/simple-icons--googlemeet.svg';
@@ -51,6 +51,17 @@ import Strava from '../assets/icons/simple-icons--strava.svg';
 import Fitbit from '../assets/icons/simple-icons--fitbit.svg';
 import Wikipedia from '../assets/icons/simple-icons--wikipedia.svg';
 import Messenger from '../assets/icons/simple-icons--messenger.svg';
+import Calculator from '../assets/icons/ant-design--calculator-filled.svg';
+import Camera from '../assets/icons/ant-design--camera-filled.svg';
+import Settings from '../assets/icons/ant-design--setting-filled.svg';
+import Phone from '../assets/icons/basil--phone-solid.svg';
+import Calendar from '../assets/icons/bitcoin-icons--calendar-filled.svg';
+import Clock from '../assets/icons/bitcoin-icons--clock-filled.svg';
+import Contacts from '../assets/icons/boxicons--contact-book-filled.svg';
+import Microphone from '../assets/icons/carbon--microphone-filled.svg';
+import Files from '../assets/icons/reicon--folder-files-filled.svg';
+import Gallery from '../assets/icons/reicon--gallery-filled.svg';
+import Messages from '../assets/icons/tabler--message-filled.svg';
 
 export const APP_ICON_COMPONENTS: Record<AppId, ComponentType<SvgProps>> = {
   instagram: Instagram,
@@ -103,4 +114,15 @@ export const APP_ICON_COMPONENTS: Record<AppId, ComponentType<SvgProps>> = {
   fitbit: Fitbit,
   wikipedia: Wikipedia,
   messenger: Messenger,
+  calculator: Calculator,
+  camera: Camera,
+  settings: Settings,
+  phone: Phone,
+  calendar: Calendar,
+  clock: Clock,
+  contacts: Contacts,
+  microphone: Microphone,
+  files: Files,
+  gallery: Gallery,
+  messages: Messages,
 };

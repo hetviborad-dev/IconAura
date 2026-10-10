@@ -9,7 +9,9 @@ export type AppId =
   | 'zoom' | 'pinterest' | 'twitch' | 'steam' | 'roblox' | 'airbnb' | 'doordash' | 'uber-eats'
   | 'etsy' | 'ebay' | 'cash-app' | 'venmo' | 'coinbase' | 'dropbox' | 'notion' | 'shazam'
   | 'soundcloud' | 'signal' | 'line' | 'viber' | 'wechat' | 'threads' | 'tinder' | 'duolingo'
-  | 'strava' | 'fitbit' | 'wikipedia' | 'messenger';
+  | 'strava' | 'fitbit' | 'wikipedia' | 'messenger'
+  | 'calculator' | 'camera' | 'settings' | 'phone' | 'calendar' | 'clock' | 'contacts'
+  | 'microphone' | 'files' | 'gallery' | 'messages';
 
 export type ThemeId =
   | 'mono-light' | 'mono-white' | 'mono-grey'
@@ -23,6 +25,7 @@ export interface AppDefinition {
   id: AppId;
   name: string;
   packageName: string;
+  packageAlternatives?: Record<string, string>;
   description: string;
   icon: {
     fallbackColor: string;

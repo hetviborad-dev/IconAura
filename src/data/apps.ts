@@ -59,6 +59,17 @@ export const APPS: Record<AppId, AppDefinition> = {
   fitbit: { id: 'fitbit', name: 'Fitbit', packageName: 'com.fitbit.FitbitMobile', description: 'Track health and fitness', icon: { fallbackColor: '#00B0B9' } },
   wikipedia: { id: 'wikipedia', name: 'Wikipedia', packageName: 'org.wikipedia', description: 'Read the free encyclopedia', icon: { fallbackColor: '#000000' } },
   messenger: { id: 'messenger', name: 'Messenger', packageName: 'com.facebook.orca', description: 'Message and call friends', icon: { fallbackColor: '#0866FF' } },
+  calculator: { id: 'calculator', name: 'Calculator', packageName: 'com.android.calculator2', description: 'Perform calculations', icon: { fallbackColor: '#4285F4' } },
+  camera: { id: 'camera', name: 'Camera', packageName: 'com.android.camera', packageAlternatives: { samsung: 'com.sec.android.app.camera' }, description: 'Capture photos and videos', icon: { fallbackColor: '#4285F4' } },
+  settings: { id: 'settings', name: 'Settings', packageName: 'com.android.settings', description: 'Manage device settings', icon: { fallbackColor: '#757575' } },
+  phone: { id: 'phone', name: 'Phone', packageName: 'com.android.phone', packageAlternatives: { samsung: 'com.sec.phone' }, description: 'Make and receive calls', icon: { fallbackColor: '#4CAF50' } },
+  calendar: { id: 'calendar', name: 'Calendar', packageName: 'com.android.calendar', packageAlternatives: { samsung: 'com.samsung.android.calendar' }, description: 'Manage your events', icon: { fallbackColor: '#4285F4' } },
+  clock: { id: 'clock', name: 'Clock', packageName: 'com.android.clock', packageAlternatives: { samsung: 'com.sec.android.app.clockpackage' }, description: 'Alarms, timer and stopwatch', icon: { fallbackColor: '#4285F4' } },
+  contacts: { id: 'contacts', name: 'Contacts', packageName: 'com.android.contacts', packageAlternatives: { samsung: 'com.samsung.android.app.contacts' }, description: 'Manage your contacts', icon: { fallbackColor: '#4285F4' } },
+  microphone: { id: 'microphone', name: 'Microphone', packageName: 'com.android.voice', description: 'Voice recording and search', icon: { fallbackColor: '#4285F4' } },
+  files: { id: 'files', name: 'Files', packageName: 'com.android.documentsui', packageAlternatives: { samsung: 'com.sec.android.app.myfiles' }, description: 'Manage your local files', icon: { fallbackColor: '#FFB300' } },
+  gallery: { id: 'gallery', name: 'Gallery', packageName: 'com.android.gallery3d', packageAlternatives: { samsung: 'com.sec.android.gallery3d' }, description: 'View your photos and videos', icon: { fallbackColor: '#4285F4' } },
+  messages: { id: 'messages', name: 'Messages', packageName: 'com.android.messaging', packageAlternatives: { samsung: 'com.samsung.android.messaging' }, description: 'Send and receive SMS', icon: { fallbackColor: '#4285F4' } },
 };
 
 /** Get app definition by ID. */

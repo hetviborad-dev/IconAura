@@ -241,8 +241,9 @@ export default function ThemeDetailScreen({
       const icons: Record<string, string> = {};
       for (const app of installedApps) {
         try {
-          const result = await HomeShortcut.getCurrentAppIcon({ packageName: app.packageName });
-          icons[app.packageName] = result.base64;
+          const pkgName = appStatus[app.id]?.packageName || app.packageName;
+          const result = await HomeShortcut.getCurrentAppIcon({ packageName: pkgName });
+          icons[pkgName] = result.base64;
         } catch (e) {
           console.error(`Failed to fetch icon for ${app.id}`, e);
         }
@@ -251,7 +252,7 @@ export default function ThemeDetailScreen({
     };
 
     fetchIcons();
-  }, [installedApps]);
+  }, [installedApps, appStatus]);
 
   // Preload all installed apps for the picker to avoid lag when opening
   useEffect(() => {
@@ -271,7 +272,17 @@ export default function ThemeDetailScreen({
   // Listen for native shortcut confirmations
   useEffect(() => {
     const subscription = onShortcutPinned((event) => {
-      const app = SUPPORTED_APPS.find((a) => generateShortcutId(a.packageName, themeId) === event.shortcutId);
+      const app = SUPPORTED_APPS.find((a) => {
+        const primaryId = generateShortcutId(a.packageName, themeId);
+        if (primaryId === event.shortcutId) return true;
+
+        if (a.packageAlternatives) {
+          return Object.values(a.packageAlternatives).some(pkg =>
+            generateShortcutId(pkg, themeId) === event.shortcutId
+          );
+        }
+        return false;
+      });
 
       if (app) {
         clearTimeout(confirmationTimers.current[app.id]);
@@ -357,7 +368,8 @@ export default function ThemeDetailScreen({
     }
 
     for (const app of appsToApply) {
-      await handleCreateShortcut(app.id, app.name, app.packageName);
+      const pkgName = appStatus[app.id]?.packageName || app.packageName;
+      await handleCreateShortcut(app.id, app.name, pkgName);
       await new Promise(r => setTimeout(r, 500));
     }
   };
@@ -510,7 +522,7 @@ export default function ThemeDetailScreen({
                       theme={theme}
                       isSelected={selectedApps.has(app.id)}
                       onToggle={() => toggleSelection(app.id)}
-                      currentIconBase64={currentIcons[mappedId || app.packageName]}
+                      currentIconBase64={currentIcons[mappedId || appStatus[app.id]?.packageName || app.packageName]}
                       onPlusPress={() => handleOpenPicker(app.id)}
                       disabled={disabled}
                       isDarkMode={isDarkMode}

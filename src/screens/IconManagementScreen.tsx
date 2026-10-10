@@ -21,6 +21,7 @@ import { RootStackParamList } from '../types/navigation';
 import { getAllApps } from '../data/apps';
 import { getEnabledIcons, toggleIconEnabled } from '../services/local/iconStorage';
 import type { AppId } from '../types/data';
+import { useAppDetection } from '../context/AppDetectionContext';
 
 const { HomeShortcut } = NativeModules;
 
@@ -83,10 +84,10 @@ interface IconManagementScreenProps {
 
 export default function IconManagementScreen({ navigation }: IconManagementScreenProps) {
   const isDarkMode = useColorScheme() === 'dark';
+  const { appStatus } = useAppDetection();
   const [enabledIcons, setEnabledIcons] = useState<Set<AppId>>(new Set());
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-
   const backgroundColor = isDarkMode ? Colors.dark.background : Colors.background;
   const textColor = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
   const secondaryTextColor = isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary;
@@ -173,19 +174,22 @@ export default function IconManagementScreen({ navigation }: IconManagementScree
           Select which icons should be visible in the theme editor.
         </Text>
 
-        {filteredApps.map((app) => (
-          <View key={app.id} style={[styles.iconRow, { backgroundColor: isDarkMode ? '#1E1E1E' : '#F9F9F9' }]}>
-            <View style={styles.leftSection}>
-              <AppIcon appId={app.packageName} isDarkMode={isDarkMode} />
-              <Text style={[styles.appName, { color: textColor }]}>{app.name}</Text>
+        {filteredApps.map((app) => {
+          const detectedPkg = appStatus[app.id]?.packageName || app.packageName;
+          return (
+            <View key={app.id} style={[styles.iconRow, { backgroundColor: isDarkMode ? '#1E1E1E' : '#F9F9F9' }]}>
+              <View style={styles.leftSection}>
+                <AppIcon appId={detectedPkg} isDarkMode={isDarkMode} />
+                <Text style={[styles.appName, { color: textColor }]}>{app.name}</Text>
+              </View>
+              <Switch
+                value={enabledIcons.has(app.id)}
+                onValueChange={(val) => handleToggle(app.id)}
+                trackColor={{ false: '#767577', true: Colors.primary }}
+              />
             </View>
-            <Switch
-              value={enabledIcons.has(app.id)}
-              onValueChange={(val) => handleToggle(app.id)}
-              trackColor={{ false: '#767577', true: Colors.primary }}
-            />
-          </View>
-        ))}
+          );
+        })}
       </ScrollView>
     </SafeAreaView>
   );

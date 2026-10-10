@@ -28,12 +28,16 @@ function createStatus(installedApps: InstalledApp[], error: string | null = null
   const statusMap: Record<AppId, AppInstallationStatus> = {} as Record<AppId, AppInstallationStatus>;
 
   SUPPORTED_APPS.forEach((app) => {
-    const found = installedApps.find((item) => item.id === app.id);
+    // Find the first version of this app that is actually installed
+    const found = installedApps.find(
+      (item) => item.id === app.id && item.installed === true && item.launchable !== false
+    );
+
     statusMap[app.id] = {
       appId: app.id,
-      packageName: app.packageName,
+      packageName: found ? found.packageName : app.packageName,
       appName: app.name,
-      installed: found?.installed === true && found.launchable !== false,
+      installed: !!found,
       loading: false,
       error,
     };
@@ -52,11 +56,28 @@ export const AppDetectionProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setError(null);
 
     try {
-      const appsToCheck = SUPPORTED_APPS.map((app) => ({
-        id: app.id,
-        packageName: app.packageName,
-        appName: app.name,
-      }));
+      const appsToCheck: AppToCheck[] = [];
+
+      SUPPORTED_APPS.forEach((app) => {
+        // Add primary package name
+        appsToCheck.push({
+          id: app.id,
+          packageName: app.packageName,
+          appName: app.name,
+        });
+
+        // Add alternatives
+        if (app.packageAlternatives) {
+          Object.values(app.packageAlternatives).forEach((pkg) => {
+            appsToCheck.push({
+              id: app.id,
+              packageName: pkg,
+              appName: app.name,
+            });
+          });
+        }
+      });
+
       const detectedApps = await checkInstalledApps(appsToCheck);
       setAppStatus(createStatus(detectedApps));
     } catch (err) {
