@@ -21,6 +21,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { Colors, Spacing, Typography, Radius, Layout } from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
 import { Theme } from '../types/index';
@@ -37,6 +38,49 @@ import PrimaryButton from '../components/PrimaryButton';
 import { NativeModules } from 'react-native';
 
 const { HomeShortcut } = NativeModules;
+
+const ThemeDetailSkeleton = ({ isDarkMode }: { isDarkMode: boolean }) => {
+  return (
+    <View style={{ flex: 1, paddingHorizontal: Layout.screenPadding, paddingTop: Spacing.lg }}>
+      <SkeletonPlaceholder
+        borderRadius={4}
+        highlightColor={isDarkMode ? '#2A2A2A' : '#E1E1E1'}
+        lowlightColor={isDarkMode ? '#1E1E1E' : '#F0F0F0'}
+      >
+        <View>
+          {/* Header */}
+          <View style={[styles.header, { marginBottom: Spacing.lg }]}>
+            <View style={{ width: 28, height: 28, borderRadius: 14 }} />
+            <View style={{ width: 150, height: 24, borderRadius: 4 }} />
+            <View style={{ width: 28, height: 28 }} />
+          </View>
+
+          {/* Preview Image */}
+          <View style={[styles.themePreviewImage, { marginBottom: Spacing.md }]} />
+
+          {/* Description */}
+          <View style={{ width: '80%', height: 16, borderRadius: 4, marginBottom: 8 }} />
+          <View style={{ width: '60%', height: 16, borderRadius: 4, marginBottom: Spacing.xl }} />
+
+          {/* Apps Section */}
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: Spacing.md }}>
+            <View style={{ width: 100, height: 20, borderRadius: 4 }} />
+            <View style={{ width: 80, height: 20, borderRadius: 4 }} />
+          </View>
+
+          {[...Array(15)].map((_, i) => (
+            <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: Spacing.sm }}>
+              <View style={{ width: 40, height: 40, borderRadius: 8, marginRight: Spacing.sm }} />
+              <View style={{ flex: 1, height: 20, borderRadius: 4, marginRight: Spacing.sm }} />
+              <View style={{ width: 20, height: 20, borderRadius: 10 }} />
+            </View>
+          ))}
+
+        </View>
+      </SkeletonPlaceholder>
+    </View>
+  );
+};
 
 const PickerAppIcon = memo(({
   appId,
@@ -381,10 +425,7 @@ export default function ThemeDetailScreen({
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? '#121212' : Colors.background }]}>
       {themeLoading || !theme ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Colors.primary} />
-          <Text style={[styles.loadingText, { color: secondaryTextColor }]}>Loading theme...</Text>
-        </View>
+        <ThemeDetailSkeleton isDarkMode={isDarkMode} />
       ) : (
         <>
           <View style={styles.hiddenCaptures} pointerEvents="none">
@@ -438,34 +479,45 @@ export default function ThemeDetailScreen({
                 </View>
               </View>
 
-              {loading && (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="large" color={Colors.primary} />
-                  <Text style={[styles.loadingText, { color: secondaryTextColor }]}>Checking apps...</Text>
+              {loading ? (
+                <View style={{ marginTop: Spacing.md }}>
+                  <SkeletonPlaceholder
+                    borderRadius={4}
+                    highlightColor={isDarkMode ? '#2A2A2A' : '#E1E1E1'}
+                    lowlightColor={isDarkMode ? '#1E1E1E' : '#F0F0F0'}
+                  >
+                    {[...Array(6)].map((_, i) => (
+                      <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: Spacing.sm }}>
+                        <View style={{ width: 40, height: 40, borderRadius: 8, marginRight: Spacing.sm }} />
+                        <View style={{ width: '70%', height: 20, borderRadius: 4, marginRight: Spacing.sm }} />
+                        <View style={{ width: 20, height: 20, borderRadius: 10 }} />
+                      </View>
+                    ))}
+                  </SkeletonPlaceholder>
                 </View>
+              ) : (
+                sortedApps.map((app) => {
+                  const isInstalled = appStatus[app.id]?.installed;
+                  const mappedId = appMappings[app.id];
+                  const isMappedSelected = mappedId ? selectedApps.has(mappedId) : false;
+                  const disabled = !isInstalled && (!mappedId || !isMappedSelected);
+
+                  return (
+                    <AppSelectionRow
+                      key={app.id}
+                      appId={app.id}
+                      appName={app.name}
+                      theme={theme}
+                      isSelected={selectedApps.has(app.id)}
+                      onToggle={() => toggleSelection(app.id)}
+                      currentIconBase64={currentIcons[mappedId || app.packageName]}
+                      onPlusPress={() => handleOpenPicker(app.id)}
+                      disabled={disabled}
+                      isDarkMode={isDarkMode}
+                    />
+                  );
+                })
               )}
-
-              {!loading && sortedApps.map((app) => {
-                const isInstalled = appStatus[app.id]?.installed;
-                const mappedId = appMappings[app.id];
-                const isMappedSelected = mappedId ? selectedApps.has(mappedId) : false;
-                const disabled = !isInstalled && (!mappedId || !isMappedSelected);
-
-                return (
-                  <AppSelectionRow
-                    key={app.id}
-                    appId={app.id}
-                    appName={app.name}
-                    theme={theme}
-                    isSelected={selectedApps.has(app.id)}
-                    onToggle={() => toggleSelection(app.id)}
-                    currentIconBase64={currentIcons[mappedId || app.packageName]}
-                    onPlusPress={() => handleOpenPicker(app.id)}
-                    disabled={disabled}
-                    isDarkMode={isDarkMode}
-                  />
-                );
-              })}
             </View>
           </ScrollView>
 
