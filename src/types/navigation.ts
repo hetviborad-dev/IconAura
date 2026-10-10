@@ -9,6 +9,7 @@ export type RootStackParamList = {
   ThemeDetail: { themeId: Theme };
   ThemeCategory: { categoryId: import('./data').ThemeCategoryId };
   Settings: undefined;
+  IconManagement: undefined;
 };
 
 export type HomeStackParamList = {

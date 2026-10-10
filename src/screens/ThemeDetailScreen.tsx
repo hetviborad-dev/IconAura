@@ -27,6 +27,7 @@ import { Theme } from '../types/index';
 import type { AppId } from '../types/data';
 import { fetchTheme } from '../services/themeService';
 import { getAllApps } from '../data/apps';
+import { getEnabledIcons } from '../services/local/iconStorage';
 import ShortcutIconCapture from '../components/ShortcutIconCapture';
 import { useAppDetection } from '../hooks/useAppDetection';
 import { createShortcut, generateShortcutId, onShortcutPinned } from '../services/shortcutCreation';
@@ -104,6 +105,7 @@ export default function ThemeDetailScreen({
   const { themeId } = route.params;
   const [theme, setTheme] = useState<ThemeDefinition | null>(null);
   const [themeLoading, setThemeLoading] = useState(true);
+  const [enabledIcons, setEnabledIcons] = useState<Set<AppId>>(new Set());
   const { appStatus, loading, error, refresh } = useAppDetection();
   const installedApps = useMemo(() =>
     SUPPORTED_APPS.filter((app) => appStatus[app.id]?.installed),
@@ -127,6 +129,24 @@ export default function ThemeDetailScreen({
     loadTheme();
   }, [themeId]);
 
+  useFocusEffect(
+    useCallback(() => {
+      let isMounted = true;
+      async function loadIcons() {
+        try {
+          const icons = await getEnabledIcons();
+          if (isMounted) {
+            setEnabledIcons(icons);
+          }
+        } catch (e) {
+          console.error('Failed to load enabled icons:', e);
+        }
+      }
+      loadIcons();
+      return () => { isMounted = false; };
+    }, [])
+  );
+
   // Selection and Icons State
   const [selectedApps, setSelectedApps] = useState<Set<AppId>>(new Set());
   const [currentIcons, setCurrentIcons] = useState<Record<string, string>>({});
@@ -147,12 +167,29 @@ export default function ThemeDetailScreen({
 
   // Initial selection
   useEffect(() => {
-    if (!hasInitializedSelection.current && installedApps.length > 0 && selectedApps.size === 0) {
-      const shuffled = [...installedApps].sort(() => 0.5 - Math.random());
-      setSelectedApps(new Set(shuffled.slice(0, 4).map(app => app.id)));
-      hasInitializedSelection.current = true;
+    if (!hasInitializedSelection.current && enabledIcons.size > 0 && selectedApps.size === 0) {
+      const enabledAndInstalled = installedApps.filter(app => enabledIcons.has(app.id));
+
+      if (enabledAndInstalled.length > 0) {
+        const shuffled = [...enabledAndInstalled].sort(() => 0.5 - Math.random());
+        setSelectedApps(new Set(shuffled.slice(0, 4).map(app => app.id)));
+        hasInitializedSelection.current = true;
+      }
     }
-  }, [installedApps]);
+  }, [installedApps, enabledIcons]);
+
+  // Sync selected apps with enabled icons
+  useEffect(() => {
+    setSelectedApps(prev => {
+      const next = new Set();
+      prev.forEach(id => {
+        if (enabledIcons.has(id)) {
+          next.add(id);
+        }
+      });
+      return next.size !== prev.size ? next : prev;
+    });
+  }, [enabledIcons]);
 
   // Fetch current icons
   useEffect(() => {
@@ -315,15 +352,17 @@ export default function ThemeDetailScreen({
   }, [appStatus, appMappings, selectedApps, showToast]);
 
   const sortedApps = useMemo(() => {
-    return [...SUPPORTED_APPS].sort((a, b) => {
-      const aInstalled = appStatus[a.id]?.installed;
-      const bInstalled = appStatus[b.id]?.installed;
+    return SUPPORTED_APPS
+      .filter(app => enabledIcons.has(app.id))
+      .sort((a, b) => {
+        const aInstalled = appStatus[a.id]?.installed;
+        const bInstalled = appStatus[b.id]?.installed;
 
-      if (aInstalled && !bInstalled) return -1;
-      if (!aInstalled && bInstalled) return 1;
-      return a.name.localeCompare(b.name);
-    });
-  }, [appStatus]);
+        if (aInstalled && !bInstalled) return -1;
+        if (!aInstalled && bInstalled) return 1;
+        return a.name.localeCompare(b.name);
+      });
+  }, [appStatus, enabledIcons]);
 
   const filteredInstalledApps = useMemo(() => {
     const sourceList = isPickerVisible ? allInstalledApps : installedApps;
@@ -385,9 +424,18 @@ export default function ThemeDetailScreen({
             <View style={styles.appsSection}>
               <View style={styles.sectionHeader}>
                 <Text style={[styles.sectionTitle, { color: textColor }]}>Set Icons</Text>
-                <Text style={[styles.selectionCount, { color: secondaryTextColor }]}>
-                  {selectedApps.size} selected
-                </Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Text style={[styles.selectionCount, { color: secondaryTextColor }]}>
+                    {selectedApps.size} selected
+                  </Text>
+                  <TouchableOpacity
+                    onPress={() => navigation.navigate('IconManagement')}
+                    style={styles.manageIconsButton}
+                  >
+                    <Ionicons name="settings-outline" size={16} color={Colors.primary} />
+                    <Text style={styles.manageIconsText}>Manage</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
 
               {loading && (
@@ -472,8 +520,6 @@ export default function ThemeDetailScreen({
                   data={filteredInstalledApps}
                   keyExtractor={(item) => item.id}
                   renderItem={({ item }) => {
-                    // For installed apps from SUPPORTED_APPS, we use their packageName.
-                    // For apps from fetchAllInstalledApps, id is already the packageName.
                     const pkgName = item.packageName || item.id;
 
                     return (
@@ -493,8 +539,6 @@ export default function ThemeDetailScreen({
                               }
                             }
 
-                            // We map the proxy app (slug) to the selected app's ID
-                            // If the selected app is a system app, we use its package name as the ID
                             const selectedAppId = item.id;
                             setAppMappings(prev => ({ ...prev, [proxyAppId]: selectedAppId }));
                             setSelectedApps(prev => {
@@ -549,6 +593,20 @@ const styles = StyleSheet.create({
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.md },
   sectionTitle: { fontSize: Typography.sizes.h3, fontWeight: Typography.weights.semibold },
   selectionCount: { fontSize: Typography.sizes.caption, fontWeight: Typography.weights.regular },
+  manageIconsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginLeft: Spacing.sm,
+    paddingHorizontal: Spacing.xs,
+    paddingVertical: 4,
+    borderRadius: Radius.sm,
+  },
+  manageIconsText: {
+    fontSize: Typography.sizes.caption,
+    fontWeight: Typography.weights.medium,
+    color: Colors.primary,
+    marginLeft: 4,
+  },
   loadingContainer: { alignItems: 'center', justifyContent: 'center', paddingVertical: Spacing.xl },
   loadingText: { fontSize: Typography.sizes.body, marginTop: Spacing.md },
   footer: { padding: Spacing.lg, paddingBottom: Spacing.xxl },

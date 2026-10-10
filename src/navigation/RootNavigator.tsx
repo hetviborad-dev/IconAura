@@ -13,6 +13,7 @@ import HomeScreen from '../screens/HomeScreen';
 import ThemeDetailScreen from '../screens/ThemeDetailScreen';
 import ThemeCategoryScreen from '../screens/ThemeCategoryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import IconManagementScreen from '../screens/IconManagementScreen';
 import CustomTabBar from '../components/CustomTabBar';
 import { RootStackParamList } from '../types/navigation';
 import { Colors } from '../constants/design';
@@ -57,6 +58,7 @@ export default function RootNavigator() {
         <Stack.Screen name="HomeStack" component={MainTabs} />
         <Stack.Screen name="ThemeDetail" component={ThemeDetailScreen} />
         <Stack.Screen name="ThemeCategory" component={ThemeCategoryScreen} />
+        <Stack.Screen name="IconManagement" component={IconManagementScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

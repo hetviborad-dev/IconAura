@@ -10,13 +10,17 @@ import {
   Text,
   StyleSheet,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { Colors, Spacing, Typography, Radius, Layout } from '../constants/design';
 import SectionHeader from '../components/SectionHeader';
 import SettingsRow from '../components/SettingsRow';
 import { APP_NAME, APP_VERSION } from '../data/config';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { RootStackParamList } from '../types/navigation';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 export default function SettingsScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const isDarkMode = useColorScheme() === 'dark';
   const backgroundColor = isDarkMode ? '#121212' : Colors.background;
   const textColor = isDarkMode ? '#FFFFFF' : Colors.textPrimary;
@@ -25,6 +29,17 @@ export default function SettingsScreen() {
   const borderColor = isDarkMode ? '#333333' : Colors.border;
 
   const settingsSections = [
+    {
+      title: 'App Configuration',
+      items: [
+        {
+          icon: 'apps',
+          label: 'Manage Icons',
+          subtitle: 'Choose visible icons',
+          onPress: () => navigation.navigate('IconManagement'),
+        },
+      ],
+    },
     {
       title: 'Support',
       items: [
@@ -81,10 +96,7 @@ export default function SettingsScreen() {
                   icon={item.icon}
                   title={item.label}
                   subtitle={item.subtitle}
-                  onPress={() => {
-                    // TODO: Handle navigation in Phase 2
-                    console.log(`Pressed: ${item.label}`);
-                  }}
+                  onPress={item.onPress || (() => console.log(`Pressed: ${item.label}`))}
                   showBorder={itemIndex < section.items.length - 1}
                 />
               ))}
