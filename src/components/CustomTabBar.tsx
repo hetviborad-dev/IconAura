@@ -25,7 +25,7 @@ export default function CustomTabBar({ state, descriptors, navigation }: BottomT
           const isFocused = state.index === index;
 
           // Use an explicit mapping to avoid any ambiguity
-          const iconName = route.name === 'HomeStack' ? 'home' :
+          const iconName = route.name === 'Home' ? 'home' :
                            route.name === 'Settings' ? 'settings' : 'help-circle';
 
           return (
