@@ -1,21 +1,20 @@
-/**
- * HomeScreen - Main screen with theme browsing
- */
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   ScrollView,
   useColorScheme,
   Text,
   StyleSheet,
+  ActivityIndicator,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Colors, Spacing, Typography, Layout } from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
-import { getThemesByCategory, THEME_CATEGORIES } from '../data/themes';
+import { THEME_CATEGORIES } from '../data/themes';
+import { fetchThemesByCategory } from '../services/themeService';
 import ThemeCategorySection from '../components/ThemeCategorySection';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import type { ThemeDefinition } from '../types/data';
 
 interface HomeScreenProps {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home'>;
@@ -23,9 +22,35 @@ interface HomeScreenProps {
 
 export default function HomeScreen({ navigation }: HomeScreenProps) {
   const isDarkMode = useColorScheme() === 'dark';
+  const [categoryThemes, setCategoryThemes] = useState<Record<string, ThemeDefinition[]>>({});
+  const [loading, setLoading] = useState(true);
+
   const backgroundColor = isDarkMode ? Colors.dark.background : Colors.background;
   const textColor = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
   const secondaryTextColor = isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary;
+
+  useEffect(() => {
+    async function loadAllCategories() {
+      try {
+        setLoading(true);
+        const themesMap: Record<string, ThemeDefinition[]> = {};
+
+        await Promise.all(
+          THEME_CATEGORIES.map(async (cat) => {
+            const themes = await fetchThemesByCategory(cat.id);
+            themesMap[cat.id] = themes;
+          })
+        );
+
+        setCategoryThemes(themesMap);
+      } catch (e) {
+        console.error('Failed to load home themes:', e);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadAllCategories();
+  }, []);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
@@ -33,25 +58,29 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {THEME_CATEGORIES.map((category) => (
-          <ThemeCategorySection
-            key={category.id}
-            title={category.title}
-            themes={getThemesByCategory(category.id)}
-            darkMode={isDarkMode}
-            onThemePress={(theme) => navigation.navigate('ThemeDetail', { themeId: theme.id })}
-            onMorePress={() => navigation.navigate('ThemeCategory', { categoryId: category.id })}
-          />
-        ))}
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={Colors.primary} />
+          </View>
+        ) : (
+          THEME_CATEGORIES.map((category) => (
+            <ThemeCategorySection
+              key={category.id}
+              title={category.title}
+              themes={categoryThemes[category.id] || []}
+              darkMode={isDarkMode}
+              onThemePress={(theme) => navigation.navigate('ThemeDetail', { themeId: theme.id })}
+              onMorePress={() => navigation.navigate('ThemeCategory', { categoryId: category.id })}
+            />
+          ))
+        )}
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+  container: { flex: 1 },
   scrollContent: {
     paddingHorizontal: Layout.screenPadding,
     paddingTop: Spacing.xxl,
@@ -78,5 +107,11 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.body,
     fontWeight: Typography.weights.regular,
     lineHeight: Typography.sizes.body * Typography.lineHeights.normal,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 50,
   },
 });

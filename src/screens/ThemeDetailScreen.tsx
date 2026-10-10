@@ -25,7 +25,7 @@ import { Colors, Spacing, Typography, Radius, Layout } from '../constants/design
 import { RootStackParamList } from '../types/navigation';
 import { Theme } from '../types/index';
 import type { AppId } from '../types/data';
-import { getTheme } from '../data/themes';
+import { fetchTheme } from '../services/themeService';
 import { getAllApps } from '../data/apps';
 import ShortcutIconCapture from '../components/ShortcutIconCapture';
 import { useAppDetection } from '../hooks/useAppDetection';
@@ -102,12 +102,30 @@ export default function ThemeDetailScreen({
 }: ThemeDetailScreenProps) {
   const isDarkMode = useColorScheme() === 'dark';
   const { themeId } = route.params;
-  const theme = getTheme(themeId);
+  const [theme, setTheme] = useState<ThemeDefinition | null>(null);
+  const [themeLoading, setThemeLoading] = useState(true);
   const { appStatus, loading, error, refresh } = useAppDetection();
   const installedApps = useMemo(() =>
     SUPPORTED_APPS.filter((app) => appStatus[app.id]?.installed),
     [appStatus]
   );
+
+  useEffect(() => {
+    async function loadTheme() {
+      try {
+        setThemeLoading(true);
+        const fetchedTheme = await fetchTheme(themeId);
+        setTheme(fetchedTheme);
+      } catch (e) {
+        console.error('Failed to load theme:', e);
+        Alert.alert('Error', 'Could not load theme details.');
+        navigation.goBack();
+      } finally {
+        setThemeLoading(false);
+      }
+    }
+    loadTheme();
+  }, [themeId]);
 
   // Selection and Icons State
   const [selectedApps, setSelectedApps] = useState<Set<AppId>>(new Set());
@@ -322,80 +340,96 @@ export default function ThemeDetailScreen({
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor }]}>
-      <View style={styles.hiddenCaptures} pointerEvents="none">
-        <ShortcutIconCapture
-          appId={capturingAppId}
-          theme={theme}
-          onCaptureReady={registerCapture}
-        />
-      </View>
-
-      <View style={styles.fixedHeader}>
-        <View style={styles.header}>
-          <TouchableOpacity
-            onPress={() => navigation.goBack()}
-            style={styles.backButton}
-          >
-            <Ionicons name="chevron-back" size={28} color={textColor} />
-          </TouchableOpacity>
-          <Text style={[styles.headerTitle, { color: textColor }]}>
-            {theme.name}
-          </Text>
-          <View style={{ width: 28 }} />
+    <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? '#121212' : Colors.background }]}>
+      {themeLoading || !theme ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={Colors.primary} />
+          <Text style={[styles.loadingText, { color: secondaryTextColor }]}>Loading theme...</Text>
         </View>
-        <Text style={[styles.description, { color: secondaryTextColor }]}>
-          {theme.description}
-        </Text>
-      </View>
+      ) : (
+        <>
+          <View style={styles.hiddenCaptures} pointerEvents="none">
+            <ShortcutIconCapture
+              appId={capturingAppId}
+              theme={theme}
+              onCaptureReady={registerCapture}
+            />
+          </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <View style={styles.appsSection}>
-          <View style={styles.sectionHeader}>
-            <Text style={[styles.sectionTitle, { color: textColor }]}>Set Icons</Text>
-            <Text style={[styles.selectionCount, { color: secondaryTextColor }]}>
-              {selectedApps.size} selected
+          <View style={styles.fixedHeader}>
+            <View style={styles.header}>
+              <TouchableOpacity
+                onPress={() => navigation.goBack()}
+                style={styles.backButton}
+              >
+                <Ionicons name="chevron-back" size={28} color={textColor} />
+              </TouchableOpacity>
+              <Text style={[styles.headerTitle, { color: textColor }]}>
+                {theme.name}
+              </Text>
+              <View style={{ width: 28 }} />
+            </View>
+            {theme.previewUrl && (
+              <Image
+                source={{ uri: theme.previewUrl }}
+                style={styles.themePreviewImage}
+                resizeMode="cover"
+              />
+            )}
+            <Text style={[styles.description, { color: secondaryTextColor }]}>
+              {theme.description}
             </Text>
           </View>
 
-          {loading && (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color={Colors.primary} />
-              <Text style={[styles.loadingText, { color: secondaryTextColor }]}>Checking apps...</Text>
+          <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+            <View style={styles.appsSection}>
+              <View style={styles.sectionHeader}>
+                <Text style={[styles.sectionTitle, { color: textColor }]}>Set Icons</Text>
+                <Text style={[styles.selectionCount, { color: secondaryTextColor }]}>
+                  {selectedApps.size} selected
+                </Text>
+              </View>
+
+              {loading && (
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator size="large" color={Colors.primary} />
+                  <Text style={[styles.loadingText, { color: secondaryTextColor }]}>Checking apps...</Text>
+                </View>
+              )}
+
+              {!loading && sortedApps.map((app) => {
+                const isInstalled = appStatus[app.id]?.installed;
+                const mappedId = appMappings[app.id];
+                const isMappedSelected = mappedId ? selectedApps.has(mappedId) : false;
+                const disabled = !isInstalled && (!mappedId || !isMappedSelected);
+
+                return (
+                  <AppSelectionRow
+                    key={app.id}
+                    appId={app.id}
+                    appName={app.name}
+                    theme={theme}
+                    isSelected={selectedApps.has(app.id)}
+                    onToggle={() => toggleSelection(app.id)}
+                    currentIconBase64={currentIcons[mappedId || app.packageName]}
+                    onPlusPress={() => handleOpenPicker(app.id)}
+                    disabled={disabled}
+                    isDarkMode={isDarkMode}
+                  />
+                );
+              })}
             </View>
-          )}
+          </ScrollView>
 
-          {!loading && sortedApps.map((app) => {
-            const isInstalled = appStatus[app.id]?.installed;
-            const mappedId = appMappings[app.id];
-            const isMappedSelected = mappedId ? selectedApps.has(mappedId) : false;
-            const disabled = !isInstalled && (!mappedId || !isMappedSelected);
-
-            return (
-              <AppSelectionRow
-                key={app.id}
-                appId={app.id}
-                appName={app.name}
-                theme={theme}
-                isSelected={selectedApps.has(app.id)}
-                onToggle={() => toggleSelection(app.id)}
-                currentIconBase64={currentIcons[mappedId || app.packageName]}
-                onPlusPress={() => handleOpenPicker(app.id)}
-                disabled={disabled}
-                isDarkMode={isDarkMode}
-              />
-            );
-          })}
-        </View>
-      </ScrollView>
-
-      <View style={styles.footer}>
-        <PrimaryButton
-          title="Set Icons"
-          onPress={handleSetIcons}
-          fullWidth
-        />
-      </View>
+          <View style={styles.footer}>
+            <PrimaryButton
+              title="Set Icons"
+              onPress={handleSetIcons}
+              fullWidth
+            />
+          </View>
+        </>
+      )}
 
       {toastMessage && (
         <View style={styles.toast}>
@@ -503,6 +537,13 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.lg },
   backButton: { width: 28, height: 28, justifyContent: 'center', alignItems: 'center' },
   headerTitle: { fontSize: Typography.sizes.h2, fontWeight: Typography.weights.bold, textAlign: 'center' },
+  themePreviewImage: {
+    width: '100%',
+    height: 150,
+    borderRadius: Radius.lg,
+    marginBottom: Spacing.md,
+    backgroundColor: '#333',
+  },
   description: { fontSize: Typography.sizes.body, fontWeight: Typography.weights.regular, marginBottom: Spacing.lg, lineHeight: Typography.sizes.body * Typography.lineHeights.normal },
   appsSection: { marginTop: Spacing.xl },
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.md },

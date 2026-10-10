@@ -13,7 +13,8 @@ export type AppId =
 
 export type ThemeId =
   | 'mono-light' | 'mono-white' | 'mono-grey'
-  | 'midnight' | 'ocean' | 'rose' | 'forest' | 'lavender' | 'sunset' | 'leopard-print' | 'crimson-bloom';
+  | 'midnight' | 'ocean' | 'rose' | 'forest' | 'lavender' | 'sunset' | 'leopard-print' | 'crimson-bloom'
+  | string;
 
 /**
  * Represents an installed application that can have custom icons
@@ -46,6 +47,7 @@ export interface ThemeDefinition {
   featuredApps: AppId[];
   icon: ThemeLayer;
   background: ThemeLayer;
+  previewUrl?: string;
   preview: {
     /**
      * Which apps to show in theme previews

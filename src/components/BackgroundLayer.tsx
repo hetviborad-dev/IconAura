@@ -1,7 +1,10 @@
 import React from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 import type { ThemeLayer } from '../types/data';
-import { BACKGROUND_PATTERNS } from '../data/patterns';
+
+const PATTERN_URLS: Record<string, string> = {
+  'crimson-bloom': 'https://nekvkaquyfvygstytbfv.supabase.co/storage/v1/object/public/theme-previews/crystle_flower.png',
+};
 
 interface BackgroundLayerProps {
   layer: ThemeLayer;
@@ -13,15 +16,15 @@ export default function BackgroundLayer({ layer, size }: BackgroundLayerProps) {
     return <View style={[styles.canvas, { backgroundColor: layer.value }]} />;
   }
 
-  const patternImage = BACKGROUND_PATTERNS[layer.value];
-  if (!patternImage) {
+  const patternUrl = PATTERN_URLS[layer.value];
+  if (!patternUrl) {
     console.warn(`Background pattern not found: ${layer.value}`);
     return <View style={[styles.canvas, { backgroundColor: '#eee' }]} />;
   }
 
   return (
     <Image
-      source={patternImage}
+      source={{ uri: patternUrl }}
       style={[styles.canvas, { width: size, height: size }]}
       resizeMode="cover"
     />
