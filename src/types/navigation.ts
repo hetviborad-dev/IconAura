@@ -9,6 +9,7 @@ export type RootStackParamList = {
   ThemeDetail: { theme: ThemeDefinition };
   Settings: undefined;
   IconManagement: undefined;
+  Wallpaper: undefined;
 };
 
 export type HomeStackParamList = {

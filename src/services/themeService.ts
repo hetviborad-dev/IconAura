@@ -39,6 +39,7 @@ export async function fetchTheme(themeId: ThemeId): Promise<ThemeDefinition> {
       featuredApps: [],
       subtitle: '',
     },
+    wallpapers: config.wallpapers || [],
   };
 }
 
@@ -70,6 +71,7 @@ export async function fetchPublicThemes(): Promise<ThemeDefinition[]> {
         featuredApps: [],
         subtitle: '',
       },
+      wallpapers: config.wallpapers || [],
     };
   });
 }
@@ -103,6 +105,7 @@ console.log('Fetched themes for category:', category, data);
         featuredApps: [],
         subtitle: '',
       },
+      wallpapers: config.wallpapers || [],
     };
   });
 }

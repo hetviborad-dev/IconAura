@@ -10,6 +10,7 @@ import HomeScreen from '../screens/HomeScreen';
 import ThemeDetailScreen from '../screens/ThemeDetailScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import IconManagementScreen from '../screens/IconManagementScreen';
+import WallpaperScreen from '../screens/WallpaperScreen';
 import CustomTabBar from '../components/CustomTabBar';
 import { RootStackParamList } from '../types/navigation';
 
@@ -29,6 +30,13 @@ function MainTabs() {
         component={HomeScreen}
         options={{
           tabBarLabel: 'Home',
+        }}
+      />
+      <Tab.Screen
+        name="Wallpapers"
+        component={WallpaperScreen}
+        options={{
+          tabBarLabel: 'Wallpapers',
         }}
       />
       <Tab.Screen

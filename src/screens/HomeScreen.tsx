@@ -23,6 +23,8 @@ interface HomeScreenProps {
 export default function HomeScreen({ navigation }: HomeScreenProps) {
   const isDarkMode = useColorScheme() === 'dark';
   const [categoryThemes, setCategoryThemes] = useState<Record<string, ThemeDefinition[]>>({});
+
+  console.log('HomeScreen - categoryThemes:', categoryThemes);
   const [loading, setLoading] = useState(true);
 
   const backgroundColor = isDarkMode ? Colors.dark.background : Colors.background;

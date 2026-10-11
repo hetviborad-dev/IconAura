@@ -62,6 +62,7 @@ export interface ThemeDefinition {
      */
     subtitle: string;
   };
+  wallpapers: string[];
 }
 
 /**
