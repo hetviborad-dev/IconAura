@@ -19,7 +19,9 @@ export default function IconLayer({ appId, layer, size }: IconLayerProps) {
   // Handle Pattern-based Icons (e.g., Leopard Print)
   if (layer.type === 'pattern') {
     // If the value is a URL, use it directly. Otherwise, look up the pattern keyword.
-    const patternUrl = PATTERN_URLS[layer.value];
+    const patternUrl = layer.value.startsWith('http')
+      ? layer.value
+      : PATTERN_URLS[layer.value];
 
     if (!patternUrl) {
       console.warn(`Icon pattern not found: ${layer.value}`);

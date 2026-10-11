@@ -16,7 +16,11 @@ export default function BackgroundLayer({ layer, size }: BackgroundLayerProps) {
     return <View style={[styles.canvas, { backgroundColor: layer.value }]} />;
   }
 
-  const patternUrl = PATTERN_URLS[layer.value];
+  // If the value is a URL, use it directly. Otherwise, look up the pattern keyword.
+  const patternUrl = layer.value.startsWith('http')
+    ? layer.value
+    : PATTERN_URLS[layer.value];
+
   if (!patternUrl) {
     console.warn(`Background pattern not found: ${layer.value}`);
     return <View style={[styles.canvas, { backgroundColor: '#eee' }]} />;
