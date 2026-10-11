@@ -70,6 +70,10 @@ export const APPS: Record<AppId, AppDefinition> = {
   files: { id: 'files', name: 'Files', packageName: 'com.android.documentsui', packageAlternatives: { samsung: 'com.sec.android.app.myfiles' }, description: 'Manage your local files', icon: { fallbackColor: '#FFB300' } },
   gallery: { id: 'gallery', name: 'Gallery', packageName: 'com.android.gallery3d', packageAlternatives: { samsung: 'com.sec.android.gallery3d' }, description: 'View your photos and videos', icon: { fallbackColor: '#4285F4' } },
   messages: { id: 'messages', name: 'Messages', packageName: 'com.android.messaging', packageAlternatives: { samsung: 'com.samsung.android.messaging' }, description: 'Send and receive SMS', icon: { fallbackColor: '#4285F4' } },
+  weather: { id: 'weather', name: 'Weather', packageName: 'com.android.weather', packageAlternatives: { samsung: 'com.samsung.android.weather' }, description: 'Check the current weather', icon: { fallbackColor: '#4285F4' } },
+  music: { id: 'music', name: 'Music', packageName: 'com.android.music', packageAlternatives: { samsung: 'com.samsung.android.music' }, description: 'Listen to your favorite music', icon: { fallbackColor: '#4285F4' } },
+  notes: { id: 'notes', name: 'Notes', packageName: 'com.android.notes', packageAlternatives: { samsung: 'com.samsung.android.app.notes' }, description: 'Write and organize notes', icon: { fallbackColor: '#4285F4' } },
+  security: { id: 'security', name: 'Security', packageName: 'com.android.security', packageAlternatives: { samsung: 'com.samsung.android.security' }, description: 'Keep your device secure', icon: { fallbackColor: '#4285F4' } },
 };
 
 /** Get app definition by ID. */

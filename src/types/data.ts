@@ -11,7 +11,8 @@ export type AppId =
   | 'soundcloud' | 'signal' | 'line' | 'viber' | 'wechat' | 'threads' | 'tinder' | 'duolingo'
   | 'strava' | 'fitbit' | 'wikipedia' | 'messenger'
   | 'calculator' | 'camera' | 'settings' | 'phone' | 'calendar' | 'clock' | 'contacts'
-  | 'microphone' | 'files' | 'gallery' | 'messages';
+  | 'microphone' | 'files' | 'gallery' | 'messages'
+  | 'weather' | 'music' | 'notes' | 'security';
 
 export type ThemeId =
   | 'mono-light' | 'mono-white' | 'mono-grey'

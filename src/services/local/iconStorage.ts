@@ -10,11 +10,33 @@ export async function getEnabledIcons(): Promise<Set<AppId>> {
     if (stored) {
       return new Set(JSON.parse(stored));
     }
-    // Default to all apps enabled initially
-    return new Set(getAllApps().map(app => app.id));
+    // Default to a specific set of 10 common apps for first-time users
+    return new Set([
+      'camera',
+      'settings',
+      'instagram',
+      'whatsapp',
+      'facebook',
+      'gallery',
+      'phone',
+      'youtube',
+      'spotify',
+      'messages',
+    ]);
   } catch (e) {
     console.error('Failed to fetch enabled icons', e);
-    return new Set(getAllApps().map(app => app.id));
+    return new Set([
+      'camera',
+      'settings',
+      'instagram',
+      'whatsapp',
+      'facebook',
+      'gallery',
+      'phone',
+      'youtube',
+      'spotify',
+      'messages',
+    ]);
   }
 }
 

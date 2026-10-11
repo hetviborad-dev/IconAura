@@ -62,6 +62,10 @@ import Microphone from '../assets/icons/carbon--microphone-filled.svg';
 import Files from '../assets/icons/reicon--folder-files-filled.svg';
 import Gallery from '../assets/icons/reicon--gallery-filled.svg';
 import Messages from '../assets/icons/tabler--message-filled.svg';
+import Weather from '../assets/icons/fluent--weather-cloudy-20-filled.svg';
+import Music from '../assets/icons/reicon--music-note2-filled.svg';
+import Notes from '../assets/icons/reicon--notes-filled.svg';
+import Security from '../assets/icons/reicon--security-filled.svg';
 
 export const APP_ICON_COMPONENTS: Record<AppId, ComponentType<SvgProps>> = {
   instagram: Instagram,
@@ -125,4 +129,8 @@ export const APP_ICON_COMPONENTS: Record<AppId, ComponentType<SvgProps>> = {
   files: Files,
   gallery: Gallery,
   messages: Messages,
+  weather: Weather,
+  music: Music,
+  notes: Notes,
+  security: Security,
 };
