@@ -7,7 +7,6 @@ import { Theme, ThemeDefinition } from './data';
 export type RootStackParamList = {
   HomeStack: undefined;
   ThemeDetail: { theme: ThemeDefinition };
-  ThemeCategory: { categoryId: import('./data').ThemeCategoryId };
   Settings: undefined;
   IconManagement: undefined;
 };
@@ -15,7 +14,6 @@ export type RootStackParamList = {
 export type HomeStackParamList = {
   Home: undefined;
   ThemeDetail: { theme: ThemeDefinition };
-  ThemeCategory: { categoryId: import('./data').ThemeCategoryId };
 };
 
 export type NavigationProps = {

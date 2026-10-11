@@ -70,7 +70,6 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
               themes={categoryThemes[category.id] || []}
               darkMode={isDarkMode}
               onThemePress={(theme) => navigation.navigate('ThemeDetail', { theme: theme })}
-              onMorePress={() => navigation.navigate('ThemeCategory', { categoryId: category.id })}
             />
           ))
         )}

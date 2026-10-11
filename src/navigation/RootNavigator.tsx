@@ -6,17 +6,12 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { useColorScheme } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import HomeScreen from '../screens/HomeScreen';
 import ThemeDetailScreen from '../screens/ThemeDetailScreen';
-import ThemeCategoryScreen from '../screens/ThemeCategoryScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import IconManagementScreen from '../screens/IconManagementScreen';
 import CustomTabBar from '../components/CustomTabBar';
 import { RootStackParamList } from '../types/navigation';
-import { Colors } from '../constants/design';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
@@ -57,7 +52,6 @@ export default function RootNavigator() {
       >
         <Stack.Screen name="HomeStack" component={MainTabs} />
         <Stack.Screen name="ThemeDetail" component={ThemeDetailScreen} />
-        <Stack.Screen name="ThemeCategory" component={ThemeCategoryScreen} />
         <Stack.Screen name="IconManagement" component={IconManagementScreen} />
       </Stack.Navigator>
     </NavigationContainer>

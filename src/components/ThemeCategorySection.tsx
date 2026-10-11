@@ -8,7 +8,6 @@ interface ThemeCategorySectionProps {
   title: string;
   themes: ThemeDefinition[];
   onThemePress: (theme: ThemeDefinition) => void;
-  onMorePress: () => void;
   darkMode: boolean;
 }
 
@@ -16,7 +15,6 @@ export default function ThemeCategorySection({
   title,
   themes,
   onThemePress,
-  onMorePress,
   darkMode,
 }: ThemeCategorySectionProps) {
   if (!themes.length) return null;
@@ -27,9 +25,6 @@ export default function ThemeCategorySection({
     <View style={styles.section}>
       <View style={styles.heading}>
         <Text style={[styles.title, { color: textColor }]}>{title}</Text>
-        <TouchableOpacity onPress={onMorePress} accessibilityRole="button" accessibilityLabel={`See all ${title} themes`}>
-          <Text style={[styles.more, { color: mutedColor }]}>More ›</Text>
-        </TouchableOpacity>
       </View>
       <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
         {themes.map((theme) => (
