@@ -25,8 +25,7 @@ import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { Colors, Spacing, Typography, Radius, Layout } from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
 import { Theme } from '../types/index';
-import type { AppId } from '../types/data';
-import { fetchTheme } from '../services/themeService';
+import type { AppId, ThemeDefinition } from '../types/data';
 import { getAllApps } from '../data/apps';
 import { getEnabledIcons } from '../services/local/iconStorage';
 import ShortcutIconCapture from '../components/ShortcutIconCapture';
@@ -136,7 +135,7 @@ interface ThemeDetailScreenProps {
   navigation: NativeStackNavigationProp<RootStackParamList, 'ThemeDetail'>;
   route: {
     params: {
-      themeId: Theme;
+      theme: ThemeDefinition;
     };
   };
 }
@@ -146,32 +145,13 @@ export default function ThemeDetailScreen({
   route,
 }: ThemeDetailScreenProps) {
   const isDarkMode = useColorScheme() === 'dark';
-  const { themeId } = route.params;
-  const [theme, setTheme] = useState<ThemeDefinition | null>(null);
-  const [themeLoading, setThemeLoading] = useState(true);
+  const { theme } = route.params;
   const [enabledIcons, setEnabledIcons] = useState<Set<AppId>>(new Set());
   const { appStatus, loading, error, refresh } = useAppDetection();
   const installedApps = useMemo(() =>
     SUPPORTED_APPS.filter((app) => appStatus[app.id]?.installed),
     [appStatus]
   );
-
-  useEffect(() => {
-    async function loadTheme() {
-      try {
-        setThemeLoading(true);
-        const fetchedTheme = await fetchTheme(themeId);
-        setTheme(fetchedTheme);
-      } catch (e) {
-        console.error('Failed to load theme:', e);
-        Alert.alert('Error', 'Could not load theme details.');
-        navigation.goBack();
-      } finally {
-        setThemeLoading(false);
-      }
-    }
-    loadTheme();
-  }, [themeId]);
 
   useFocusEffect(
     useCallback(() => {
@@ -205,7 +185,7 @@ export default function ThemeDetailScreen({
   const [capturingAppId, setCapturingAppId] = useState<AppId | null>(null);
   const confirmationTimers = React.useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const captureIcons = React.useRef<Partial<Record<AppId, () => Promise<string>>>>({});
-  const registerCapture = React.useCallback((appId: AppId, capture: () => Promise<string>) => {
+  const registerCapture = useCallback((appId: AppId, capture: () => Promise<string>) => {
     captureIcons.current[appId] = capture;
   }, []);
 
@@ -273,12 +253,12 @@ export default function ThemeDetailScreen({
   useEffect(() => {
     const subscription = onShortcutPinned((event) => {
       const app = SUPPORTED_APPS.find((a) => {
-        const primaryId = generateShortcutId(a.packageName, themeId);
+        const primaryId = generateShortcutId(a.packageName, theme.id);
         if (primaryId === event.shortcutId) return true;
 
         if (a.packageAlternatives) {
           return Object.values(a.packageAlternatives).some(pkg =>
-            generateShortcutId(pkg, themeId) === event.shortcutId
+            generateShortcutId(pkg, theme.id) === event.shortcutId
           );
         }
         return false;
@@ -295,7 +275,7 @@ export default function ThemeDetailScreen({
       Object.values(confirmationTimers.current).forEach(clearTimeout);
       confirmationTimers.current = {};
     };
-  }, [themeId]);
+  }, [theme.id]);
 
   const backgroundColor = isDarkMode ? '#121212' : Colors.background;
   const textColor = isDarkMode ? '#FFFFFF' : Colors.textPrimary;
@@ -319,7 +299,7 @@ export default function ThemeDetailScreen({
         console.log(`[Shortcut] No mapping for ${appId}, using original package: ${targetPackageName}`);
       }
 
-      const shortcutId = generateShortcutId(packageName, themeId);
+      const shortcutId = generateShortcutId(packageName, theme.id);
       setCapturingAppId(appId as AppId);
 
       let attempts = 0;
@@ -343,7 +323,7 @@ export default function ThemeDetailScreen({
         iconColor: theme.icon.value,
         backgroundColor: theme.background.value,
         iconPngBase64,
-        themeId,
+        themeId: theme.id,
       });
 
       if (result.success) {
@@ -436,112 +416,108 @@ export default function ThemeDetailScreen({
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: isDarkMode ? '#121212' : Colors.background }]}>
-      {themeLoading || !theme ? (
-        <ThemeDetailSkeleton isDarkMode={isDarkMode} />
-      ) : (
-        <>
-          <View style={styles.hiddenCaptures} pointerEvents="none">
-            <ShortcutIconCapture
-              appId={capturingAppId}
-              theme={theme}
-              onCaptureReady={registerCapture}
-            />
-          </View>
+      <>
+        <View style={styles.hiddenCaptures} pointerEvents="none">
+          <ShortcutIconCapture
+            appId={capturingAppId}
+            theme={theme}
+            onCaptureReady={registerCapture}
+          />
+        </View>
 
-          <View style={styles.fixedHeader}>
-            <View style={styles.header}>
-              <TouchableOpacity
-                onPress={() => navigation.goBack()}
-                style={styles.backButton}
-              >
-                <Ionicons name="chevron-back" size={28} color={textColor} />
-              </TouchableOpacity>
-              <Text style={[styles.headerTitle, { color: textColor }]}>
-                {theme.name}
-              </Text>
-              <View style={{ width: 28 }} />
-            </View>
-            {theme.previewUrl && (
-              <Image
-                source={{ uri: theme.previewUrl }}
-                style={styles.themePreviewImage}
-                resizeMode="cover"
-              />
-            )}
-            <Text style={[styles.description, { color: secondaryTextColor }]}>
-              {theme.description}
+        <View style={styles.fixedHeader}>
+          <View style={styles.header}>
+            <TouchableOpacity
+              onPress={() => navigation.goBack()}
+              style={styles.backButton}
+            >
+              <Ionicons name="chevron-back" size={28} color={textColor} />
+            </TouchableOpacity>
+            <Text style={[styles.headerTitle, { color: textColor }]}>
+              {theme.name}
             </Text>
+            <View style={{ width: 28 }} />
           </View>
-
-          <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-            <View style={styles.appsSection}>
-              <View style={styles.sectionHeader}>
-                <Text style={[styles.sectionTitle, { color: textColor }]}>Set Icons</Text>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Text style={[styles.selectionCount, { color: secondaryTextColor }]}>
-                    {selectedApps.size} selected
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => navigation.navigate('IconManagement')}
-                    style={styles.manageIconsButton}
-                  >
-                    <Ionicons name="settings-outline" size={16} color={Colors.primary} />
-                    <Text style={styles.manageIconsText}>Manage</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
-
-              {loading ? (
-                <View style={{ marginTop: Spacing.md }}>
-                  <SkeletonPlaceholder
-                    borderRadius={4}
-                    highlightColor={isDarkMode ? '#2A2A2A' : '#E1E1E1'}
-                    lowlightColor={isDarkMode ? '#1E1E1E' : '#F0F0F0'}
-                  >
-                    {[...Array(6)].map((_, i) => (
-                      <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: Spacing.sm }}>
-                        <View style={{ width: 40, height: 40, borderRadius: 8, marginRight: Spacing.sm }} />
-                        <View style={{ width: '70%', height: 20, borderRadius: 4, marginRight: Spacing.sm }} />
-                        <View style={{ width: 20, height: 20, borderRadius: 10 }} />
-                      </View>
-                    ))}
-                  </SkeletonPlaceholder>
-                </View>
-              ) : (
-                sortedApps.map((app) => {
-                  const isInstalled = appStatus[app.id]?.installed;
-                  const mappedId = appMappings[app.id];
-                  const isMappedSelected = mappedId ? selectedApps.has(mappedId) : false;
-                  const disabled = !isInstalled && (!mappedId || !isMappedSelected);
-
-                  return (
-                    <AppSelectionRow
-                      key={app.id}
-                      appId={app.id}
-                      appName={app.name}
-                      theme={theme}
-                      isSelected={selectedApps.has(app.id)}
-                      onToggle={() => toggleSelection(app.id)}
-                      currentIconBase64={currentIcons[mappedId || appStatus[app.id]?.packageName || app.packageName]}
-                      onPlusPress={() => handleOpenPicker(app.id)}
-                      disabled={disabled}
-                      isDarkMode={isDarkMode}
-                    />
-                  );
-                })
-              )}
-            </View>
-          </ScrollView>
-
-          <View style={styles.footer}>
-            <PrimaryButton
-              title="Set Icons"
-              onPress={handleSetIcons}
-              fullWidth
+          {theme.previewUrl && (
+            <Image
+              source={{ uri: theme.previewUrl }}
+              style={styles.themePreviewImage}
+              resizeMode="cover"
             />
+          )}
+          <Text style={[styles.description, { color: secondaryTextColor }]}>
+            {theme.description}
+          </Text>
+        </View>
+
+        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          <View style={styles.appsSection}>
+            <View style={styles.sectionHeader}>
+              <Text style={[styles.sectionTitle, { color: textColor }]}>Set Icons</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={[styles.selectionCount, { color: secondaryTextColor }]}>
+                  {selectedApps.size} selected
+                </Text>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('IconManagement')}
+                  style={styles.manageIconsButton}
+                >
+                  <Ionicons name="settings-outline" size={16} color={Colors.primary} />
+                  <Text style={styles.manageIconsText}>Manage</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {loading ? (
+              <View style={{ marginTop: Spacing.md }}>
+                <SkeletonPlaceholder
+                  borderRadius={4}
+                  highlightColor={isDarkMode ? '#2A2A2A' : '#E1E1E1'}
+                  lowlightColor={isDarkMode ? '#1E1E1E' : '#F0F0F0'}
+                >
+                  {[...Array(6)].map((_, i) => (
+                    <View key={i} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: Spacing.sm }}>
+                      <View style={{ width: 40, height: 40, borderRadius: 8, marginRight: Spacing.sm }} />
+                      <View style={{ width: '70%', height: 20, borderRadius: 4, marginRight: Spacing.sm }} />
+                      <View style={{ width: 20, height: 20, borderRadius: 10 }} />
+                    </View>
+                  ))}
+                </SkeletonPlaceholder>
+              </View>
+            ) : (
+              sortedApps.map((app) => {
+                const isInstalled = appStatus[app.id]?.installed;
+                const mappedId = appMappings[app.id];
+                const isMappedSelected = mappedId ? selectedApps.has(mappedId) : false;
+                const disabled = !isInstalled && (!mappedId || !isMappedSelected);
+
+                return (
+                  <AppSelectionRow
+                    key={app.id}
+                    appId={app.id}
+                    appName={app.name}
+                    theme={theme}
+                    isSelected={selectedApps.has(app.id)}
+                    onToggle={() => toggleSelection(app.id)}
+                    currentIconBase64={currentIcons[mappedId || appStatus[app.id]?.packageName || app.packageName]}
+                    onPlusPress={() => handleOpenPicker(app.id)}
+                    disabled={disabled}
+                    isDarkMode={isDarkMode}
+                  />
+                );
+              })
+            )}
           </View>
-        </>
-      )}
+        </ScrollView>
+
+        <View style={styles.footer}>
+          <PrimaryButton
+            title="Set Icons"
+            onPress={handleSetIcons}
+            fullWidth
+          />
+        </View>
+      </>
 
       {toastMessage && (
         <View style={styles.toast}>
