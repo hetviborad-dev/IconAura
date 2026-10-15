@@ -8,6 +8,7 @@ import {
   Modal,
   ActivityIndicator,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Spacing, Typography, Radius } from '../constants/design';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
@@ -16,7 +17,8 @@ interface WallpaperSelectionModalProps {
   onClose: () => void;
   wallpaperUrl: string;
   onApply: (target: 'home' | 'lock' | 'both') => Promise<void>;
-  onApplyTheme: () => void;
+  onApplyTheme?: () => void;
+  showApplyTheme?: boolean;
   isDarkMode: boolean;
 }
 
@@ -26,8 +28,10 @@ export default function WallpaperSelectionModal({
   wallpaperUrl,
   onApply,
   onApplyTheme,
+  showApplyTheme,
   isDarkMode,
 }: WallpaperSelectionModalProps) {
+  const insets = useSafeAreaInsets();
   const [isLoading, setIsLoading] = useState(false);
   const backgroundColor = isDarkMode ? Colors.dark.surface : 'white';
   const textColor = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
@@ -44,77 +48,72 @@ export default function WallpaperSelectionModal({
 
   return (
     <Modal visible={visible} transparent animationType="fade">
-      <View style={styles.overlay}>
-        <View style={[styles.container, { backgroundColor }]}>
-          <View style={styles.header}>
-            <Text style={[styles.title, { color: textColor }]}>Set Wallpaper</Text>
-            <TouchableOpacity onPress={onClose}>
-              <Ionicons name="close" size={24} color={textColor} />
+      <View style={styles.fullScreenContainer}>
+        <Image source={{ uri: wallpaperUrl }} style={styles.fullScreenImage} resizeMode="cover" />
+
+        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
+          <Ionicons name="close" size={28} color="white" />
+        </TouchableOpacity>
+
+        <View style={[styles.bottomControls, { paddingBottom: insets.bottom + Spacing.xl }]}>
+          <Text style={[styles.optionLabel, { color: 'white' }]}>Apply to:</Text>
+
+          <View style={styles.buttonGroup}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => handleApply('home')}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator size="small" color="white" />
+              ) : (
+                <>
+                  <Ionicons name="home-outline" size={24} color="white" />
+                  <Text style={[styles.actionText, { color: 'white' }]}>Home</Text>
+                </>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => handleApply('lock')}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator size="small" color="white" />
+              ) : (
+                <>
+                  <Ionicons name="lock-closed-outline" size={24} color="white" />
+                  <Text style={[styles.actionText, { color: 'white' }]}>Lock</Text>
+                </>
+              )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => handleApply('both')}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator size="small" color="white" />
+              ) : (
+                <>
+                  <Ionicons name="layers-outline" size={24} color="white" />
+                  <Text style={[styles.actionText, { color: 'white' }]}>Both</Text>
+                </>
+              )}
             </TouchableOpacity>
           </View>
 
-          <View style={styles.previewContainer}>
-            <Image source={{ uri: wallpaperUrl }} style={styles.previewImage} resizeMode="cover" />
-          </View>
-
-          <View style={styles.optionsContainer}>
-            <Text style={[styles.optionLabel, { color: secondaryTextColor }]}>Apply to:</Text>
-
-            <View style={styles.buttonGroup}>
-              <TouchableOpacity
-                style={[styles.actionButton, isLoading && { opacity: 0.5 }]}
-                onPress={() => handleApply('home')}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <ActivityIndicator size="small" color={textColor} />
-                ) : (
-                  <>
-                    <Ionicons name="home-outline" size={20} color={textColor} />
-                    <Text style={[styles.actionText, { color: textColor }]}>Home Screen</Text>
-                  </>
-                )}
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.actionButton, isLoading && { opacity: 0.5 }]}
-                onPress={() => handleApply('lock')}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <ActivityIndicator size="small" color={textColor} />
-                ) : (
-                  <>
-                    <Ionicons name="lock-closed-outline" size={20} color={textColor} />
-                    <Text style={[styles.actionText, { color: textColor }]}>Lock Screen</Text>
-                  </>
-                )}
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.actionButton, isLoading && { opacity: 0.5 }]}
-                onPress={() => handleApply('both')}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <ActivityIndicator size="small" color={textColor} />
-                ) : (
-                  <>
-                    <Ionicons name="layers-outline" size={20} color={textColor} />
-                    <Text style={[styles.actionText, { color: textColor }]}>Both</Text>
-                  </>
-                )}
-              </TouchableOpacity>
-            </View>
-
+          {showApplyTheme && (
             <TouchableOpacity
               style={styles.themeButton}
               onPress={onApplyTheme}
             >
-              <Ionicons name="color-palette-outline" size={20} color={Colors.primary} />
+              <Ionicons name="color-palette-outline" size={20} color="white" />
               <Text style={styles.themeButtonText}>Apply Matching Theme</Text>
             </TouchableOpacity>
-          </View>
+          )}
         </View>
       </View>
     </Modal>
@@ -122,47 +121,35 @@ export default function WallpaperSelectionModal({
 }
 
 const styles = StyleSheet.create({
-  overlay: {
+  fullScreenContainer: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: Spacing.lg,
+    backgroundColor: 'black',
   },
-  container: {
-    width: '100%',
-    maxWidth: 400,
-    borderRadius: Radius.xl,
-    overflow: 'hidden',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: Spacing.lg,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.border,
-  },
-  title: {
-    fontSize: Typography.sizes.h3,
-    fontWeight: Typography.weights.bold,
-  },
-  previewContainer: {
-    width: '100%',
-    height: 300,
-    backgroundColor: '#000',
-  },
-  previewImage: {
+  fullScreenImage: {
+    ...StyleSheet.absoluteFillObject,
     width: '100%',
     height: '100%',
   },
-  optionsContainer: {
+  closeButton: {
+    position: 'absolute',
+    top: 50,
+    right: 20,
+    zIndex: 10,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    borderRadius: 20,
+    padding: 8,
+  },
+  bottomControls: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     padding: Spacing.lg,
+    paddingBottom: Spacing.xxxl + 20, // Increased padding to account for safe area/navigation bar
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    borderTopLeftRadius: Radius.xl,
+    borderTopRightRadius: Radius.xl,
+    alignItems: 'center',
   },
   optionLabel: {
     fontSize: Typography.sizes.bodySmall,
@@ -174,6 +161,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: Spacing.xl,
+    width: '100%',
   },
   actionButton: {
     flex: 1,
@@ -182,9 +170,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: Radius.md,
-    backgroundColor: 'rgba(150,150,150,0.1)',
+    backgroundColor: 'rgba(255,255,255,0.2)',
     borderWidth: 1,
-    borderColor: 'rgba(150,150,150,0.2)',
+    borderColor: 'rgba(255,255,255,0.3)',
   },
   actionText: {
     fontSize: Typography.sizes.caption,
@@ -199,6 +187,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.md,
     backgroundColor: Colors.primary,
     gap: 8,
+    width: '100%',
   },
   themeButtonText: {
     color: 'white',

@@ -104,6 +104,7 @@ export default function WallpaperScreen() {
           isDarkMode={isDarkMode}
           onClose={() => setSelectedWallpaper(null)}
           onApply={handleApplyWallpaper}
+          showApplyTheme={true}
           onApplyTheme={() => {
             setSelectedWallpaper(null);
             navigation.navigate('ThemeDetail', { theme: selectedWallpaper.theme });

@@ -639,6 +639,7 @@ export default function ThemeDetailScreen({
             }
             setSelectedWallpaperUrl(null);
           }}
+          showApplyTheme={false}
           onApplyTheme={() => {
             setSelectedWallpaperUrl(null);
             // Already in ThemeDetailScreen, so just show a toast or alert
