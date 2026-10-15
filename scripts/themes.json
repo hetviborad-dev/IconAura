@@ -36,5 +36,65 @@
     "iconValue": "pattern",
     "bgType": "color",
     "bgValue": "#F1E0CE"
+  },
+  {
+    "slug": "dog-print",
+    "name": "Dog Print",
+    "description": "A stylish dog print theme",
+    "category": "animal-print",
+    "iconType": "color",
+    "iconValue": "#FFFFFF",
+    "bgType": "pattern",
+    "bgValue": "pattern"
+  },
+  {
+    "slug": "midnight-navy",
+    "name": "Midnight Navy",
+    "description": "A deep navy theme with a clean, modern aesthetic",
+    "category": "minimalist",
+    "iconType": "color",
+    "iconValue": "#0F172A",
+    "bgType": "color",
+    "bgValue": "#E2E8F0"
+  },
+  {
+    "slug": "soft-beige",
+    "name": "Soft Beige",
+    "description": "A warm neutral theme with understated elegance",
+    "category": "minimalist",
+    "iconType": "color",
+    "iconValue": "#8B7355",
+    "bgType": "color",
+    "bgValue": "#F5F0E8"
+  },
+  {
+    "slug": "sage-green",
+    "name": "Sage Green",
+    "description": "A calming green palette inspired by nature",
+    "category": "minimalist",
+    "iconType": "color",
+    "iconValue": "#3F5B4B",
+    "bgType": "color",
+    "bgValue": "#E8EFE7"
+  },
+  {
+    "slug": "soft-lavender",
+    "name": "Soft Lavender",
+    "description": "A subtle lavender theme with a gentle, modern feel",
+    "category": "minimalist",
+    "iconType": "color",
+    "iconValue": "#6D5A91",
+    "bgType": "color",
+    "bgValue": "#F0EBF8"
+  },
+  {
+    "slug": "dusty-rose",
+    "name": "Dusty Rose",
+    "description": "A muted pink palette with a refined aesthetic",
+    "category": "minimalist",
+    "iconType": "color",
+    "iconValue": "#9F5F68",
+    "bgType": "color",
+    "bgValue": "#F8EDEF"
   }
 ]

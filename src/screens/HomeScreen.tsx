@@ -11,8 +11,7 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Colors, Spacing, Typography, Layout } from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
-import { THEME_CATEGORIES } from '../data/themes';
-import { fetchThemesByCategory, fetchCategories } from '../services/themeService';
+import { fetchThemesByCategory, fetchCategories, fetchHomeThemes } from '../services/themeService';
 import ThemeCategorySection from '../components/ThemeCategorySection';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { ThemeDefinition } from '../types/data';
@@ -27,44 +26,40 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   const [categoryThemes, setCategoryThemes] = useState<Record<string, ThemeDefinition[]>>({});
   const [loading, setLoading] = useState(true);
 
-  console.log('HomeScreen - categoryThemes:', categoryThemes);
-
+  
   const backgroundColor = isDarkMode ? Colors.dark.background : Colors.background;
   const textColor = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
   const secondaryTextColor = isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary;
-
+  
   const loadAllCategories = async () => {
     try {
       setLoading(true);
 
-      // 1. Fetch categories from DB
-      const fetchedCategories = await fetchCategories();
+      console.log('DEBUG: Calling fetchHomeThemes...');
+      const { categories, themesMap } = await fetchHomeThemes();
+      console.log('DEBUG: fetchHomeThemes categories:', categories);
+      console.log('DEBUG: fetchHomeThemes themesMap keys:', Object.keys(themesMap));
 
-      // Fallback to hardcoded categories if DB is empty
-      const finalCategories = fetchedCategories.length > 0
-        ? fetchedCategories
-        : THEME_CATEGORIES.map(cat => ({ id: cat.id, name: cat.title }));
-
-      setCategories(finalCategories);
-
-      const themesMap: Record<string, ThemeDefinition[]> = {};
-
-      // 2. Fetch themes for each category
-      await Promise.all(
-        finalCategories.map(async (cat) => {
-          const themes = await fetchThemesByCategory(cat.id);
-          themesMap[cat.id] = themes;
-        })
-      );
-
-      setCategoryThemes(themesMap);
+      if (categories && categories.length > 0) {
+        const mappedCats = categories.map(cat => ({
+          id: cat.slug,
+          name: cat.name
+        }));
+        console.log('DEBUG: Mapped categories:', mappedCats);
+        setCategories(mappedCats);
+        setCategoryThemes(themesMap);
+      } else {
+        console.log('DEBUG: No categories found in DB');
+        setCategories([]);
+        setCategoryThemes({});
+      }
     } catch (e) {
       console.error('Failed to load home themes:', e);
     } finally {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     loadAllCategories();
   }, []);
@@ -76,9 +71,9 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
-            refreshing={loading}
-            onRefresh={loadAllCategories}
-            colors={[Colors.primary]}
+          refreshing={loading}
+          onRefresh={loadAllCategories}
+          colors={[Colors.primary]}
             tintColor={Colors.primary}
           />
         }

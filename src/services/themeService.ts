@@ -10,18 +10,20 @@ export async function fetchCategories(): Promise<{ id: string; name: string }[]>
 
   const { data, error } = await supabase
     .from('categories')
-    .select('id, name, slug')
-    .order('created_at', { ascending: true });
+    .select('id, name, slug, order_index')
+    .order('order_index', { ascending: true });
 
   if (error) {
     console.error('Error fetching categories:', error);
     return [];
   }
 
-  return data.map(cat => ({
-    id: cat.slug,
-    name: cat.name,
-  }));
+  return (data || [])
+    .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
+    .map(cat => ({
+      id: cat.slug,
+      name: cat.name,
+    }));
 }
 
 // Helper to get category ID from slug
@@ -34,6 +36,65 @@ async function getCategoryId(slug: string) {
 
   if (error) return null;
   return data;
+}
+
+export async function fetchHomeThemes() {
+  if (!supabase) {
+    console.error('Supabase client is not initialized');
+    return { categories: [], themesMap: {} };
+  }
+
+  // 1. Fetch all categories ordered by rank
+  const { data: categories, error: catError } = await supabase
+    .from('categories')
+    .select('id, name, slug, order_index')
+    .order('order_index', { ascending: true });
+
+  if (catError) {
+    console.error('Error fetching categories:', catError);
+    return { categories: [], themesMap: {} };
+  }
+
+  // Fail-safe: manually sort categories in JS to ensure order_index is respected
+  const sortedCategories = (categories || []).sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
+
+  // 2. Fetch all public themes with their category slug
+  const { data: themes, error: themeError } = await supabase
+    .from('themes')
+    .select('*, categories(slug)')
+    .eq('is_public', true);
+
+  if (themeError) {
+    console.error('Error fetching themes:', themeError);
+    return { categories: sortedCategories || [], themesMap: {} };
+  }
+
+  // 3. Map themes to their categories
+  const themesMap: Record<string, ThemeDefinition[]> = {};
+  themes.forEach(row => {
+    // Handle both object and array responses for the joined category
+    const categoryData = Array.isArray(row.categories) ? row.categories[0] : row.categories;
+    const categorySlug = categoryData?.slug;
+
+    if (categorySlug) {
+      if (!themesMap[categorySlug]) themesMap[categorySlug] = [];
+      const config = row.config as any;
+      themesMap[categorySlug].push({
+        id: row.id,
+        name: row.name,
+        description: config.description || 'Community Theme',
+        category: categorySlug,
+        featuredApps: config.featuredApps || [],
+        icon: config.icon,
+        background: config.background,
+        previewUrl: row.preview_url,
+        preview: config.preview || { featuredApps: [], subtitle: '' },
+        wallpapers: config.wallpapers || [],
+      });
+    }
+  });
+
+  return { categories: sortedCategories, themesMap };
 }
 
 export async function fetchTheme(themeId: ThemeId): Promise<ThemeDefinition> {
