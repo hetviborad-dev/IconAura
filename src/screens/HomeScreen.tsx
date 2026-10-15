@@ -7,9 +7,10 @@ import {
   StyleSheet,
   ActivityIndicator,
   RefreshControl,
+  TouchableOpacity,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Colors, Spacing, Typography, Layout } from '../constants/design';
+import { Colors, Spacing, Typography, Layout, TouchTarget } from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
 import { fetchThemesByCategory, fetchCategories, fetchHomeThemes } from '../services/themeService';
 import ThemeCategorySection from '../components/ThemeCategorySection';
@@ -26,30 +27,22 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   const [categoryThemes, setCategoryThemes] = useState<Record<string, ThemeDefinition[]>>({});
   const [loading, setLoading] = useState(true);
 
-  
   const backgroundColor = isDarkMode ? Colors.dark.background : Colors.background;
   const textColor = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
   const secondaryTextColor = isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary;
-  
+
   const loadAllCategories = async () => {
     try {
       setLoading(true);
-
-      console.log('DEBUG: Calling fetchHomeThemes...');
       const { categories, themesMap } = await fetchHomeThemes();
-      console.log('DEBUG: fetchHomeThemes categories:', categories);
-      console.log('DEBUG: fetchHomeThemes themesMap keys:', Object.keys(themesMap));
 
       if (categories && categories.length > 0) {
-        const mappedCats = categories.map(cat => ({
+        setCategories(categories.map(cat => ({
           id: cat.slug,
           name: cat.name
-        }));
-        console.log('DEBUG: Mapped categories:', mappedCats);
-        setCategories(mappedCats);
+        })));
         setCategoryThemes(themesMap);
       } else {
-        console.log('DEBUG: No categories found in DB');
         setCategories([]);
         setCategoryThemes({});
       }
@@ -59,21 +52,34 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     loadAllCategories();
   }, []);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
+      <View style={styles.header}>
+        <View>
+          <Text style={[styles.headerMain, { color: textColor }]}>ICON PACK</Text>
+          <Text style={[styles.headerSub, { color: secondaryTextColor }]}>Aura</Text>
+        </View>
+        <TouchableOpacity
+          style={styles.settingsButton}
+          onPress={() => {}} // To be implemented
+        >
+          <Text style={{ fontSize: 24, color: textColor }}>⚙️</Text>
+        </TouchableOpacity>
+      </View>
+
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl
-          refreshing={loading}
-          onRefresh={loadAllCategories}
-          colors={[Colors.primary]}
+            refreshing={loading}
+            onRefresh={loadAllCategories}
+            colors={[Colors.primary]}
             tintColor={Colors.primary}
           />
         }
@@ -100,32 +106,33 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: Layout.screenPadding,
+    paddingVertical: Spacing.xl,
+  },
+  headerMain: {
+    fontSize: Typography.sizes.h3,
+    fontWeight: Typography.weights.bold,
+    letterSpacing: 1,
+  },
+  headerSub: {
+    fontSize: Typography.sizes.bodySmall,
+    fontWeight: Typography.weights.medium,
+    marginTop: -4,
+  },
+  settingsButton: {
+    width: TouchTarget.min,
+    height: TouchTarget.min,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   scrollContent: {
     paddingHorizontal: Layout.screenPadding,
-    paddingTop: Spacing.xxl,
+    paddingTop: Spacing.sm,
     paddingBottom: Spacing.xxxl,
-  },
-  header: {
-    marginBottom: Spacing.xxl,
-    paddingHorizontal: Layout.screenPadding,
-    paddingTop: Spacing.xxl,
-  },
-  eyebrow: {
-    fontSize: Typography.sizes.caption,
-    fontWeight: Typography.weights.semibold,
-    letterSpacing: 1.4,
-    marginBottom: Spacing.sm,
-  },
-  appName: {
-    fontSize: Typography.sizes.h1,
-    fontWeight: Typography.weights.bold,
-    marginBottom: Spacing.sm,
-    lineHeight: Typography.sizes.h1 * Typography.lineHeights.tight,
-  },
-  tagline: {
-    fontSize: Typography.sizes.body,
-    fontWeight: Typography.weights.regular,
-    lineHeight: Typography.sizes.body * Typography.lineHeights.normal,
   },
   loadingContainer: {
     flex: 1,
