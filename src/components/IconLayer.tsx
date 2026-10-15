@@ -5,10 +5,6 @@ import type { ThemeLayer } from '../types/data';
 import { APP_ICON_COMPONENTS } from '../data/app-icons';
 import PatternedIcon from './PatternedIcon';
 
-const PATTERN_URLS: Record<string, string> = {
-  leopard: 'https://nekvkaquyfvygstytbfv.supabase.co/storage/v1/object/public/theme-previews/leopard_print.png',
-};
-
 interface IconLayerProps {
   appId: AppId;
   layer: ThemeLayer;
@@ -18,13 +14,10 @@ interface IconLayerProps {
 export default function IconLayer({ appId, layer, size }: IconLayerProps) {
   // Handle Pattern-based Icons (e.g., Leopard Print)
   if (layer.type === 'pattern') {
-    // If the value is a URL, use it directly. Otherwise, look up the pattern keyword.
-    const patternUrl = layer.value.startsWith('http')
-      ? layer.value
-      : PATTERN_URLS[layer.value];
+    const patternUrl = layer.value.startsWith('http') ? layer.value : null;
 
     if (!patternUrl) {
-      console.warn(`Icon pattern not found: ${layer.value}`);
+      console.warn(`Icon pattern URL not found in layer value: ${layer.value}`);
       return null;
     }
 
