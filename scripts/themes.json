@@ -1,0 +1,31 @@
+[
+  {
+    "slug": "evil-eyes",
+    "name": "Evil Eyes",
+    "description": "Evil Eyes Aesthetic Theme",
+    "category": "popular",
+    "iconType": "color",
+    "iconValue": "#FFFFFF",
+    "bgType": "pattern",
+    "bgValue": "pattern"
+  },
+  {
+    "slug": "crimson-bloom",
+    "name": "Crimson Bloom",
+    "description": "A beautiful floral theme",
+    "category": "colorful",
+    "iconType": "pattern",
+    "iconValue": "pattern",
+    "bgType": "pattern",
+    "bgValue": "pattern"
+  },{
+    "slug": "mono-black",
+    "name": "Mono Black",
+    "description": "A sleek and minimalist theme",
+    "category": "minimalist",
+    "iconType": "color",
+    "iconValue": "#000000",
+    "bgType": "color",
+    "bgValue": "#FFFFFF"
+  }
+]
