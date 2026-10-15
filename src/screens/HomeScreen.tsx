@@ -10,12 +10,13 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Colors, Spacing, Typography, Layout, TouchTarget } from '../constants/design';
+import { Colors, Spacing, Typography, Layout, TouchTarget, Radius } from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
 import { fetchThemesByCategory, fetchCategories, fetchHomeThemes } from '../services/themeService';
 import ThemeCategorySection from '../components/ThemeCategorySection';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { ThemeDefinition } from '../types/data';
+import { ThemeCard } from '../components';
 
 interface HomeScreenProps {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home'>;
@@ -25,6 +26,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   const isDarkMode = useColorScheme() === 'dark';
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [categoryThemes, setCategoryThemes] = useState<Record<string, ThemeDefinition[]>>({});
+  const [selectedCategoryId, setSelectedCategoryId] = useState('all');
   const [loading, setLoading] = useState(true);
 
   const backgroundColor = isDarkMode ? Colors.dark.background : Colors.background;
@@ -72,6 +74,56 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
         </TouchableOpacity>
       </View>
 
+      <View style={styles.categoryContainer}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryScroll}>
+          <TouchableOpacity
+            style={[
+              styles.categoryButton,
+              { borderColor: isDarkMode ? Colors.dark.border : Colors.border },
+              selectedCategoryId === 'all' && {
+                backgroundColor: isDarkMode ? Colors.dark.textPrimary : Colors.primary
+              },
+            ]}
+            onPress={() => setSelectedCategoryId('all')}
+          >
+            <Text style={[
+              styles.categoryText,
+              {
+                color: selectedCategoryId === 'all'
+                  ? (isDarkMode ? Colors.dark.background : '#FFFFFF')
+                  : secondaryTextColor
+              }
+            ]}>
+              All
+            </Text>
+          </TouchableOpacity>
+          {categories.map((category) => (
+            <TouchableOpacity
+              key={category.id}
+              style={[
+                styles.categoryButton,
+                { borderColor: isDarkMode ? Colors.dark.border : Colors.border },
+                selectedCategoryId === category.id && {
+                  backgroundColor: isDarkMode ? Colors.dark.textPrimary : Colors.primary
+                },
+              ]}
+              onPress={() => setSelectedCategoryId(category.id)}
+            >
+              <Text style={[
+                styles.categoryText,
+                {
+                  color: selectedCategoryId === category.id
+                    ? (isDarkMode ? Colors.dark.background : '#FFFFFF')
+                    : secondaryTextColor
+                }
+              ]}>
+                {category.name}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
+
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
@@ -88,7 +140,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           <View style={styles.loadingContainer}>
             <ActivityIndicator size="large" color={Colors.primary} />
           </View>
-        ) : (
+        ) : selectedCategoryId === 'all' ? (
           categories.map((category) => (
             <ThemeCategorySection
               key={category.id}
@@ -98,6 +150,19 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
               onThemePress={(theme) => navigation.navigate('ThemeDetail', { theme: theme })}
             />
           ))
+        ) : (
+          <View style={styles.verticalThemesContainer}>
+            {categoryThemes[selectedCategoryId]?.map((theme) => (
+              <View key={theme.id} style={styles.gridItem}>
+                <View style={{ marginRight: -Spacing.md }}>
+                  <ThemeCard
+                    theme={theme}
+                    onPress={() => navigation.navigate('ThemeDetail', { theme: theme })}
+                  />
+                </View>
+              </View>
+            ))}
+          </View>
         )}
       </ScrollView>
     </SafeAreaView>
@@ -128,6 +193,34 @@ const styles = StyleSheet.create({
     height: TouchTarget.min,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  categoryContainer: {
+    paddingVertical: Spacing.md,
+    paddingLeft: Layout.screenPadding,
+  },
+  categoryScroll: {
+    paddingRight: Layout.screenPadding,
+    gap: Spacing.sm,
+  },
+  categoryButton: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.xs,
+    borderRadius: Radius.lg,
+    borderWidth: 1,
+  },
+  categoryText: {
+    fontSize: Typography.sizes.bodySmall,
+    fontWeight: Typography.weights.semibold,
+  },
+  verticalThemesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+  },
+  gridItem: {
+    width: '33.33%',
+    alignItems: 'center',
+    marginBottom: Spacing.md,
   },
   scrollContent: {
     paddingHorizontal: Layout.screenPadding,
