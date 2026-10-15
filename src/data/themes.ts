@@ -7,4 +7,5 @@ export const THEME_CATEGORIES: { id: string; title: string }[] = [
   { id: 'colorful', title: 'Colorful' },
   { id: 'light', title: 'Light & Dark' },
   { id: 'animal-print', title: 'Animal Print' },
+  { id: 'minimalist', title: 'Minimalist' },
 ];

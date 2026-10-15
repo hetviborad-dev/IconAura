@@ -14,8 +14,8 @@
     "name": "Crimson Bloom",
     "description": "A beautiful floral theme",
     "category": "colorful",
-    "iconType": "pattern",
-    "iconValue": "pattern",
+    "iconType": "color",
+    "iconValue": "#FFFFFF",
     "bgType": "pattern",
     "bgValue": "pattern"
   },{
@@ -27,5 +27,14 @@
     "iconValue": "#000000",
     "bgType": "color",
     "bgValue": "#FFFFFF"
+  },{
+    "slug": "leapard-print",
+    "name": "Leopard Print",
+    "description": "A stylish leopard print theme",
+    "category": "animal-print",
+    "iconType": "pattern",
+    "iconValue": "pattern",
+    "bgType": "color",
+    "bgValue": "#F1E0CE"
   }
 ]

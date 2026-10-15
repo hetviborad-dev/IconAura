@@ -6,6 +6,25 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { Command } from 'commander';
 
+// List of all available AppIds for random selection
+const ALL_APP_IDS = [
+  'instagram', 'whatsapp', 'youtube', 'spotify', 'telegram', 'facebook', 'chrome', 'gmail',
+  'tiktok', 'x', 'discord', 'reddit', 'netflix', 'snapchat', 'uber', 'paypal',
+  'google-maps', 'google-drive', 'google-photos', 'google-play', 'google-calendar', 'google-meet',
+  'zoom', 'pinterest', 'twitch', 'steam', 'roblox', 'airbnb', 'doordash', 'uber-eats',
+  'etsy', 'ebay', 'cash-app', 'venmo', 'coinbase', 'dropbox', 'notion', 'shazam',
+  'soundcloud', 'signal', 'line', 'viber', 'wechat', 'threads', 'tinder', 'duolingo',
+  'strava', 'fitbit', 'wikipedia', 'messenger',
+  'calculator', 'camera', 'settings', 'phone', 'calendar', 'clock', 'contacts',
+  'microphone', 'files', 'gallery', 'messages',
+  'weather', 'music', 'notes', 'security'
+];
+
+function getRandomApps(count = 4): string[] {
+  const shuffled = [...ALL_APP_IDS].sort(() => 0.5 - Math.random());
+  return shuffled.slice(0, count);
+}
+
 dotenv.config();
 
 // Configure Cloudinary
@@ -141,11 +160,11 @@ async function importSingleTheme(options: any) {
     const config = {
       description,
       category,
-      featuredApps: existingTheme?.config?.featuredApps || ['instagram', 'whatsapp', 'youtube', 'spotify'],
+      featuredApps: existingTheme?.config?.featuredApps || getRandomApps(4),
       icon: { type: iconType, value: finalIconValue },
       background: { type: bgType, value: finalBgValue },
       preview: {
-        featuredApps: existingTheme?.config?.preview?.featuredApps || ['instagram', 'whatsapp', 'youtube', 'spotify'],
+        featuredApps: existingTheme?.config?.preview?.featuredApps || getRandomApps(4),
         subtitle: existingTheme?.config?.preview?.subtitle || `Experience the ${name} aesthetic`,
       },
       wallpapers: allWallpapers,

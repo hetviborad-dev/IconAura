@@ -36,7 +36,7 @@ export interface AppDefinition {
 /**
  * Represents a complete icon theme with colors and styling
  */
-export type ThemeCategoryId = 'popular' | 'simple' | 'colorful' | 'light' | 'animal-print';
+export type ThemeCategoryId = 'popular' | 'simple' | 'colorful' | 'light' | 'animal-print' | string;
 
 export interface ThemeLayer {
   type: 'color' | 'pattern';

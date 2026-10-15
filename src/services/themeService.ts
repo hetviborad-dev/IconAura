@@ -2,6 +2,40 @@ import { supabase } from '../lib/supabase';
 import type { ThemeDefinition, ThemeId } from '../types/data';
 import 'react-native-url-polyfill/auto';
 
+export async function fetchCategories(): Promise<{ id: string; name: string }[]> {
+  if (!supabase) {
+    console.error('Supabase client is not initialized');
+    return [];
+  }
+
+  const { data, error } = await supabase
+    .from('categories')
+    .select('id, name, slug')
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching categories:', error);
+    return [];
+  }
+
+  return data.map(cat => ({
+    id: cat.slug,
+    name: cat.name,
+  }));
+}
+
+// Helper to get category ID from slug
+async function getCategoryId(slug: string) {
+  const { data, error } = await supabase
+    .from('categories')
+    .select('id')
+    .eq('slug', slug)
+    .single();
+
+  if (error) return null;
+  return data;
+}
+
 export async function fetchTheme(themeId: ThemeId): Promise<ThemeDefinition> {
   if (!supabase) {
     console.error('Supabase client is not initialized');
@@ -15,7 +49,7 @@ export async function fetchTheme(themeId: ThemeId): Promise<ThemeDefinition> {
   // Fetch from Supabase
   const { data, error } = await supabase
     .from('themes')
-    .select('*')
+    .select('*, categories(name)')
     .eq(searchColumn, themeId)
     .single();
 
@@ -25,12 +59,13 @@ export async function fetchTheme(themeId: ThemeId): Promise<ThemeDefinition> {
 
   // Map Supabase row to ThemeDefinition
   const config = data.config as any;
+  const categoryName = data.categories?.name || config.category || 'popular';
 
   return {
     id: data.id,
     name: data.name,
     description: config.description || 'Community Theme',
-    category: config.category || 'popular',
+    category: categoryName,
     featuredApps: config.featuredApps || [],
     icon: config.icon,
     background: config.background,
@@ -51,18 +86,19 @@ export async function fetchPublicThemes(): Promise<ThemeDefinition[]> {
 
   const { data, error } = await supabase
     .from('themes')
-    .select('*')
+    .select('*, categories(name)')
     .eq('is_public', true);
 
   if (error || !data) return [];
 
   return data.map(row => {
     const config = row.config as any;
+    const categoryName = row.categories?.name || config.category || 'popular';
     return {
       id: row.id,
       name: row.name,
       description: config.description || 'Community Theme',
-      category: config.category || 'popular',
+      category: categoryName,
       featuredApps: config.featuredApps || [],
       icon: config.icon,
       background: config.background,
@@ -82,21 +118,32 @@ export async function fetchThemesByCategory(category: string): Promise<ThemeDefi
     return [];
   }
 
+  console.log(`DEBUG: fetchThemesByCategory called for category: ${category}`);
+
+  // We search by both category_id (new) and config->>category (old) for backward compatibility
+  const categoryId = await getCategoryId(category);
+
   const { data, error } = await supabase
     .from('themes')
-    .select('*')
+    .select('*, categories(name)')
     .eq('is_public', true)
-    .eq('config->>category', category);
+    .or(`category_id.eq.${categoryId || '00000000-0000-0000-0000-000000000000'},config->>category.eq.${category}`);
 
-  if (error || !data) return [];
-console.log('Fetched themes for category:', category, data);
-  return data.map(row => {
+  if (error) {
+    console.error(`DEBUG: Error fetching themes for ${category}:`, error);
+    return [];
+  }
+
+  console.log(`DEBUG: Found ${data?.length || 0} themes for category ${category}`);
+
+  return (data || []).map(row => {
     const config = row.config as any;
+    const categoryName = row.categories?.name || config.category || 'popular';
     return {
       id: row.id,
       name: row.name,
       description: config.description || 'Community Theme',
-      category: config.category || 'popular',
+      category: categoryName,
       featuredApps: config.featuredApps || [],
       icon: config.icon,
       background: config.background,
