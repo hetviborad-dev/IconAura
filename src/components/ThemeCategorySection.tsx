@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { Colors, Spacing, Typography } from '../constants/design';
 import type { ThemeDefinition } from '../types/data';
 import ThemeCard from './ThemeCard';
@@ -26,15 +26,23 @@ export default function ThemeCategorySection({
       <View style={styles.heading}>
         <Text style={[styles.title, { color: textColor }]}>{title}</Text>
       </View>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
-        {themes.map((theme) => (
+      <FlatList
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.row}
+        data={themes}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
           <ThemeCard
-            key={theme.id}
-            theme={theme}
-            onPress={() => onThemePress(theme)}
+            theme={item}
+            onPress={() => onThemePress(item)}
           />
-        ))}
-      </ScrollView>
+        )}
+        initialNumToRender={5}
+        maxToRenderPerBatch={5}
+        windowSize={3}
+        removeClippedSubviews={true}
+      />
     </View>
   );
 }

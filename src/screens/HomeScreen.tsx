@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import {
   View,
   FlatList,
+  SectionList,
   ScrollView,
   useColorScheme,
   Text,
@@ -206,6 +207,10 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           columnWrapperStyle={styles.columnWrapper}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          initialNumToRender={12}
+          maxToRenderPerBatch={10}
+          windowSize={5}
+          removeClippedSubviews={true}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
               <Text style={{ color: secondaryTextColor }}>No themes found</Text>
@@ -220,6 +225,10 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           renderItem={renderCategoryItem}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          initialNumToRender={10}
+          maxToRenderPerBatch={5}
+          windowSize={5}
+          removeClippedSubviews={true}
           refreshControl={
             <RefreshControl
               refreshing={loading}
@@ -246,6 +255,10 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           columnWrapperStyle={styles.columnWrapper}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          initialNumToRender={12}
+          maxToRenderPerBatch={10}
+          windowSize={5}
+          removeClippedSubviews={true}
           refreshControl={
             <RefreshControl
               refreshing={loading}
@@ -341,10 +354,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 100,
   },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 100,
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 50,
+  },
+  sectionHeader: {
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Layout.screenPadding,
+    marginTop: Spacing.lg,
+  },
+  sectionHeaderText: {
+    fontSize: Typography.sizes.h3,
+    fontWeight: Typography.weights.bold,
   },
 });
