@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import {
   View,
+  FlatList,
   ScrollView,
   useColorScheme,
   Text,
@@ -8,11 +9,12 @@ import {
   ActivityIndicator,
   RefreshControl,
   TouchableOpacity,
+  TextInput,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Colors, Spacing, Typography, Layout, TouchTarget, Radius } from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
-import { fetchThemesByCategory, fetchCategories, fetchHomeThemes } from '../services/themeService';
+import { fetchHomeThemes } from '../services/themeService';
 import ThemeCategorySection from '../components/ThemeCategorySection';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { ThemeDefinition } from '../types/data';
@@ -22,18 +24,60 @@ interface HomeScreenProps {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home'>;
 }
 
+const CategoryButton = memo(({
+  id,
+  name,
+  isSelected,
+  onPress,
+  isDarkMode,
+  secondaryTextColor
+}: {
+  id: string;
+  name: string;
+  isSelected: boolean;
+  onPress: (id: string) => void;
+  isDarkMode: boolean;
+  secondaryTextColor: string;
+}) => {
+  return (
+    <TouchableOpacity
+      style={[
+        styles.categoryButton,
+        { borderColor: isDarkMode ? Colors.dark.border : Colors.border },
+        isSelected && {
+          backgroundColor: isDarkMode ? Colors.dark.textPrimary : Colors.primary
+        },
+      ]}
+      onPress={() => onPress(id)}
+    >
+      <Text style={[
+        styles.categoryText,
+        {
+          color: isSelected
+            ? (isDarkMode ? Colors.dark.background : '#FFFFFF')
+            : secondaryTextColor
+        }
+      ]}>
+        {name}
+      </Text>
+    </TouchableOpacity>
+  );
+});
+
 export default function HomeScreen({ navigation }: HomeScreenProps) {
   const isDarkMode = useColorScheme() === 'dark';
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [categoryThemes, setCategoryThemes] = useState<Record<string, ThemeDefinition[]>>({});
   const [selectedCategoryId, setSelectedCategoryId] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
   const backgroundColor = isDarkMode ? Colors.dark.background : Colors.background;
   const textColor = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
   const secondaryTextColor = isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary;
+  const surfaceColor = isDarkMode ? Colors.dark.surface : Colors.backgroundSecondary;
 
-  const loadAllCategories = async () => {
+  const loadAllCategories = useCallback(async () => {
     try {
       setLoading(true);
       const { categories, themesMap } = await fetchHomeThemes();
@@ -53,11 +97,55 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadAllCategories();
+  }, [loadAllCategories]);
+
+  const handleCategoryPress = useCallback((id: string) => {
+    setSelectedCategoryId(id);
   }, []);
+
+  const handleThemePress = useCallback((theme: ThemeDefinition) => {
+    navigation.navigate('ThemeDetail', { theme });
+  }, [navigation]);
+
+  const filteredThemes = useMemo(() => {
+    const query = searchQuery.toLowerCase().trim();
+    if (!query) return null;
+
+    const allThemes: ThemeDefinition[] = [];
+    if (selectedCategoryId === 'all') {
+      Object.values(categoryThemes).forEach(themes => {
+        allThemes.push(...themes);
+      });
+    } else {
+      allThemes.push(...(categoryThemes[selectedCategoryId] || []));
+    }
+
+    return allThemes.filter(theme =>
+      theme.name.toLowerCase().includes(query)
+    );
+  }, [searchQuery, selectedCategoryId, categoryThemes]);
+
+  const renderCategoryItem = useCallback(({ item }: { item: { id: string; name: string } }) => (
+    <ThemeCategorySection
+      title={item.name}
+      themes={categoryThemes[item.id] || []}
+      darkMode={isDarkMode}
+      onThemePress={handleThemePress}
+    />
+  ), [categoryThemes, isDarkMode, handleThemePress]);
+
+  const renderThemeItem = useCallback(({ item }: { item: ThemeDefinition }) => (
+    <View style={styles.themeGridItem}>
+      <ThemeCard
+        theme={item}
+        onPress={() => handleThemePress(item)}
+      />
+    </View>
+  ), [handleThemePress]);
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
@@ -68,103 +156,113 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
         </View>
         <TouchableOpacity
           style={styles.settingsButton}
-          onPress={() => {}} // To be implemented
+          onPress={() => {}}
         >
           <Text style={{ fontSize: 24, color: textColor }}>⚙️</Text>
         </TouchableOpacity>
       </View>
 
-      <View style={styles.categoryContainer}>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.categoryScroll}>
-          <TouchableOpacity
-            style={[
-              styles.categoryButton,
-              { borderColor: isDarkMode ? Colors.dark.border : Colors.border },
-              selectedCategoryId === 'all' && {
-                backgroundColor: isDarkMode ? Colors.dark.textPrimary : Colors.primary
-              },
-            ]}
-            onPress={() => setSelectedCategoryId('all')}
-          >
-            <Text style={[
-              styles.categoryText,
-              {
-                color: selectedCategoryId === 'all'
-                  ? (isDarkMode ? Colors.dark.background : '#FFFFFF')
-                  : secondaryTextColor
-              }
-            ]}>
-              All
-            </Text>
-          </TouchableOpacity>
-          {categories.map((category) => (
-            <TouchableOpacity
-              key={category.id}
-              style={[
-                styles.categoryButton,
-                { borderColor: isDarkMode ? Colors.dark.border : Colors.border },
-                selectedCategoryId === category.id && {
-                  backgroundColor: isDarkMode ? Colors.dark.textPrimary : Colors.primary
-                },
-              ]}
-              onPress={() => setSelectedCategoryId(category.id)}
-            >
-              <Text style={[
-                styles.categoryText,
-                {
-                  color: selectedCategoryId === category.id
-                    ? (isDarkMode ? Colors.dark.background : '#FFFFFF')
-                    : secondaryTextColor
-                }
-              ]}>
-                {category.name}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={[styles.searchBar, { backgroundColor: surfaceColor, color: textColor }]}
+          placeholder="Search themes..."
+          placeholderTextColor={secondaryTextColor}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          clearButtonMode="while-editing"
+        />
       </View>
 
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={loading}
-            onRefresh={loadAllCategories}
-            colors={[Colors.primary]}
-            tintColor={Colors.primary}
-          />
-        }
-      >
-        {loading && categories.length === 0 ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={Colors.primary} />
-          </View>
-        ) : selectedCategoryId === 'all' ? (
-          categories.map((category) => (
-            <ThemeCategorySection
-              key={category.id}
-              title={category.name}
-              themes={categoryThemes[category.id] || []}
-              darkMode={isDarkMode}
-              onThemePress={(theme) => navigation.navigate('ThemeDetail', { theme: theme })}
+      <View style={styles.categoryContainer}>
+        <FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          data={['all', ...categories.map(c => c.id)]}
+          keyExtractor={(item) => item}
+          contentContainerStyle={styles.categoryScroll}
+          renderItem={({ item }) => {
+            const categoryName = item === 'all' ? 'All' : categories.find(c => c.id === item)?.name || '';
+            return (
+              <CategoryButton
+                id={item}
+                name={categoryName}
+                isSelected={selectedCategoryId === item}
+                onPress={handleCategoryPress}
+                isDarkMode={isDarkMode}
+                secondaryTextColor={secondaryTextColor}
+              />
+            );
+          }}
+        />
+      </View>
+
+      {filteredThemes ? (
+        <FlatList
+          key={`search-list-${selectedCategoryId}`}
+          data={filteredThemes}
+          keyExtractor={(item) => item.id}
+          renderItem={renderThemeItem}
+          numColumns={3}
+          columnWrapperStyle={styles.columnWrapper}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <Text style={{ color: secondaryTextColor }}>No themes found</Text>
+            </View>
+          }
+        />
+      ) : selectedCategoryId === 'all' ? (
+        <FlatList
+          key="all-list"
+          data={categories}
+          keyExtractor={(item) => item.id}
+          renderItem={renderCategoryItem}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={loadAllCategories}
+              colors={[Colors.primary]}
+              tintColor={Colors.primary}
             />
-          ))
-        ) : (
-          <View style={styles.verticalThemesContainer}>
-            {categoryThemes[selectedCategoryId]?.map((theme) => (
-              <View key={theme.id} style={styles.gridItem}>
-                <View style={{ marginRight: -Spacing.md }}>
-                  <ThemeCard
-                    theme={theme}
-                    onPress={() => navigation.navigate('ThemeDetail', { theme: theme })}
-                  />
-                </View>
+          }
+          ListEmptyComponent={
+            loading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={Colors.primary} />
               </View>
-            ))}
-          </View>
-        )}
-      </ScrollView>
+            ) : null
+          }
+        />
+      ) : (
+        <FlatList
+          key={`category-list-${selectedCategoryId}`}
+          data={categoryThemes[selectedCategoryId] || []}
+          keyExtractor={(item) => item.id}
+          renderItem={renderThemeItem}
+          numColumns={3}
+          columnWrapperStyle={styles.columnWrapper}
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={loading}
+              onRefresh={loadAllCategories}
+              colors={[Colors.primary]}
+              tintColor={Colors.primary}
+            />
+          }
+          ListEmptyComponent={
+            loading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={Colors.primary} />
+              </View>
+            ) : null
+          }
+        />
+      )}
     </SafeAreaView>
   );
 }
@@ -194,6 +292,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  searchContainer: {
+    paddingHorizontal: Layout.screenPadding,
+    marginBottom: Spacing.md,
+  },
+  searchBar: {
+    height: 48,
+    borderRadius: Radius.lg,
+    paddingHorizontal: Spacing.md,
+    fontSize: Typography.sizes.body,
+    borderWidth: 1,
+    borderColor: 'transparent',
+  },
   categoryContainer: {
     paddingVertical: Spacing.md,
     paddingLeft: Layout.screenPadding,
@@ -212,20 +322,24 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.bodySmall,
     fontWeight: Typography.weights.semibold,
   },
-  verticalThemesContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  columnWrapper: {
     justifyContent: 'flex-start',
   },
-  gridItem: {
+  themeGridItem: {
     width: '33.33%',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     marginBottom: Spacing.md,
   },
   scrollContent: {
     paddingHorizontal: Layout.screenPadding,
     paddingTop: Spacing.sm,
     paddingBottom: Spacing.xxxl,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 100,
   },
   loadingContainer: {
     flex: 1,

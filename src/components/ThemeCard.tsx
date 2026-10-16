@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {
   View,
   Text,
@@ -15,10 +15,10 @@ interface ThemeCardProps {
   onPress: () => void;
 }
 
-export default function ThemeCard({
+const ThemeCard = memo(({
   theme,
   onPress,
-}: ThemeCardProps) {
+}: ThemeCardProps) => {
   const isDarkMode = useColorScheme() === 'dark';
   const borderColor = isDarkMode ? Colors.dark.border : Colors.border;
   const cardColor = isDarkMode ? Colors.dark.surface : Colors.background;
@@ -41,8 +41,7 @@ export default function ThemeCard({
           },
         ]}
       >
-        {[...theme.featuredApps]
-          .sort(() => Math.random() - 0.5)
+        {theme.featuredApps
           .slice(0, 4)
           .map((appId) => (
             <View key={appId} style={styles.iconTile}>
@@ -55,7 +54,9 @@ export default function ThemeCard({
       </Text>
     </TouchableOpacity>
   );
-}
+});
+
+export default ThemeCard;
 
 const styles = StyleSheet.create({
   card: {
