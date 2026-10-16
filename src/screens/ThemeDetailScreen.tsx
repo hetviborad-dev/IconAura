@@ -478,39 +478,34 @@ export default function ThemeDetailScreen({
           )}
         </View>
 
-        <View style={styles.wallpapersSection}>
-          <View style={[styles.sectionHeader, { paddingHorizontal: 0 }]}>
-            <Text style={[styles.sectionTitle, { color: textColor }]}>
-              Matching Wallpapers
-            </Text>
-          </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.wallpapersList}
-          >
-            {(theme.wallpapers || []).map((url, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.wallpaperThumbnail}
-                onPress={() => setSelectedWallpaperUrl(url)}
-              >
-                <Image
-                  source={{ uri: url }}
-                  style={styles.wallpaperImageThumbnail}
-                  resizeMode="cover"
-                />
-              </TouchableOpacity>
-            ))}
-            {(!theme.wallpapers || theme.wallpapers.length === 0) && (
-              <Text
-                style={[styles.noWallpapersText, { color: secondaryTextColor }]}
-              >
-                No matching wallpapers available for this theme.
+        {theme.wallpapers && theme.wallpapers.length > 0 && (
+          <View style={styles.wallpapersSection}>
+            <View style={[styles.sectionHeader, { paddingHorizontal: 0 }]}>
+              <Text style={[styles.sectionTitle, { color: textColor }]}>
+                Matching Wallpapers
               </Text>
-            )}
-          </ScrollView>
-        </View>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.wallpapersList}
+            >
+              {theme.wallpapers.map((url, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.wallpaperThumbnail}
+                  onPress={() => setSelectedWallpaperUrl(url)}
+                >
+                  <Image
+                    source={{ uri: url }}
+                    style={styles.wallpaperImageThumbnail}
+                    resizeMode="cover"
+                  />
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        )}
         <View style={styles.sectionHeader}>
           <Text style={[styles.sectionTitle, { color: textColor }]}>
             Set Icons
@@ -526,11 +521,11 @@ export default function ThemeDetailScreen({
               style={styles.manageIconsButton}
             >
               <Ionicons
-                name="settings-outline"
+                name="add-circle-outline"
                 size={16}
                 color={Colors.primary}
               />
-              <Text style={styles.manageIconsText}>Manage</Text>
+              <Text style={styles.manageIconsText}>Manage Icons</Text>
             </TouchableOpacity>
           </View>
         </View>

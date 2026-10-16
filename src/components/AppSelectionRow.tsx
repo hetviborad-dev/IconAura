@@ -33,12 +33,15 @@ const AppSelectionRow = memo(({
     <View style={[styles.container, disabled && styles.disabledContainer]}>
       <TouchableOpacity
         onPress={onToggle}
-        style={[styles.checkbox, disabled && styles.disabledCheckbox]}
+        style={[
+          styles.checkbox,
+          disabled && !isSelected && styles.disabledCheckbox
+        ]}
       >
         <View style={[
           styles.checkboxOuter,
           {
-            borderColor: isSelected ? Colors.primary : (disabled ? '#CCCCCC' : borderColor),
+            borderColor: isSelected ? Colors.primary : (!disabled ? '#CCCCCC' : borderColor),
             backgroundColor: isSelected ? Colors.primary + '15' : 'transparent'
           }
         ]}>
