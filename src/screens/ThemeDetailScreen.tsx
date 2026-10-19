@@ -469,13 +469,27 @@ export default function ThemeDetailScreen({
             </Text>
             <View style={{ width: 28 }} />
           </View>
-          {theme.previewUrl && (
-            <Image
-              source={{ uri: theme.previewUrl }}
-              style={styles.themePreviewImage}
-              resizeMode="cover"
-            />
-          )}
+          <View style={styles.previewRow}>
+            {theme.previewUrl && (
+              <Image
+                source={{ uri: theme.previewUrl }}
+                style={styles.themePreviewImage}
+                resizeMode="cover"
+              />
+            )}
+            <TouchableOpacity
+              style={[
+                styles.previewButton,
+                {
+                  backgroundColor: isDarkMode ? '#333' : Colors.backgroundSecondary,
+                  borderColor: isDarkMode ? '#444' : Colors.border,
+                },
+              ]}
+              onPress={() => navigation.navigate('ThemeHomeScreenPreview', { theme })}
+            >
+              <Ionicons name="home-outline" size={24} color={textColor} />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {theme.wallpapers && theme.wallpapers.length > 0 && (
@@ -796,10 +810,24 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   themePreviewImage: {
-    width: '100%',
+    flex: 1,
     height: 60,
     marginBottom: Spacing.md,
     backgroundColor: '#333',
+    borderRadius: Radius.md,
+  },
+  previewRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+  },
+  previewButton: {
+    width: 60,
+    height: 60,
+    borderRadius: Radius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
   },
   description: {
     fontSize: Typography.sizes.body,

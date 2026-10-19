@@ -7,6 +7,7 @@ import { Theme, ThemeDefinition } from './data';
 export type RootStackParamList = {
   HomeStack: undefined;
   ThemeDetail: { theme: ThemeDefinition };
+  ThemeHomeScreenPreview: { theme: ThemeDefinition };
   Settings: undefined;
   IconManagement: undefined;
   Wallpaper: undefined;
