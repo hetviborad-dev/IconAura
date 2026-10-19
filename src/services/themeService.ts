@@ -139,20 +139,24 @@ export async function fetchTheme(themeId: ThemeId): Promise<ThemeDefinition> {
   };
 }
 
-export async function fetchPublicThemes(): Promise<ThemeDefinition[]> {
+export async function fetchPublicThemes(page: number = 1, limit: number = 20): Promise<{ data: ThemeDefinition[]; hasMore: boolean }> {
   if (!supabase) {
     console.error('Supabase client is not initialized');
-    return [];
+    return { data: [], hasMore: false };
   }
+
+  const from = (page - 1) * limit;
+  const to = from + limit - 1;
 
   const { data, error } = await supabase
     .from('themes')
     .select('*, categories(name)')
-    .eq('is_public', true);
+    .eq('is_public', true)
+    .range(from, to);
 
-  if (error || !data) return [];
+  if (error || !data) return { data: [], hasMore: false };
 
-  return data.map(row => {
+  const themes = data.map(row => {
     const config = row.config as any;
     const categoryName = row.categories?.name || config.category || 'popular';
     return {
@@ -171,6 +175,11 @@ export async function fetchPublicThemes(): Promise<ThemeDefinition[]> {
       wallpapers: config.wallpapers || [],
     };
   });
+
+  return {
+    data: themes,
+    hasMore: data.length === limit,
+  };
 }
 
 export async function fetchThemesByCategory(category: string): Promise<ThemeDefinition[]> {

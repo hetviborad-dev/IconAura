@@ -39,7 +39,8 @@ export default function WallpaperScreen() {
     async function loadWallpapers() {
       try {
         setLoading(true);
-        const themes = await fetchPublicThemes();
+        const result = await fetchPublicThemes();
+        const themes = result.data;
         const allWallpapers: WallpaperItem[] = [];
 
         themes.forEach(theme => {
@@ -72,6 +73,7 @@ export default function WallpaperScreen() {
     <TouchableOpacity
       style={styles.wallpaperContainer}
       onPress={() => setSelectedWallpaper(item)}
+      activeOpacity={0.8}
     >
       <Image source={{ uri: item.url }} style={styles.wallpaperImage} />
     </TouchableOpacity>
@@ -136,9 +138,9 @@ const styles = StyleSheet.create({
   },
   wallpaperContainer: {
     flex: 1,
-    margin: Spacing.sm / 2,
+    margin: Spacing.xs / 2,
     aspectRatio: 9 / 16,
-    borderRadius: Radius.md,
+    borderRadius: Radius.sm,
     overflow: 'hidden',
     backgroundColor: '#eee',
   },

@@ -28,6 +28,9 @@ export default function ThemeExploreScreen() {
   const isDarkMode = useColorScheme() === 'dark';
   const [themes, setThemes] = useState<ThemeDefinition[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [currentThemeIndex, setCurrentThemeIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
@@ -37,11 +40,12 @@ export default function ThemeExploreScreen() {
   useEffect(() => {
     async function initialize() {
       try {
-        const [publicThemes, savedThemes] = await Promise.all([
-          fetchPublicThemes(),
+        const [result, savedThemes] = await Promise.all([
+          fetchPublicThemes(1, 20),
           getSavedThemes(),
         ]);
-        setThemes(publicThemes);
+        setThemes(result.data);
+        setHasMore(result.hasMore);
         setSavedThemeIds(new Set(savedThemes.map(t => t.id)));
       } catch (error) {
         console.error('Failed to initialize explore screen:', error);
@@ -59,6 +63,24 @@ export default function ThemeExploreScreen() {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  const handleLoadMore = async () => {
+    if (!hasMore || loadingMore) return;
+
+    setLoadingMore(true);
+    try {
+      const nextPage = page + 1;
+      const result = await fetchPublicThemes(nextPage, 20);
+
+      setThemes(prev => [...prev, ...result.data]);
+      setHasMore(result.hasMore);
+      setPage(nextPage);
+    } catch (error) {
+      console.error('Failed to load more themes:', error);
+    } finally {
+      setLoadingMore(false);
+    }
+  };
 
   const handleScroll = (event: any) => {
     const offsetY = event.nativeEvent.contentOffset.y;
@@ -145,6 +167,15 @@ export default function ThemeExploreScreen() {
         snapToInterval={height}
         snapToAlignment="start"
         decelerationRate="fast"
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={() => (
+          loadingMore ? (
+            <View style={styles.footerLoader}>
+              <ActivityIndicator size="small" color="white" />
+            </View>
+          ) : null
+        )}
       />
 
       <TouchableOpacity
@@ -256,5 +287,11 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  footerLoader: {
+    height: height,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'black',
   },
 });
