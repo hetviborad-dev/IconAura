@@ -10,6 +10,7 @@ import HomeScreen from '../screens/HomeScreen';
 import ThemeDetailScreen from '../screens/ThemeDetailScreen';
 import ThemeHomeScreenPreview from '../screens/ThemeHomeScreenPreview';
 import ThemeExploreScreen from '../screens/ThemeExploreScreen';
+import SavedThemesScreen from '../screens/SavedThemesScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import IconManagementScreen from '../screens/IconManagementScreen';
 import WallpaperScreen from '../screens/WallpaperScreen';
@@ -70,6 +71,7 @@ export default function RootNavigator() {
         <Stack.Screen name="HomeStack" component={MainTabs} />
         <Stack.Screen name="ThemeDetail" component={ThemeDetailScreen} />
         <Stack.Screen name="ThemeHomeScreenPreview" component={ThemeHomeScreenPreview} />
+        <Stack.Screen name="SavedThemes" component={SavedThemesScreen} />
         <Stack.Screen name="IconManagement" component={IconManagementScreen} />
       </Stack.Navigator>
     </NavigationContainer>

@@ -33,6 +33,12 @@ export default function SettingsScreen() {
       title: 'App Configuration',
       items: [
         {
+          icon: 'heart',
+          label: 'Saved Themes',
+          subtitle: 'View your favorite themes',
+          onPress: () => navigation.navigate('SavedThemes'),
+        },
+        {
           icon: 'apps',
           label: 'Manage Icons',
           subtitle: 'Choose visible icons',

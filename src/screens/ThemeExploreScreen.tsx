@@ -18,6 +18,7 @@ import { fetchPublicThemes } from '../services/themeService';
 import ThemePreviewCard from '../components/ThemePreviewCard';
 import WallpaperSelectionModal from '../components/WallpaperSelectionModal';
 import { setWallpaper } from '../services/wallpaperService';
+import { saveTheme, unsaveTheme, getSavedThemes } from '../services/local/themeStorage';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 const { height } = Dimensions.get('window');
@@ -30,21 +31,26 @@ export default function ThemeExploreScreen() {
   const [currentThemeIndex, setCurrentThemeIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+  const [savedThemeIds, setSavedThemeIds] = useState<Set<string>>(new Set());
   const captureIcons = useRef<Partial<Record<string, () => Promise<string>>>>({});
 
   useEffect(() => {
-    async function loadThemes() {
+    async function initialize() {
       try {
-        const publicThemes = await fetchPublicThemes();
+        const [publicThemes, savedThemes] = await Promise.all([
+          fetchPublicThemes(),
+          getSavedThemes(),
+        ]);
         setThemes(publicThemes);
+        setSavedThemeIds(new Set(savedThemes.map(t => t.id)));
       } catch (error) {
-        console.error('Failed to load themes for explore:', error);
+        console.error('Failed to initialize explore screen:', error);
       } finally {
         setLoading(false);
       }
     }
 
-    loadThemes();
+    initialize();
   }, []);
 
   useEffect(() => {
@@ -59,6 +65,28 @@ export default function ThemeExploreScreen() {
     const index = Math.round(offsetY / height);
     if (index !== currentThemeIndex && index >= 0 && index < themes.length) {
       setCurrentThemeIndex(index);
+    }
+  };
+
+  const handleToggleSave = async () => {
+    const theme = themes[currentThemeIndex];
+    if (!theme) return;
+
+    const isCurrentlySaved = savedThemeIds.has(theme.id);
+    const nextSavedIds = new Set(savedThemeIds);
+
+    if (isCurrentlySaved) {
+      const success = await unsaveTheme(theme.id);
+      if (success) {
+        nextSavedIds.delete(theme.id);
+        setSavedThemeIds(nextSavedIds);
+      }
+    } else {
+      const result = await saveTheme(theme);
+      if (result.success) {
+        nextSavedIds.add(theme.id);
+        setSavedThemeIds(nextSavedIds);
+      }
     }
   };
 
@@ -99,6 +127,7 @@ export default function ThemeExploreScreen() {
   }
 
   const currentTheme = themes[currentThemeIndex];
+  const isSaved = currentTheme ? savedThemeIds.has(currentTheme.id) : false;
 
   return (
     <View style={styles.container}>
@@ -130,6 +159,17 @@ export default function ThemeExploreScreen() {
         onPress={() => setModalVisible(true)}
       >
         <Icon name="checkmark-circle" size={28} color="white" />
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={styles.saveIconButton}
+        onPress={handleToggleSave}
+      >
+        <Icon
+          name={isSaved ? 'heart' : 'heart-outline'}
+          size={28}
+          color={isSaved ? '#FF4B4B' : 'white'}
+        />
       </TouchableOpacity>
 
       <View style={styles.clockContainer}>
@@ -179,6 +219,18 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 50,
     right: 74, // Offset from close button
+    zIndex: 100,
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  saveIconButton: {
+    position: 'absolute',
+    top: 50,
+    right: 128, // Offset from apply button
     zIndex: 100,
     width: 44,
     height: 44,

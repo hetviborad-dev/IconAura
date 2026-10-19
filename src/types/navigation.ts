@@ -9,6 +9,7 @@ export type RootStackParamList = {
   ThemeDetail: { theme: ThemeDefinition };
   ThemeHomeScreenPreview: { theme: ThemeDefinition };
   ThemeExplore: undefined;
+  SavedThemes: undefined;
   Settings: undefined;
   IconManagement: undefined;
   Wallpaper: undefined;

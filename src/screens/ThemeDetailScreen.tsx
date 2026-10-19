@@ -35,6 +35,7 @@ import type { AppId, ThemeDefinition } from '../types/data';
 import { getAllApps } from '../data/apps';
 import { getEnabledIcons } from '../services/local/iconStorage';
 import { setWallpaper } from '../services/wallpaperService';
+import { saveTheme, unsaveTheme, isThemeSaved } from '../services/local/themeStorage';
 import ShortcutIconCapture from '../components/ShortcutIconCapture';
 import { useAppDetection } from '../hooks/useAppDetection';
 import {
@@ -136,6 +137,7 @@ export default function ThemeDetailScreen({
   console.log('ThemeDetailScreen - theme:', theme);
   const [enabledIcons, setEnabledIcons] = useState<Set<AppId>>(new Set());
   const { appStatus, loading, error, refresh } = useAppDetection();
+  const [isSaved, setIsSaved] = useState(false);
   const installedApps = useMemo(
     () => SUPPORTED_APPS.filter(app => appStatus[app.id]?.installed),
     [appStatus],
@@ -155,10 +157,16 @@ export default function ThemeDetailScreen({
         }
       }
       loadIcons();
+
+      // Check if theme is saved
+      isThemeSaved(theme.id).then(saved => {
+        if (isMounted) setIsSaved(saved);
+      });
+
       return () => {
         isMounted = false;
       };
-    }, []),
+    }, [theme.id]),
   );
 
   // Selection and Icons State
@@ -377,6 +385,16 @@ export default function ThemeDetailScreen({
     }
   };
 
+  const handleToggleSave = async () => {
+    if (isSaved) {
+      const success = await unsaveTheme(theme.id);
+      if (success) setIsSaved(false);
+    } else {
+      const result = await saveTheme(theme);
+      if (result.success) setIsSaved(true);
+    }
+  };
+
   const showToast = useCallback((message: string) => {
     setToastMessage(message);
     setTimeout(() => {
@@ -467,18 +485,30 @@ export default function ThemeDetailScreen({
             <Text style={[styles.headerTitle, { color: textColor }]}>
               {theme.name}
             </Text>
-            <TouchableOpacity
-              style={[
-                styles.previewButtonSmall,
-                {
-                  backgroundColor: isDarkMode ? '#333' : Colors.backgroundSecondary,
-                  borderColor: isDarkMode ? '#444' : Colors.border,
-                },
-              ]}
-              onPress={() => navigation.navigate('ThemeHomeScreenPreview', { theme })}
-            >
-              <Ionicons name="eye-outline" size={24} color={textColor} />
-            </TouchableOpacity>
+            <View style={styles.headerActions}>
+              <TouchableOpacity
+                style={styles.headerAction}
+                onPress={handleToggleSave}
+              >
+                <Ionicons
+                  name={isSaved ? 'heart' : 'heart-outline'}
+                  size={24}
+                  color={isSaved ? '#FF4B4B' : textColor}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.previewButtonSmall,
+                  {
+                    backgroundColor: isDarkMode ? '#333' : Colors.backgroundSecondary,
+                    borderColor: isDarkMode ? '#444' : Colors.border,
+                  },
+                ]}
+                onPress={() => navigation.navigate('ThemeHomeScreenPreview', { theme })}
+              >
+                <Ionicons name="eye-outline" size={24} color={textColor} />
+              </TouchableOpacity>
+            </View>
           </View>
           <View style={styles.previewRow}>
             {theme.previewUrl && (
@@ -794,6 +824,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: Spacing.lg,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  headerAction: {
+    padding: 4,
   },
   backButton: {
     width: 28,
