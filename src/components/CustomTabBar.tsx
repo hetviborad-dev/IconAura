@@ -26,6 +26,8 @@ export default function CustomTabBar({ state, descriptors, navigation }: BottomT
 
           // Use an explicit mapping to avoid any ambiguity
           const iconName = route.name === 'Home' ? 'home' :
+                           route.name === 'Themes' ? 'color-palette' :
+                           route.name === 'Wallpapers' ? 'image' :
                            route.name === 'Settings' ? 'settings' : 'help-circle';
 
           return (

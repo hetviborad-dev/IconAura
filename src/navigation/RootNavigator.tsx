@@ -9,6 +9,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
 import ThemeDetailScreen from '../screens/ThemeDetailScreen';
 import ThemeHomeScreenPreview from '../screens/ThemeHomeScreenPreview';
+import ThemeExploreScreen from '../screens/ThemeExploreScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import IconManagementScreen from '../screens/IconManagementScreen';
 import WallpaperScreen from '../screens/WallpaperScreen';
@@ -31,6 +32,13 @@ function MainTabs() {
         component={HomeScreen}
         options={{
           tabBarLabel: 'Home',
+        }}
+      />
+      <Tab.Screen
+        name="Themes"
+        component={ThemeExploreScreen}
+        options={{
+          tabBarLabel: 'Themes',
         }}
       />
       <Tab.Screen
