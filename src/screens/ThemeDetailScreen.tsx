@@ -811,7 +811,6 @@ const styles = StyleSheet.create({
     height: 60,
     marginBottom: Spacing.md,
     backgroundColor: '#333',
-    borderRadius: Radius.md,
   },
   previewRow: {
     flexDirection: 'row',
