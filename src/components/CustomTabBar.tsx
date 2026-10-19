@@ -1,5 +1,5 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, useColorScheme } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, useColorScheme, Animated } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -16,8 +16,36 @@ export default function CustomTabBar({ state, descriptors, navigation }: BottomT
     ? 'rgba(30, 30, 30, 0.8)'
     : 'rgba(255, 255, 255, 0.8)';
 
+  const translateY = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    const activeRouteName = state.routes[state.index].name;
+
+    if (activeRouteName === 'Themes') {
+      Animated.timing(translateY, {
+        toValue: 150, // Move it down out of view
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [state.index, translateY]);
+
   return (
-    <View style={[styles.container, { bottom: insets.bottom + 16 }]}>
+    <Animated.View
+      style={[
+        styles.container,
+        {
+          bottom: insets.bottom + 16,
+          transform: [{ translateY }]
+        }
+      ]}
+    >
       <View style={[styles.tabBar, { backgroundColor: tabBarBg }]}>
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
@@ -52,7 +80,7 @@ export default function CustomTabBar({ state, descriptors, navigation }: BottomT
           );
         })}
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
