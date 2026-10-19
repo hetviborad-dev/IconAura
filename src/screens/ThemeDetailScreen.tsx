@@ -467,7 +467,18 @@ export default function ThemeDetailScreen({
             <Text style={[styles.headerTitle, { color: textColor }]}>
               {theme.name}
             </Text>
-            <View style={{ width: 28 }} />
+            <TouchableOpacity
+              style={[
+                styles.previewButtonSmall,
+                {
+                  backgroundColor: isDarkMode ? '#333' : Colors.backgroundSecondary,
+                  borderColor: isDarkMode ? '#444' : Colors.border,
+                },
+              ]}
+              onPress={() => navigation.navigate('ThemeHomeScreenPreview', { theme })}
+            >
+              <Ionicons name="eye-outline" size={24} color={textColor} />
+            </TouchableOpacity>
           </View>
           <View style={styles.previewRow}>
             {theme.previewUrl && (
@@ -477,18 +488,6 @@ export default function ThemeDetailScreen({
                 resizeMode="cover"
               />
             )}
-            <TouchableOpacity
-              style={[
-                styles.previewButton,
-                {
-                  backgroundColor: isDarkMode ? '#333' : Colors.backgroundSecondary,
-                  borderColor: isDarkMode ? '#444' : Colors.border,
-                },
-              ]}
-              onPress={() => navigation.navigate('ThemeHomeScreenPreview', { theme })}
-            >
-              <Ionicons name="home-outline" size={24} color={textColor} />
-            </TouchableOpacity>
           </View>
         </View>
 
@@ -580,9 +579,7 @@ export default function ThemeDetailScreen({
                           marginRight: Spacing.sm,
                         }}
                       />
-                      <View
-                        style={{ width: 20, height: 20, borderRadius: 10 }}
-                      />
+                      <View style={{ width: 20, height: 20, borderRadius: 10 }} />
                     </View>
                   ))}
                 </SkeletonPlaceholder>
@@ -825,6 +822,14 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: Radius.md,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderWidth: 1,
+  },
+  previewButtonSmall: {
+    width: 36,
+    height: 36,
+    borderRadius: Radius.sm,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
