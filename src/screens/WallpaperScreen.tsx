@@ -19,10 +19,23 @@ import { fetchPublicThemes } from '../services/themeService';
 import { setWallpaper } from '../services/wallpaperService';
 import type { ThemeDefinition } from '../types/data';
 import WallpaperSelectionModal from '../components/WallpaperSelectionModal';
+import Skeleton from '../components/Skeleton';
 
 interface WallpaperItem {
   url: string;
   theme: ThemeDefinition;
+}
+
+function LoadingSkeleton() {
+  return (
+    <View style={styles.grid}>
+      {[...Array(12)].map((_, i) => (
+        <View key={i} style={styles.wallpaperContainer}>
+          <Skeleton borderRadius={Radius.sm} />
+        </View>
+      ))}
+    </View>
+  );
 }
 
 export default function WallpaperScreen() {
@@ -85,9 +98,7 @@ export default function WallpaperScreen() {
         <Text style={[styles.title, { color: textColor }]}>Wallpapers</Text>
       </View>
       {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={Colors.primary} />
-        </View>
+        <LoadingSkeleton />
       ) : (
         <FlatList
           data={wallpapers}
@@ -126,11 +137,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: Typography.sizes.h1,
     fontWeight: Typography.weights.bold,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   grid: {
     paddingHorizontal: Layout.screenPadding,

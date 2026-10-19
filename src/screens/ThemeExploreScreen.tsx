@@ -225,11 +225,6 @@ export default function ThemeExploreScreen() {
         />
       </TouchableOpacity>
 
-      <View style={styles.clockContainer}>
-        <Icon name="time" size={24} color="white" />
-        <Text style={styles.clockText}>{currentTime}</Text>
-      </View>
-
       <WallpaperSelectionModal
         visible={modalVisible}
         isDarkMode={isDarkMode}

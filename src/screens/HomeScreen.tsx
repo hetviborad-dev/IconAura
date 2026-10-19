@@ -155,12 +155,6 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           <Text style={[styles.headerMain, { color: textColor }]}>ICON PACK</Text>
           <Text style={[styles.headerSub, { color: secondaryTextColor }]}>Aura</Text>
         </View>
-        <TouchableOpacity
-          style={styles.settingsButton}
-          onPress={() => {}}
-        >
-          <Text style={{ fontSize: 24, color: textColor }}>⚙️</Text>
-        </TouchableOpacity>
       </View>
 
       <View style={styles.searchContainer}>
