@@ -20,8 +20,34 @@ import WallpaperSelectionModal from '../components/WallpaperSelectionModal';
 import { setWallpaper } from '../services/wallpaperService';
 import { saveTheme, unsaveTheme, getSavedThemes } from '../services/local/themeStorage';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Skeleton from '../components/Skeleton';
 
 const { height } = Dimensions.get('window');
+
+function LoadingSkeleton() {
+  return (
+    <View style={styles.container}>
+      <Skeleton height={height} />
+
+      <View style={styles.closeButton}>
+        <Skeleton width={44} height={44} borderRadius={22} />
+      </View>
+
+      <View style={styles.applyIconButton}>
+        <Skeleton width={44} height={44} borderRadius={22} />
+      </View>
+
+      <View style={styles.saveIconButton}>
+        <Skeleton width={44} height={44} borderRadius={22} />
+      </View>
+
+      <View style={styles.clockContainer}>
+        <Skeleton width={24} height={24} borderRadius={12} />
+        <Skeleton width={60} height={20} borderRadius={10} />
+      </View>
+    </View>
+  );
+}
 
 export default function ThemeExploreScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -141,11 +167,7 @@ export default function ThemeExploreScreen() {
   };
 
   if (loading) {
-    return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color="white" />
-      </View>
-    );
+    return <LoadingSkeleton />;
   }
 
   const currentTheme = themes[currentThemeIndex];
