@@ -1,5 +1,15 @@
 [
   {
+    "slug": "pattern-power",
+    "name": "Pattern Power",
+    "description": "A theme with patterns on both icons and background",
+    "category": "popular",
+    "iconType": "pattern",
+    "iconValue": "pattern",
+    "bgType": "pattern",
+    "bgValue": "pattern"
+  },
+  {
     "slug": "evil-eyes",
     "name": "Evil Eyes",
     "description": "Evil Eyes Aesthetic Theme",

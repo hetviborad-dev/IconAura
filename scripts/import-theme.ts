@@ -56,17 +56,23 @@ async function importSingleTheme(options: any) {
 
     const files = fs.existsSync(themeFolder) ? fs.readdirSync(themeFolder) : [];
 
-    // 1. Handle Pattern Image
-    const patternFile = files.find(f =>
-      f.toLowerCase().startsWith('pattern') &&
-      ['.jpg', '.jpeg', '.png', '.webp'].some(ext => f.toLowerCase().endsWith(ext))
-    );
+    // 1. Handle Pattern Images
+    const findPatternFile = (prefix: string) =>
+      files.find(f =>
+        f.toLowerCase().startsWith(prefix) &&
+        ['.jpg', '.jpeg', '.png', '.webp'].some(ext => f.toLowerCase().endsWith(ext))
+      );
 
-    let uploadedPatternUrl: string | undefined;
-    if (patternFile) {
-      console.log(`  Processing pattern: ${patternFile}...`);
-      const inputPath = path.join(themeFolder, patternFile);
-      const outputPath = path.join(themeFolder, `pattern_processed.png`);
+    const iconPatternFile = findPatternFile('icon-pattern');
+    const bgPatternFile = findPatternFile('bg-pattern');
+    const genericPatternFile = findPatternFile('pattern');
+
+    let uploadedIconPatternUrl: string | undefined;
+    let uploadedBgPatternUrl: string | undefined;
+
+    async function processAndUpload(file: string, publicId: string) {
+      const inputPath = path.join(themeFolder, file);
+      const outputPath = path.join(themeFolder, `${publicId}_processed.png`);
 
       await sharp(inputPath)
         .resize(580, 580, { fit: 'cover' })
@@ -75,11 +81,28 @@ async function importSingleTheme(options: any) {
 
       const res = await cloudinary.uploader.upload(outputPath, {
         folder: `iconaura/themes/${slug}`,
-        public_id: 'pattern',
+        public_id: publicId,
       });
-      uploadedPatternUrl = res.secure_url;
       fs.unlinkSync(outputPath);
-      console.log(`  ✅ Uploaded pattern: ${res.secure_url}`);
+      return res.secure_url;
+    }
+
+    // Resolve which files to use (support separate files or fallback to generic pattern.png)
+    const finalIconFile = iconPatternFile || genericPatternFile;
+    const finalBgFile = bgPatternFile || genericPatternFile;
+
+    if (finalIconFile) {
+      console.log(`  Processing icon pattern: ${finalIconFile}...`);
+      uploadedIconPatternUrl = await processAndUpload(finalIconFile, 'icon-pattern');
+      console.log(`  ✅ Uploaded icon pattern: ${uploadedIconPatternUrl}`);
+    }
+
+    if (finalBgFile && finalBgFile !== finalIconFile) {
+      console.log(`  Processing bg pattern: ${finalBgFile}...`);
+      uploadedBgPatternUrl = await processAndUpload(finalBgFile, 'bg-pattern');
+      console.log(`  ✅ Uploaded bg pattern: ${uploadedBgPatternUrl}`);
+    } else if (finalBgFile === finalIconFile) {
+      uploadedBgPatternUrl = uploadedIconPatternUrl;
     }
 
     // 2. Handle All Wallpapers
@@ -112,7 +135,7 @@ async function importSingleTheme(options: any) {
       console.log(`  ✅ Uploaded ${uploadedWallpapers.length} wallpapers.`);
     }
 
-    if (uploadedWallpapers.length === 0 && !uploadedPatternUrl) {
+    if (uploadedWallpapers.length === 0 && !uploadedIconPatternUrl && !uploadedBgPatternUrl) {
       console.warn(`  ⚠️ No images found for ${name}. This theme will be color-only.`);
     }
 
@@ -154,8 +177,8 @@ async function importSingleTheme(options: any) {
     const currentWallpapers = existingTheme?.config?.wallpapers || [];
     const allWallpapers = Array.from(new Set([...currentWallpapers, ...uploadedWallpapers]));
 
-    const finalIconValue = (iconType === 'pattern' && uploadedPatternUrl) ? uploadedPatternUrl : iconValue;
-    const finalBgValue = (bgType === 'pattern' && uploadedPatternUrl) ? uploadedPatternUrl : bgValue;
+    const finalIconValue = (iconType === 'pattern' && uploadedIconPatternUrl) ? uploadedIconPatternUrl : iconValue;
+    const finalBgValue = (bgType === 'pattern' && uploadedBgPatternUrl) ? uploadedBgPatternUrl : bgValue;
 
     const config = {
       description,
@@ -177,7 +200,7 @@ async function importSingleTheme(options: any) {
         slug,
         config,
         category_id: categoryId,
-        preview_url: uploadedPatternUrl || uploadedWallpapers[0],
+        preview_url: uploadedIconPatternUrl || uploadedBgPatternUrl || uploadedWallpapers[0],
         is_public: true,
       }, { onConflict: 'slug' })
       .select()
