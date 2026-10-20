@@ -66,7 +66,7 @@ export default function AdvancedFilterModal({
     onClose();
   };
 
-  const backgroundColor = isDarkMode ? Colors.dark.surface : Colors.background;
+  const backgroundColor = isDarkMode ? Colors.dark.surface : '#F5F5F5';
   const textColor = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
   const secondaryTextColor = isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary;
 
@@ -93,18 +93,18 @@ export default function AdvancedFilterModal({
               {COMMON_COLORS.map(color => (
                 <TouchableOpacity
                   key={color.value}
-                  style={[
-                    styles.colorChipWrapper,
-                    selectedColors.includes(color.value) && styles.selectedColorChipWrapper
-                  ]}
+                  style={{ alignItems: 'center', gap: 4 }}
                   onPress={() => toggleColor(color.value)}
                 >
-                  <View style={[styles.colorChip, { backgroundColor: color.color }]} />
-                  {selectedColors.includes(color.value) && (
-                    <View style={styles.checkBadge}>
-                      <Icon name="checkmark-circle" size={14} color="white" />
-                    </View>
-                  )}
+                  <View style={[
+                    styles.colorChipWrapper,
+                    selectedColors.includes(color.value) && styles.selectedColorChipWrapper
+                  ]}>
+                    <View style={[
+                      styles.colorChip,
+                      { backgroundColor: color.color, borderColor: isDarkMode ? Colors.dark.border : Colors.border }
+                    ]} />
+                  </View>
                   <Text style={[styles.colorText, { color: textColor }]}>{color.name}</Text>
                 </TouchableOpacity>
               ))}
@@ -191,14 +191,14 @@ const styles = StyleSheet.create({
   },
   colorChipWrapper: {
     alignItems: 'center',
-    gap: 4,
+    justifyContent: 'center',
     padding: 4,
-    borderRadius: Radius.sm,
+    borderRadius: Radius.full,
     borderWidth: 2,
     borderColor: 'transparent',
   },
   selectedColorChipWrapper: {
-    borderColor: 'rgba(255,255,255,0.3)',
+    borderColor: Colors.primary,
   },
   colorChip: {
     width: 32,
