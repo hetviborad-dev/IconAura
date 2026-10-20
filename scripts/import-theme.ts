@@ -41,7 +41,7 @@ const supabase = createClient(
 );
 
 async function importSingleTheme(options: any) {
-  const { name, slug, category, description, iconType, iconValue, bgType, bgValue, folder } = options;
+  const { name, slug, category, description, iconType, iconValue, bgType, bgValue, folder, color_tags, theme_tags } = options;
 
   const themeFolder = path.join(folder, slug);
   const needsImages = iconType === 'pattern' || bgType === 'pattern';
@@ -202,6 +202,8 @@ async function importSingleTheme(options: any) {
         category_id: categoryId,
         preview_url: uploadedIconPatternUrl || uploadedBgPatternUrl || uploadedWallpapers[0],
         is_public: true,
+        color_tags: color_tags || [],
+        theme_tags: theme_tags || [],
       }, { onConflict: 'slug' })
       .select()
       .single();

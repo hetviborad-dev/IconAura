@@ -51,6 +51,8 @@ export interface ThemeDefinition {
   featuredApps: AppId[];
   icon: ThemeLayer;
   background: ThemeLayer;
+  color_tags?: string[];
+  theme_tags?: string[];
   previewUrl?: string;
   preview: {
     /**

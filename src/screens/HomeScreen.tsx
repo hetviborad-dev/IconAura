@@ -20,6 +20,9 @@ import ThemeCategorySection from '../components/ThemeCategorySection';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { ThemeDefinition } from '../types/data';
 import { ThemeCard } from '../components';
+import Skeleton from '../components/Skeleton';
+import AdvancedFilterModal from '../components/AdvancedFilterModal';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 interface HomeScreenProps {
   navigation: NativeStackNavigationProp<RootStackParamList, 'Home'>;
@@ -72,6 +75,8 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   const [selectedCategoryId, setSelectedCategoryId] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [filterModalVisible, setFilterModalVisible] = useState(false);
+  const [filters, setFilters] = useState({ colors: [] as string[], tags: [] as string[] });
 
   const backgroundColor = isDarkMode ? Colors.dark.background : Colors.background;
   const textColor = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
@@ -81,7 +86,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   const loadAllCategories = useCallback(async () => {
     try {
       setLoading(true);
-      const { categories, themesMap } = await fetchHomeThemes();
+      const { categories, themesMap } = await fetchHomeThemes(filters);
 
       if (categories && categories.length > 0) {
         setCategories(categories.map(cat => ({
@@ -98,11 +103,11 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [filters]);
 
   useEffect(() => {
     loadAllCategories();
-  }, [loadAllCategories]);
+  }, [loadAllCategories, filters]);
 
   const handleCategoryPress = useCallback((id: string) => {
     setSelectedCategoryId(id);
@@ -149,130 +154,149 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   ), [handleThemePress]);
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor }]}>
-      <View style={styles.header}>
-        <View>
-          <Text style={[styles.headerMain, { color: textColor }]}>ICON PACK</Text>
-          <Text style={[styles.headerSub, { color: secondaryTextColor }]}>Aura</Text>
+    <>
+      <SafeAreaView style={[styles.container, { backgroundColor }]}>
+        <View style={styles.header}>
+          <View>
+            <Text style={[styles.headerMain, { color: textColor }]}>ICON PACK</Text>
+            <Text style={[styles.headerSub, { color: secondaryTextColor }]}>Aura</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.filterButton}
+            onPress={() => setFilterModalVisible(true)}
+          >
+            <Icon name="options-outline" size={24} color={textColor} />
+          </TouchableOpacity>
         </View>
-      </View>
 
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={[styles.searchBar, { backgroundColor: surfaceColor, color: textColor }]}
-          placeholder="Search themes..."
-          placeholderTextColor={secondaryTextColor}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          clearButtonMode="while-editing"
-        />
-      </View>
+        <View style={styles.searchContainer}>
+          <TextInput
+            style={[styles.searchBar, { backgroundColor: surfaceColor, color: textColor }]}
+            placeholder="Search themes..."
+            placeholderTextColor={secondaryTextColor}
+            value={searchQuery}
+            onChangeText={setSearchQuery}
+            clearButtonMode="while-editing"
+          />
+        </View>
 
-      <View style={styles.categoryContainer}>
-        <FlatList
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          data={['all', ...categories.map(c => c.id)]}
-          keyExtractor={(item) => item}
-          contentContainerStyle={styles.categoryScroll}
-          renderItem={({ item }) => {
-            const categoryName = item === 'all' ? 'All' : categories.find(c => c.id === item)?.name || '';
-            return (
-              <CategoryButton
-                id={item}
-                name={categoryName}
-                isSelected={selectedCategoryId === item}
-                onPress={handleCategoryPress}
-                isDarkMode={isDarkMode}
-                secondaryTextColor={secondaryTextColor}
+        <View style={styles.categoryContainer}>
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={['all', ...categories.map(c => c.id)]}
+            keyExtractor={(item) => item}
+            contentContainerStyle={styles.categoryScroll}
+            renderItem={({ item }) => {
+              const categoryName = item === 'all' ? 'All' : categories.find(c => c.id === item)?.name || '';
+              return (
+                <CategoryButton
+                  id={item}
+                  name={categoryName}
+                  isSelected={selectedCategoryId === item}
+                  onPress={handleCategoryPress}
+                  isDarkMode={isDarkMode}
+                  secondaryTextColor={secondaryTextColor}
+                />
+              );
+            }}
+          />
+        </View>
+
+        {filteredThemes ? (
+          <FlatList
+            key={`search-list-${selectedCategoryId}`}
+            data={filteredThemes}
+            keyExtractor={(item) => item.id}
+            renderItem={renderThemeItem}
+            numColumns={3}
+            columnWrapperStyle={styles.columnWrapper}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            initialNumToRender={12}
+            maxToRenderPerBatch={10}
+            windowSize={5}
+            removeClippedSubviews={true}
+            ListEmptyComponent={
+              <View style={styles.emptyContainer}>
+                <Text style={{ color: secondaryTextColor }}>No themes found</Text>
+              </View>
+            }
+          />
+        ) : selectedCategoryId === 'all' ? (
+          <FlatList
+            key="all-list"
+            data={categories}
+            keyExtractor={(item) => item.id}
+            renderItem={renderCategoryItem}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            initialNumToRender={10}
+            maxToRenderPerBatch={5}
+            windowSize={5}
+            removeClippedSubviews={true}
+            refreshControl={
+              <RefreshControl
+                refreshing={loading}
+                onRefresh={loadAllCategories}
+                colors={[Colors.primary]}
+                tintColor={Colors.primary}
               />
-            );
-          }}
-        />
-      </View>
-
-      {filteredThemes ? (
-        <FlatList
-          key={`search-list-${selectedCategoryId}`}
-          data={filteredThemes}
-          keyExtractor={(item) => item.id}
-          renderItem={renderThemeItem}
-          numColumns={3}
-          columnWrapperStyle={styles.columnWrapper}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          initialNumToRender={12}
-          maxToRenderPerBatch={10}
-          windowSize={5}
-          removeClippedSubviews={true}
-          ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Text style={{ color: secondaryTextColor }}>No themes found</Text>
-            </View>
-          }
-        />
-      ) : selectedCategoryId === 'all' ? (
-        <FlatList
-          key="all-list"
-          data={categories}
-          keyExtractor={(item) => item.id}
-          renderItem={renderCategoryItem}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          initialNumToRender={10}
-          maxToRenderPerBatch={5}
-          windowSize={5}
-          removeClippedSubviews={true}
-          refreshControl={
-            <RefreshControl
-              refreshing={loading}
-              onRefresh={loadAllCategories}
-              colors={[Colors.primary]}
-              tintColor={Colors.primary}
-            />
-          }
-          ListEmptyComponent={
-            loading ? (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={Colors.primary} />
-              </View>
-            ) : null
-          }
-        />
-      ) : (
-        <FlatList
-          key={`category-list-${selectedCategoryId}`}
-          data={categoryThemes[selectedCategoryId] || []}
-          keyExtractor={(item) => item.id}
-          renderItem={renderThemeItem}
-          numColumns={3}
-          columnWrapperStyle={styles.columnWrapper}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-          initialNumToRender={12}
-          maxToRenderPerBatch={10}
-          windowSize={5}
-          removeClippedSubviews={true}
-          refreshControl={
-            <RefreshControl
-              refreshing={loading}
-              onRefresh={loadAllCategories}
-              colors={[Colors.primary]}
-              tintColor={Colors.primary}
-            />
-          }
-          ListEmptyComponent={
-            loading ? (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={Colors.primary} />
-              </View>
-            ) : null
-          }
-        />
-      )}
-    </SafeAreaView>
+            }
+            ListEmptyComponent={
+              loading ? (
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator size="large" color={Colors.primary} />
+                </View>
+              ) : null
+            }
+          />
+        ) : (
+          <FlatList
+            key={`category-list-${selectedCategoryId}`}
+            data={categoryThemes[selectedCategoryId] || []}
+            keyExtractor={(item) => item.id}
+            renderItem={renderThemeItem}
+            numColumns={3}
+            columnWrapperStyle={styles.columnWrapper}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+            initialNumToRender={12}
+            maxToRenderPerBatch={10}
+            windowSize={5}
+            removeClippedSubviews={true}
+            refreshControl={
+              <RefreshControl
+                refreshing={loading}
+                onRefresh={loadAllCategories}
+                colors={[Colors.primary]}
+                tintColor={Colors.primary}
+              />
+            }
+            ListEmptyComponent={
+              loading ? (
+                <View style={styles.loadingContainer}>
+                  <ActivityIndicator size="large" color={Colors.primary} />
+                </View>
+              ) : null
+            }
+          />
+        )}
+      </SafeAreaView>
+      <AdvancedFilterModal
+        isVisible={filterModalVisible}
+        onClose={() => setFilterModalVisible(false)}
+        initialFilters={filters}
+        onApply={(newFilters) => {
+          setFilters(newFilters);
+          setLoading(true);
+        }}
+      />
+    </>
   );
 }
+
+// I need to move the Modal inside the return's main fragment or wrap everything in a fragment.
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
@@ -282,6 +306,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: Layout.screenPadding,
     paddingVertical: Spacing.xl,
+  },
+  filterButton: {
+    width: TouchTarget.min,
+    height: TouchTarget.min,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   headerMain: {
     fontSize: Typography.sizes.h3,

@@ -7,7 +7,9 @@
     "iconType": "pattern",
     "iconValue": "pattern",
     "bgType": "pattern",
-    "bgValue": "pattern"
+    "bgValue": "pattern",
+    "color_tags": ["red"],
+    "theme_tags": ["pattern", "bold", "modern"]
   },
   {
     "slug": "evil-eyes",
@@ -17,7 +19,9 @@
     "iconType": "color",
     "iconValue": "#FFFFFF",
     "bgType": "pattern",
-    "bgValue": "pattern"
+    "bgValue": "pattern",
+    "color_tags": ["white", "blue"],
+    "theme_tags": ["aesthetic", "mystery", "eye"]
   },
   {
     "slug": "crimson-bloom",
@@ -27,7 +31,9 @@
     "iconType": "color",
     "iconValue": "#FFFFFF",
     "bgType": "pattern",
-    "bgValue": "pattern"
+    "bgValue": "pattern",
+    "color_tags": ["white", "red", "black"],
+    "theme_tags": ["floral", "nature", "bloom"]
   },{
     "slug": "mono-black",
     "name": "Mono Black",
@@ -36,7 +42,9 @@
     "iconType": "color",
     "iconValue": "#000000",
     "bgType": "color",
-    "bgValue": "#FFFFFF"
+    "bgValue": "#FFFFFF",
+    "color_tags": ["black", "white"],
+    "theme_tags": ["minimalist", "sleek", "dark"]
   },{
     "slug": "leapard-print",
     "name": "Leopard Print",
@@ -45,7 +53,9 @@
     "iconType": "pattern",
     "iconValue": "pattern",
     "bgType": "color",
-    "bgValue": "#F1E0CE"
+    "bgValue": "#F1E0CE",
+    "color_tags": ["beige", "brown"],
+    "theme_tags": ["animal", "stylish", "print"]
   },
   {
     "slug": "dog-print",
@@ -55,7 +65,9 @@
     "iconType": "color",
     "iconValue": "#FFFFFF",
     "bgType": "pattern",
-    "bgValue": "pattern"
+    "bgValue": "pattern",
+    "color_tags": ["brown", "beige"],
+    "theme_tags": ["animal", "cute", "dog"]
   },
   {
     "slug": "midnight-navy",
@@ -65,7 +77,9 @@
     "iconType": "color",
     "iconValue": "#0F172A",
     "bgType": "color",
-    "bgValue": "#E2E8F0"
+    "bgValue": "#E2E8F0",
+    "color_tags": ["navy", "blue"],
+    "theme_tags": ["minimalist", "clean", "dark"]
   },
   {
     "slug": "soft-beige",
@@ -75,7 +89,9 @@
     "iconType": "color",
     "iconValue": "#8B7355",
     "bgType": "color",
-    "bgValue": "#F5F0E8"
+    "bgValue": "#F5F0E8",
+    "color_tags": ["beige", "brown"],
+    "theme_tags": ["minimalist", "elegant", "warm"]
   },
   {
     "slug": "sage-green",
@@ -85,7 +101,9 @@
     "iconType": "color",
     "iconValue": "#3F5B4B",
     "bgType": "color",
-    "bgValue": "#E8EFE7"
+    "bgValue": "#E8EFE7",
+    "color_tags": ["green", "sage"],
+    "theme_tags": ["nature", "calming", "minimalist"]
   },
   {
     "slug": "soft-lavender",
@@ -95,7 +113,9 @@
     "iconType": "color",
     "iconValue": "#6D5A91",
     "bgType": "color",
-    "bgValue": "#F0EBF8"
+    "bgValue": "#F0EBF8",
+    "color_tags": ["purple", "lavender"],
+    "theme_tags": ["modern", "gentle", "minimalist"]
   },
   {
     "slug": "dusty-rose",
@@ -105,6 +125,8 @@
     "iconType": "color",
     "iconValue": "#9F5F68",
     "bgType": "color",
-    "bgValue": "#F8EDEF"
+    "bgValue": "#F8EDEF",
+    "color_tags": ["pink", "rose"],
+    "theme_tags": ["refined", "muted", "minimalist"]
   }
 ]

@@ -38,7 +38,10 @@ async function getCategoryId(slug: string) {
   return data;
 }
 
-export async function fetchHomeThemes() {
+export async function fetchHomeThemes(filters?: {
+  colors?: string[];
+  tags?: string[];
+}) {
   if (!supabase) {
     console.error('Supabase client is not initialized');
     return { categories: [], themesMap: {} };
@@ -59,10 +62,20 @@ export async function fetchHomeThemes() {
   const sortedCategories = (categories || []).sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
 
   // 2. Fetch all public themes with their category slug
-  const { data: themes, error: themeError } = await supabase
+  let query = supabase
     .from('themes')
     .select('*, categories(slug)')
     .eq('is_public', true);
+
+  if (filters?.colors && filters.colors.length > 0) {
+    query = query.overlaps('color_tags', filters.colors);
+  }
+
+  if (filters?.tags && filters.tags.length > 0) {
+    query = query.overlaps('theme_tags', filters.tags);
+  }
+
+  const { data: themes, error: themeError } = await query;
 
   if (themeError) {
     console.error('Error fetching themes:', themeError);
@@ -139,7 +152,14 @@ export async function fetchTheme(themeId: ThemeId): Promise<ThemeDefinition> {
   };
 }
 
-export async function fetchPublicThemes(page: number = 1, limit: number = 20): Promise<{ data: ThemeDefinition[]; hasMore: boolean }> {
+export async function fetchPublicThemes(
+  page: number = 1,
+  limit: number = 20,
+  filters?: {
+    colors?: string[];
+    tags?: string[];
+  }
+): Promise<{ data: ThemeDefinition[]; hasMore: boolean }> {
   if (!supabase) {
     console.error('Supabase client is not initialized');
     return { data: [], hasMore: false };
@@ -148,11 +168,20 @@ export async function fetchPublicThemes(page: number = 1, limit: number = 20): P
   const from = (page - 1) * limit;
   const to = from + limit - 1;
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('themes')
     .select('*, categories(name)')
-    .eq('is_public', true)
-    .range(from, to);
+    .eq('is_public', true);
+
+  if (filters?.colors && filters.colors.length > 0) {
+    query = query.overlaps('color_tags', filters.colors);
+  }
+
+  if (filters?.tags && filters.tags.length > 0) {
+    query = query.overlaps('theme_tags', filters.tags);
+  }
+
+  const { data, error } = await query.range(from, to);
 
   if (error || !data) return { data: [], hasMore: false };
 
@@ -167,6 +196,8 @@ export async function fetchPublicThemes(page: number = 1, limit: number = 20): P
       featuredApps: config.featuredApps || [],
       icon: config.icon,
       background: config.background,
+      color_tags: row.color_tags || [],
+      theme_tags: row.theme_tags || [],
       previewUrl: row.preview_url,
       preview: config.preview || {
         featuredApps: [],
