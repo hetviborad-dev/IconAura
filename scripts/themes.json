@@ -128,5 +128,53 @@
     "bgValue": "#F8EDEF",
     "color_tags": ["pink", "rose"],
     "theme_tags": ["refined", "muted", "minimalist"]
+  },
+  {
+    "slug": "news-paper",
+    "name": "News Paper",
+    "description": "A classic newsprint aesthetic",
+    "category": "modern",
+    "iconType": "color",
+    "iconValue": "#000000",
+    "bgType": "pattern",
+    "bgValue": "pattern",
+    "color_tags": ["black"],
+    "theme_tags": ["newspaper", "print", "modern"]
+  },
+  {
+    "slug": "red-polka-dots",
+    "name": "Red Polka Dots",
+    "description": "Playful red dots with elegant ivory icons",
+    "category": "colorful",
+    "iconType": "color",
+    "iconValue": "#F5F5DC",
+    "bgType": "pattern",
+    "bgValue": "pattern",
+    "color_tags": ["beige", "red"],
+    "theme_tags": ["dots", "colorful", "playful"]
+  },
+  {
+    "slug": "autumn-leaves",
+    "name": "Autumn Leaves",
+    "description": "Warm autumn nature theme",
+    "category": "nature",
+    "iconType": "color",
+    "iconValue": "#FFFFFF",
+    "bgType": "pattern",
+    "bgValue": "pattern",
+    "color_tags": ["white", "orange", "brown"],
+    "theme_tags": ["nature", "autumn", "leaves"]
+  },
+  {
+    "slug": "kiss-lips",
+    "name": "Kiss Lips",
+    "description": "Romantic lips pattern on both background and icons",
+    "category": "colorful",
+    "iconType": "pattern",
+    "iconValue": "pattern",
+    "bgType": "pattern",
+    "bgValue": "pattern",
+    "color_tags": ["red"],
+    "theme_tags": ["lips", "pattern", "romantic"]
   }
 ]
