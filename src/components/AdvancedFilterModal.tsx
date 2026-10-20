@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -49,6 +49,13 @@ export default function AdvancedFilterModal({
   const [selectedColors, setSelectedColors] = useState(initialFilters.colors);
   const [selectedTags, setSelectedTags] = useState(initialFilters.tags);
 
+  useEffect(() => {
+    if (isVisible) {
+      setSelectedColors(initialFilters.colors);
+      setSelectedTags(initialFilters.tags);
+    }
+  }, [isVisible, initialFilters]);
+
   const toggleColor = (value: string) => {
     setSelectedColors(prev =>
       prev.includes(value) ? prev.filter(c => c !== value) : [...prev, value]
@@ -59,6 +66,11 @@ export default function AdvancedFilterModal({
     setSelectedTags(prev =>
       prev.includes(value) ? prev.filter(t => t !== value) : [...prev, value]
     );
+  };
+
+  const clearAll = () => {
+    setSelectedColors([]);
+    setSelectedTags([]);
   };
 
   const handleApply = () => {
@@ -137,9 +149,23 @@ export default function AdvancedFilterModal({
           </ScrollView>
 
           <View style={styles.footer}>
-            <TouchableOpacity style={styles.applyButton} onPress={handleApply}>
-              <Text style={styles.applyButtonText}>Apply Filters</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity style={styles.clearButton} onPress={clearAll}>
+                <Text style={[styles.clearButtonText, { color: secondaryTextColor }]}>Clear All</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.applyButton,
+                  { backgroundColor: isDarkMode ? Colors.dark.textPrimary : Colors.primary }
+                ]}
+                onPress={handleApply}
+              >
+                <Text style={[
+                  styles.applyButtonText,
+                  { color: isDarkMode ? Colors.dark.background : 'white' }
+                ]}>Apply Filters</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </View>
@@ -230,15 +256,30 @@ const styles = StyleSheet.create({
     borderTopColor: 'rgba(150,150,150,0.2)',
     paddingTop: Spacing.md,
   },
-  applyButton: {
-    backgroundColor: 'black',
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+  },
+  clearButton: {
+    flex: 1,
     paddingVertical: Spacing.md,
     borderRadius: Radius.md,
     alignItems: 'center',
-    marginTop: Spacing.sm,
+    borderWidth: 1,
+    borderColor: 'rgba(150,150,150,0.4)',
+  },
+  clearButtonText: {
+    fontSize: Typography.sizes.body,
+    fontWeight: Typography.weights.medium,
+  },
+  applyButton: {
+    flex: 2,
+    paddingVertical: Spacing.md,
+    borderRadius: Radius.md,
+    alignItems: 'center',
+    marginTop: 0,
   },
   applyButtonText: {
-    color: 'white',
     fontSize: Typography.sizes.body,
     fontWeight: Typography.weights.bold,
   },
