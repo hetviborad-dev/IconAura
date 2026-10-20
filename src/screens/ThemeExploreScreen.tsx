@@ -19,6 +19,7 @@ import ThemePreviewCard from '../components/ThemePreviewCard';
 import WallpaperSelectionModal from '../components/WallpaperSelectionModal';
 import { setWallpaper } from '../services/wallpaperService';
 import { saveTheme, unsaveTheme, getSavedThemes } from '../services/local/themeStorage';
+import { useInterstitialAd } from '../hooks/useInterstitialAd';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Skeleton from '../components/Skeleton';
 
@@ -62,6 +63,8 @@ export default function ThemeExploreScreen() {
   const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
   const [savedThemeIds, setSavedThemeIds] = useState<Set<string>>(new Set());
   const captureIcons = useRef<Partial<Record<string, () => Promise<string>>>>({});
+  const lastAdIndex = useRef<number>(-1);
+  const { showAd } = useInterstitialAd();
 
   useEffect(() => {
     async function initialize() {
@@ -113,6 +116,12 @@ export default function ThemeExploreScreen() {
     const index = Math.round(offsetY / height);
     if (index !== currentThemeIndex && index >= 0 && index < themes.length) {
       setCurrentThemeIndex(index);
+
+      // Trigger interstitial ad every 5 themes
+      if (index > 0 && index % 5 === 0 && index !== lastAdIndex.current) {
+        showAd();
+        lastAdIndex.current = index;
+      }
     }
   };
 

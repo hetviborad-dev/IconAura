@@ -22,6 +22,7 @@ import type { ThemeDefinition } from '../types/data';
 import { ThemeCard } from '../components';
 import Skeleton from '../components/Skeleton';
 import AdvancedFilterModal from '../components/AdvancedFilterModal';
+import AdBanner from '../components/AdBanner';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 interface HomeScreenProps {
@@ -168,6 +169,8 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
             <Icon name="options-outline" size={24} color={textColor} />
           </TouchableOpacity>
         </View>
+
+        <AdBanner />
 
         <View style={styles.searchContainer}>
           <TextInput
