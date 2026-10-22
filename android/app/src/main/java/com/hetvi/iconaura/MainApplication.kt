@@ -1,4 +1,4 @@
-package com.iconaura
+package com.hetvi.iconaura
 
 import android.app.Application
 import com.facebook.react.PackageList

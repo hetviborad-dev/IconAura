@@ -11,6 +11,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import { Colors, Spacing, Typography, Radius, TouchTarget } from '../constants/design';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 interface PrimaryButtonProps {
   title: string;
@@ -18,6 +19,11 @@ interface PrimaryButtonProps {
   style?: ViewStyle;
   fullWidth?: boolean;
   disabled?: boolean;
+  icon?: {
+    name: string;
+    size?: number;
+    color?: string;
+  };
 }
 
 export default function PrimaryButton({
@@ -26,6 +32,7 @@ export default function PrimaryButton({
   style,
   fullWidth = false,
   disabled = false,
+  icon,
 }: PrimaryButtonProps) {
   const isDarkMode = useColorScheme() === 'dark';
   const buttonBackground = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
@@ -45,6 +52,14 @@ export default function PrimaryButton({
       activeOpacity={0.7}
       disabled={disabled}
     >
+      {icon && (
+        <Icon
+          name={icon.name}
+          size={icon.size || 20}
+          color={icon.color || '#FFFFFF'}
+          style={styles.icon}
+        />
+      )}
       <Text style={styles.buttonText}>{title}</Text>
     </TouchableOpacity>
   );
@@ -57,6 +72,8 @@ const styles = StyleSheet.create({
     borderRadius: Radius.md,
     justifyContent: 'center',
     alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
     minHeight: TouchTarget.min,
   },
   fullWidth: {
@@ -69,5 +86,8 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: Typography.sizes.body,
     fontWeight: Typography.weights.semibold,
+  },
+  icon: {
+    // Any specific icon styling
   },
 });

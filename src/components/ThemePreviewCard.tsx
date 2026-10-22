@@ -5,10 +5,12 @@ import {
   Image,
   ScrollView,
   Dimensions,
+  Text,
 } from 'react-native';
 import { ThemeDefinition, AppId } from '../types/data';
-import { Layout } from '../constants/design';
+import { Layout, Colors } from '../constants/design';
 import IconCanvas from './IconCanvas';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const { width, height } = Dimensions.get('window');
 
@@ -23,6 +25,7 @@ interface Props {
 
 export default function ThemePreviewCard({ theme }: Props) {
   const [wallpaperIndex, setWallpaperIndex] = useState(0);
+  console.log(`DEBUG: ThemePreviewCard [${theme.name}] isPremium:`, theme.isPremium);
 
   // Use theme wallpapers if available, otherwise use the default one
   const wallpapers = (theme.wallpapers && theme.wallpapers.length > 0)
@@ -57,6 +60,12 @@ export default function ThemePreviewCard({ theme }: Props) {
       </View>
 
       <View style={styles.uiLayer}>
+        {theme.isPremium && (
+          <View style={styles.premiumBadge}>
+            <Icon name="lock-closed" size={14} color="white" />
+            <Text style={styles.premiumText}>Premium</Text>
+          </View>
+        )}
         <View style={styles.bottomContainer}>
           {wallpapers.length > 1 && (
             <View style={styles.pageIndicator}>
@@ -111,6 +120,27 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
     zIndex: 15,
+  },
+  premiumBadge: {
+    position: 'absolute',
+    top: 80,
+    right: 20,
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    gap: 6,
+    borderWidth: 2,
+    borderColor: '#FFD700',
+    zIndex: 999,
+  },
+  premiumText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
   },
   pageIndicator: {
     flexDirection: 'row',

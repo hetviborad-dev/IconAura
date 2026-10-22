@@ -23,6 +23,7 @@ import { ThemeCard } from '../components';
 import Skeleton from '../components/Skeleton';
 import AdvancedFilterModal from '../components/AdvancedFilterModal';
 import AdBanner from '../components/AdBanner';
+import { useSubscription } from '../hooks/useSubscription';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 interface HomeScreenProps {
@@ -71,6 +72,7 @@ const CategoryButton = memo(({
 
 export default function HomeScreen({ navigation }: HomeScreenProps) {
   const isDarkMode = useColorScheme() === 'dark';
+  const { isPremium } = useSubscription();
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [categoryThemes, setCategoryThemes] = useState<Record<string, ThemeDefinition[]>>({});
   const [selectedCategoryId, setSelectedCategoryId] = useState('all');
@@ -162,15 +164,24 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
             <Text style={[styles.headerMain, { color: textColor }]}>ICON PACK</Text>
             <Text style={[styles.headerSub, { color: secondaryTextColor }]}>Aura</Text>
           </View>
-          <TouchableOpacity
-            style={styles.filterButton}
-            onPress={() => setFilterModalVisible(true)}
-          >
-            <Icon name="options-outline" size={24} color={textColor} />
-          </TouchableOpacity>
+          <View style={styles.headerActions}>
+            <TouchableOpacity
+              style={styles.premiumButton}
+              onPress={() => navigation.navigate('Premium')}
+            >
+              <Icon name="star" size={18} color={Colors.primary} />
+              <Text style={styles.premiumButtonText}>Premium</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.filterButton}
+              onPress={() => setFilterModalVisible(true)}
+            >
+              <Icon name="options-outline" size={24} color={textColor} />
+            </TouchableOpacity>
+          </View>
         </View>
 
-        <AdBanner />
+        {!isPremium && <AdBanner />}
 
         <View style={styles.searchContainer}>
           <TextInput
@@ -309,6 +320,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: Layout.screenPadding,
     paddingVertical: Spacing.xl,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  premiumButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 215, 0, 0.2)',
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: Radius.sm,
+    gap: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 215, 0, 0.5)',
+  },
+  premiumButtonText: {
+    fontSize: Typography.sizes.caption,
+    fontWeight: Typography.weights.bold,
   },
   filterButton: {
     width: TouchTarget.min,

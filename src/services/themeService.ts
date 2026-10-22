@@ -76,7 +76,7 @@ export async function fetchHomeThemes(filters?: {
   }
 
   const { data: themes, error: themeError } = await query;
-
+  console.log('DEBUG: fetchPublicThemes data[0]:', themes?.[0]);
   if (themeError) {
     console.error('Error fetching themes:', themeError);
     return { categories: sortedCategories || [], themesMap: {} };
@@ -100,6 +100,7 @@ export async function fetchHomeThemes(filters?: {
         featuredApps: config.featuredApps || [],
         icon: config.icon,
         background: config.background,
+        isPremium: row.is_premium || false,
         previewUrl: row.preview_url,
         preview: config.preview || { featuredApps: [], subtitle: '' },
         wallpapers: config.wallpapers || [],
@@ -143,6 +144,7 @@ export async function fetchTheme(themeId: ThemeId): Promise<ThemeDefinition> {
     featuredApps: config.featuredApps || [],
     icon: config.icon,
     background: config.background,
+    isPremium: data.is_premium || false,
     previewUrl: data.preview_url,
     preview: config.preview || {
       featuredApps: [],
@@ -196,6 +198,7 @@ export async function fetchPublicThemes(
       featuredApps: config.featuredApps || [],
       icon: config.icon,
       background: config.background,
+      isPremium: row.is_premium || false,
       color_tags: row.color_tags || [],
       theme_tags: row.theme_tags || [],
       previewUrl: row.preview_url,
@@ -248,6 +251,7 @@ export async function fetchThemesByCategory(category: string): Promise<ThemeDefi
       featuredApps: config.featuredApps || [],
       icon: config.icon,
       background: config.background,
+      isPremium: row.is_premium || false,
       previewUrl: row.preview_url,
       preview: config.preview || {
         featuredApps: [],

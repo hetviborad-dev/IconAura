@@ -18,10 +18,12 @@ import { APP_NAME, APP_VERSION } from '../data/config';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useSubscription } from '../hooks/useSubscription';
 
 export default function SettingsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const isDarkMode = useColorScheme() === 'dark';
+  const { isPremium } = useSubscription();
   const backgroundColor = isDarkMode ? '#121212' : Colors.background;
   const textColor = isDarkMode ? '#FFFFFF' : Colors.textPrimary;
   const secondaryTextColor = isDarkMode ? '#AAAAAA' : Colors.textSecondary;
@@ -30,8 +32,20 @@ export default function SettingsScreen() {
 
   const settingsSections = [
     {
+      title: 'Account',
+      items: [
+        {
+          icon: 'star',
+          label: isPremium ? 'Premium Active' : 'Upgrade to Premium',
+          subtitle: isPremium ? 'You have full access' : 'Unlock all themes and features',
+          onPress: () => navigation.navigate('Premium'),
+        },
+      ],
+    },
+    {
       title: 'App Configuration',
       items: [
+
         {
           icon: 'heart',
           label: 'Saved Themes',

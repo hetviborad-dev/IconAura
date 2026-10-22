@@ -31,6 +31,7 @@ import {
 } from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
 import { Theme } from '../types/index';
+import { useSubscription } from '../hooks/useSubscription';
 import type { AppId, ThemeDefinition } from '../types/data';
 import { getAllApps } from '../data/apps';
 import { getEnabledIcons } from '../services/local/iconStorage';
@@ -134,6 +135,8 @@ export default function ThemeDetailScreen({
 }: ThemeDetailScreenProps) {
   const isDarkMode = useColorScheme() === 'dark';
   const { theme } = route.params;
+  console.log(`DEBUG: ThemeDetailScreen [${theme.name}] isPremium:`, theme.isPremium);
+  const { isPremium } = useSubscription();
   console.log('ThemeDetailScreen - theme:', theme);
   const [enabledIcons, setEnabledIcons] = useState<Set<AppId>>(new Set());
   const { appStatus, loading, error, refresh } = useAppDetection();
@@ -369,6 +372,10 @@ export default function ThemeDetailScreen({
   };
 
   const handleSetIcons = async () => {
+    if (theme.isPremium && !isPremium) {
+      navigation.navigate('Premium');
+      return;
+    }
     const appsToApply = SUPPORTED_APPS.filter(app => selectedApps.has(app.id));
     if (appsToApply.length === 0) {
       Alert.alert(
@@ -523,10 +530,16 @@ export default function ThemeDetailScreen({
 
         {theme.wallpapers && theme.wallpapers.length > 0 && (
           <View style={styles.wallpapersSection}>
-            <View style={[styles.sectionHeader, { paddingHorizontal: 0 }]}>
+            <View style={[styles.sectionHeader, { paddingHorizontal: 0, flexDirection: 'row', alignItems: 'center', gap: 8 }]}>
               <Text style={[styles.sectionTitle, { color: textColor }]}>
                 Matching Wallpapers
               </Text>
+              {theme.isPremium && !isPremium && (
+                <View style={styles.wallpaperSectionBadge}>
+                  <Ionicons name="lock-closed" size={12} color="white" />
+                  <Text style={styles.wallpaperSectionBadgeText}>Premium</Text>
+                </View>
+              )}
             </View>
             <ScrollView
               horizontal
@@ -544,6 +557,12 @@ export default function ThemeDetailScreen({
                     style={styles.wallpaperImageThumbnail}
                     resizeMode="cover"
                   />
+                  {theme.isPremium && !isPremium && (
+                    <View style={styles.wallpaperLockBadge}>
+                      <Ionicons name="lock-closed" size={12} color="white" />
+                      <Text style={styles.wallpaperLockText}>Premium</Text>
+                    </View>
+                  )}
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -650,7 +669,12 @@ export default function ThemeDetailScreen({
         </ScrollView>
 
         <View style={styles.footer}>
-          <PrimaryButton title="Set Icons" onPress={handleSetIcons} fullWidth />
+          <PrimaryButton
+            title="Set Icons"
+            onPress={handleSetIcons}
+            fullWidth
+            icon={theme.isPremium && !isPremium ? { name: 'lock-closed' } : undefined}
+          />
         </View>
       </>
 
@@ -665,8 +689,14 @@ export default function ThemeDetailScreen({
           visible={!!selectedWallpaperUrl}
           wallpaperUrl={selectedWallpaperUrl}
           isDarkMode={isDarkMode}
+          isPremiumTheme={theme.isPremium}
+          isUserPremium={isPremium}
           onClose={() => setSelectedWallpaperUrl(null)}
           onApply={async target => {
+            if (theme.isPremium && !isPremium) {
+              navigation.navigate('Premium');
+              return;
+            }
             const result = await setWallpaper(selectedWallpaperUrl!, target);
             if (result.success) {
               Alert.alert('Success', `Wallpaper applied to ${target} screen!`);
@@ -926,10 +956,49 @@ const styles = StyleSheet.create({
     marginRight: Spacing.md,
     overflow: 'hidden',
     backgroundColor: '#333',
+    position: 'relative',
   },
   wallpaperImageThumbnail: {
     width: '100%',
     height: '100%',
+  },
+  wallpaperLockBadge: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 10,
+    gap: 2,
+    borderWidth: 1,
+    borderColor: 'rgba(255,215,0,0.5)',
+    zIndex: 10,
+  },
+  wallpaperLockText: {
+    color: 'white',
+    fontSize: 8,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+  },
+  wallpaperSectionBadge: {
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 10,
+    gap: 2,
+    borderWidth: 1,
+    borderColor: 'rgba(255,215,0,0.5)',
+  },
+  wallpaperSectionBadgeText: {
+    color: 'white',
+    fontSize: 10,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
   },
   noWallpapersText: {
     fontSize: Typography.sizes.bodySmall,

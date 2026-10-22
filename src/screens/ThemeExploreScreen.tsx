@@ -14,6 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { ThemeDefinition } from '../types/data';
+import { useSubscription } from '../hooks/useSubscription';
 import { fetchPublicThemes } from '../services/themeService';
 import ThemePreviewCard from '../components/ThemePreviewCard';
 import WallpaperSelectionModal from '../components/WallpaperSelectionModal';
@@ -53,6 +54,7 @@ function LoadingSkeleton() {
 export default function ThemeExploreScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const isDarkMode = useColorScheme() === 'dark';
+  const { isPremium } = useSubscription();
   const [themes, setThemes] = useState<ThemeDefinition[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -118,7 +120,7 @@ export default function ThemeExploreScreen() {
       setCurrentThemeIndex(index);
 
       // Trigger interstitial ad every 5 themes
-      if (index > 0 && index % 5 === 0 && index !== lastAdIndex.current) {
+      if (index > 0 && index % 5 === 0 && index !== lastAdIndex.current && !isPremium) {
         showAd();
         lastAdIndex.current = index;
       }
@@ -148,6 +150,10 @@ export default function ThemeExploreScreen() {
   };
 
   const handleApplyWallpaper = async (target: 'home' | 'lock' | 'both') => {
+    if (!isPremium) {
+      navigation.navigate('Premium');
+      return;
+    }
     const theme = themes[currentThemeIndex];
     const wallpaperUrl = (theme.wallpapers && theme.wallpapers.length > 0)
       ? theme.wallpapers[0]
@@ -218,7 +224,13 @@ export default function ThemeExploreScreen() {
 
       <TouchableOpacity
         style={styles.applyIconButton}
-        onPress={() => setModalVisible(true)}
+        onPress={() => {
+          if (currentTheme?.wallpapers && currentTheme.wallpapers.length > 0) {
+            setModalVisible(true);
+          } else {
+            handleNavigateToDetail();
+          }
+        }}
       >
         <Icon name="checkmark-circle" size={28} color="white" />
       </TouchableOpacity>
@@ -226,13 +238,22 @@ export default function ThemeExploreScreen() {
       <TouchableOpacity
         style={styles.saveIconButton}
         onPress={handleToggleSave}
-      >
-        <Icon
-          name={isSaved ? 'heart' : 'heart-outline'}
-          size={28}
-          color={isSaved ? '#FF4B4B' : 'white'}
-        />
+        >
+        <View style={styles.saveIconContainer}>
+          <Icon
+            name={isSaved ? 'heart' : 'heart-outline'}
+            size={28}
+            color={isSaved ? '#FF4B4B' : 'white'}
+            />
+        </View>
       </TouchableOpacity>
+
+      {currentTheme?.isPremium && (
+        <View style={styles.premiumIndicator}>
+          <Icon name="lock-closed" size={16} color="#FFD700" />
+          <Text style={styles.premiumText}>Premium</Text>
+        </View>
+      )}
 
       <WallpaperSelectionModal
         visible={modalVisible}
@@ -295,6 +316,36 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  saveIconContainer: {
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  lockIcon: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    zIndex: 1,
+  },
+  premiumIndicator: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    zIndex: 100,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 22,
+  },
+  premiumText: {
+    color: '#FFD700',
+    fontSize: 14,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
   },
   clockContainer: {
     position: 'absolute',

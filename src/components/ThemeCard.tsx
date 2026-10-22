@@ -9,6 +9,7 @@ import {
 import { Colors, Radius, Spacing, Typography } from '../constants/design';
 import type { ThemeDefinition } from '../types/data';
 import IconCanvas from './IconCanvas';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 interface ThemeCardProps {
   theme: ThemeDefinition;
@@ -32,6 +33,12 @@ const ThemeCard = memo(({
       accessibilityRole="button"
       accessibilityLabel={`${theme.name} icon pack`}
     >
+      {theme.isPremium && (
+        <View style={styles.premiumBadge}>
+          <Icon name="lock-closed" size={10} color="white" />
+          <Text style={styles.premiumText}>Premium</Text>
+        </View>
+      )}
       <View
         style={[
           styles.preview,
@@ -65,6 +72,28 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     borderWidth: 1,
     marginRight: Spacing.md,
+    position: 'relative',
+  },
+  premiumBadge: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 10,
+    gap: 2,
+    borderWidth: 1,
+    borderColor: 'rgba(255,215,0,0.5)',
+    zIndex: 10,
+  },
+  premiumText: {
+    color: 'white',
+    fontSize: 8,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
   },
   preview: {
     width: 110,

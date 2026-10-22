@@ -2,8 +2,13 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 import { currentAdIds } from '../constants/ads';
+import { useSubscription } from '../hooks/useSubscription';
 
 export default function AdBanner() {
+  const { isPremium } = useSubscription();
+
+  if (isPremium) return null;
+
   return (
     <View style={styles.container}>
       <BannerAd

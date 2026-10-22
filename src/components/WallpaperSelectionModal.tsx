@@ -20,6 +20,8 @@ interface WallpaperSelectionModalProps {
   onApplyTheme?: () => void;
   showApplyTheme?: boolean;
   isDarkMode: boolean;
+  isPremiumTheme?: boolean;
+  isUserPremium?: boolean;
 }
 
 export default function WallpaperSelectionModal({
@@ -30,12 +32,15 @@ export default function WallpaperSelectionModal({
   onApplyTheme,
   showApplyTheme,
   isDarkMode,
+  isPremiumTheme = false,
+  isUserPremium = false,
 }: WallpaperSelectionModalProps) {
   const insets = useSafeAreaInsets();
   const [isLoading, setIsLoading] = useState(false);
   const backgroundColor = isDarkMode ? Colors.dark.surface : 'white';
   const textColor = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
   const secondaryTextColor = isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary;
+  const isLocked = isPremiumTheme && !isUserPremium;
 
   const handleApply = async (target: 'home' | 'lock' | 'both') => {
     setIsLoading(true);
@@ -55,12 +60,19 @@ export default function WallpaperSelectionModal({
           <Ionicons name="close" size={28} color="white" />
         </TouchableOpacity>
 
+        {isLocked && (
+          <View style={styles.premiumBadge}>
+            <Ionicons name="lock-closed" size={16} color="white" />
+            <Text style={styles.premiumText}>Premium Wallpaper</Text>
+          </View>
+        )}
+
         <View style={[styles.bottomControls, { paddingBottom: insets.bottom + Spacing.xl }]}>
           <Text style={[styles.optionLabel, { color: 'white' }]}>Apply to:</Text>
 
           <View style={styles.buttonGroup}>
             <TouchableOpacity
-              style={styles.actionButton}
+              style={[styles.actionButton, isLocked && styles.lockedButton]}
               onPress={() => handleApply('home')}
               disabled={isLoading}
             >
@@ -68,6 +80,7 @@ export default function WallpaperSelectionModal({
                 <ActivityIndicator size="small" color="white" />
               ) : (
                 <>
+                  {isLocked && <Ionicons name="lock-closed" size={12} color="#FFD700" style={styles.lockIcon} />}
                   <Ionicons name="home-outline" size={24} color="white" />
                   <Text style={[styles.actionText, { color: 'white' }]}>Home</Text>
                 </>
@@ -75,7 +88,7 @@ export default function WallpaperSelectionModal({
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.actionButton}
+              style={[styles.actionButton, isLocked && styles.lockedButton]}
               onPress={() => handleApply('lock')}
               disabled={isLoading}
             >
@@ -83,6 +96,7 @@ export default function WallpaperSelectionModal({
                 <ActivityIndicator size="small" color="white" />
               ) : (
                 <>
+                  {isLocked && <Ionicons name="lock-closed" size={12} color="#FFD700" style={styles.lockIcon} />}
                   <Ionicons name="lock-closed-outline" size={24} color="white" />
                   <Text style={[styles.actionText, { color: 'white' }]}>Lock</Text>
                 </>
@@ -90,7 +104,7 @@ export default function WallpaperSelectionModal({
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.actionButton}
+              style={[styles.actionButton, isLocked && styles.lockedButton]}
               onPress={() => handleApply('both')}
               disabled={isLoading}
             >
@@ -98,6 +112,7 @@ export default function WallpaperSelectionModal({
                 <ActivityIndicator size="small" color="white" />
               ) : (
                 <>
+                  {isLocked && <Ionicons name="lock-closed" size={12} color="#FFD700" style={styles.lockIcon} />}
                   <Ionicons name="layers-outline" size={24} color="white" />
                   <Text style={[styles.actionText, { color: 'white' }]}>Both</Text>
                 </>
@@ -139,6 +154,33 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 8,
   },
+  premiumBadge: {
+    position: 'absolute',
+    top: 50,
+    left: 20,
+    zIndex: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#FFD700',
+  },
+  premiumText: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
+  },
+  lockIcon: {
+    position: 'absolute',
+    top: -5,
+    right: -5,
+    zIndex: 1,
+  },
   bottomControls: {
     position: 'absolute',
     bottom: 0,
@@ -173,6 +215,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.2)',
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.3)',
+    position: 'relative',
+  },
+  lockedButton: {
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    borderColor: 'rgba(255,215,0,0.3)',
+    opacity: 0.8,
   },
   actionText: {
     fontSize: Typography.sizes.caption,

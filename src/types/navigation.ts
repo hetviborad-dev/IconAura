@@ -11,8 +11,10 @@ export type RootStackParamList = {
   ThemeExplore: undefined;
   SavedThemes: undefined;
   Settings: undefined;
+  Premium: undefined;
   IconManagement: undefined;
   Wallpaper: undefined;
+
 };
 
 export type HomeStackParamList = {

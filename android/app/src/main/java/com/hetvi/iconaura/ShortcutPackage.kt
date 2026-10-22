@@ -1,4 +1,4 @@
-package com.iconaura
+package com.hetvi.iconaura
 
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
@@ -6,15 +6,15 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
 
 /**
- * Package for registering the InstalledAppsModule with React Native.
+ * Package for registering the ShortcutModule with React Native.
  *
  * This package is automatically discovered and registered by React Native's
- * autolink mechanism through the react-native.config.js configuration.
+ * autolink mechanism.
  */
-class InstalledAppsPackage : ReactPackage {
+class ShortcutPackage : ReactPackage {
 
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
-    return listOf(InstalledAppsModule(reactContext))
+    return listOf(ShortcutModule(reactContext))
   }
 
   override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {

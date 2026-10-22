@@ -17,9 +17,11 @@ import { Colors, Spacing, Typography, Layout, Radius } from '../constants/design
 import { RootStackParamList } from '../types/navigation';
 import { fetchPublicThemes } from '../services/themeService';
 import { setWallpaper } from '../services/wallpaperService';
+import { useSubscription } from '../hooks/useSubscription';
 import type { ThemeDefinition } from '../types/data';
 import WallpaperSelectionModal from '../components/WallpaperSelectionModal';
 import Skeleton from '../components/Skeleton';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 interface WallpaperItem {
   url: string;
@@ -41,6 +43,7 @@ function LoadingSkeleton() {
 export default function WallpaperScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const isDarkMode = useColorScheme() === 'dark';
+  const { isPremium } = useSubscription();
   const [wallpapers, setWallpapers] = useState<WallpaperItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedWallpaper, setSelectedWallpaper] = useState<WallpaperItem | null>(null);
@@ -73,6 +76,10 @@ export default function WallpaperScreen() {
   }, []);
 
   const handleApplyWallpaper = async (target: 'home' | 'lock' | 'both') => {
+    if (selectedWallpaper?.theme.isPremium && !isPremium) {
+      navigation.navigate('Premium');
+      return;
+    }
     const result = await setWallpaper(selectedWallpaper!.url, target);
     if (result.success) {
       Alert.alert('Success', `Wallpaper applied to ${target} screen!`);
@@ -89,6 +96,12 @@ export default function WallpaperScreen() {
       activeOpacity={0.8}
     >
       <Image source={{ uri: item.url }} style={styles.wallpaperImage} />
+      {item.theme.isPremium && !isPremium && (
+        <View style={styles.premiumBadge}>
+          <Icon name="lock-closed" size={12} color="white" />
+          <Text style={styles.premiumText}>Premium</Text>
+        </View>
+      )}
     </TouchableOpacity>
   );
 
@@ -115,6 +128,8 @@ export default function WallpaperScreen() {
           visible={!!selectedWallpaper}
           wallpaperUrl={selectedWallpaper.url}
           isDarkMode={isDarkMode}
+          isPremiumTheme={selectedWallpaper.theme.isPremium}
+          isUserPremium={isPremium}
           onClose={() => setSelectedWallpaper(null)}
           onApply={handleApplyWallpaper}
           showApplyTheme={true}
@@ -149,10 +164,32 @@ const styles = StyleSheet.create({
     borderRadius: Radius.sm,
     overflow: 'hidden',
     backgroundColor: '#eee',
+    position: 'relative',
   },
   wallpaperImage: {
     width: '100%',
     height: '100%',
     resizeMode: 'cover',
+  },
+  premiumBadge: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 10,
+    gap: 2,
+    borderWidth: 1,
+    borderColor: 'rgba(255,215,0,0.5)',
+    zIndex: 10,
+  },
+  premiumText: {
+    color: 'white',
+    fontSize: 8,
+    fontWeight: 'bold',
+    textTransform: 'uppercase',
   },
 });

@@ -1,4 +1,4 @@
-package com.iconaura
+package com.hetvi.iconaura
 
 import android.content.pm.PackageManager
 import android.os.Build

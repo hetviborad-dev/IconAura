@@ -12,6 +12,7 @@ import ThemeHomeScreenPreview from '../screens/ThemeHomeScreenPreview';
 import ThemeExploreScreen from '../screens/ThemeExploreScreen';
 import SavedThemesScreen from '../screens/SavedThemesScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import PremiumScreen from '../screens/PremiumScreen';
 import IconManagementScreen from '../screens/IconManagementScreen';
 import WallpaperScreen from '../screens/WallpaperScreen';
 import CustomTabBar from '../components/CustomTabBar';
@@ -72,6 +73,7 @@ export default function RootNavigator() {
         <Stack.Screen name="ThemeDetail" component={ThemeDetailScreen} />
         <Stack.Screen name="ThemeHomeScreenPreview" component={ThemeHomeScreenPreview} />
         <Stack.Screen name="SavedThemes" component={SavedThemesScreen} />
+        <Stack.Screen name="Premium" component={PremiumScreen} />
         <Stack.Screen name="IconManagement" component={IconManagementScreen} />
       </Stack.Navigator>
     </NavigationContainer>

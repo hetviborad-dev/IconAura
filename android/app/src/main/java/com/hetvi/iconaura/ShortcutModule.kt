@@ -1,4 +1,4 @@
-package com.iconaura
+package com.hetvi.iconaura
 
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
@@ -45,7 +45,7 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
 
   companion object {
     private const val TAG = "IconAura.Shortcut"
-    private const val ACTION_SHORTCUT_ADDED = "com.iconaura.SHORTCUT_ADDED"
+    private const val ACTION_SHORTCUT_ADDED = "com.hetvi.iconaura.SHORTCUT_ADDED"
   }
 
   init {
