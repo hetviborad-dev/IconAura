@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { Colors, Spacing, Typography, Radius, Layout } from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
 import { ThemeDefinition } from '../types/data';
 import { useSubscription } from '../context/SubscriptionContext';
@@ -250,7 +251,7 @@ export default function ThemeExploreScreen() {
 
       {(currentTheme?.isPremium && !isPremium) && (
         <View style={styles.premiumIndicator}>
-          <Icon name="lock-closed" size={16} color="#FFD700" />
+          <Icon name="lock-closed" size={16} color={Colors.primary} />
           <Text style={styles.premiumText}>Premium</Text>
         </View>
       )}
@@ -342,7 +343,7 @@ const styles = StyleSheet.create({
     borderRadius: 22,
   },
   premiumText: {
-    color: '#FFD700',
+    color: Colors.primary,
     fontSize: 14,
     fontWeight: 'bold',
     textTransform: 'uppercase',

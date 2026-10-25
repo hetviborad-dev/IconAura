@@ -31,15 +31,11 @@ export default function WallpaperSelectionModal({
   onApply,
   onApplyTheme,
   showApplyTheme,
-  isDarkMode,
   isPremiumTheme = false,
   isUserPremium = false,
 }: WallpaperSelectionModalProps) {
   const insets = useSafeAreaInsets();
   const [isLoading, setIsLoading] = useState(false);
-  const backgroundColor = isDarkMode ? Colors.dark.surface : 'white';
-  const textColor = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
-  const secondaryTextColor = isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary;
   const isLocked = isPremiumTheme && !isUserPremium;
 
   const handleApply = async (target: 'home' | 'lock' | 'both') => {
@@ -80,7 +76,7 @@ export default function WallpaperSelectionModal({
                 <ActivityIndicator size="small" color="white" />
               ) : (
                 <>
-                  {isLocked && <Ionicons name="lock-closed" size={12} color="#FFD700" style={styles.lockIcon} />}
+                  {isLocked && <Ionicons name="lock-closed" size={12} color={Colors.primary} style={styles.lockIcon} />}
                   <Ionicons name="home-outline" size={24} color="white" />
                   <Text style={[styles.actionText, { color: 'white' }]}>Home</Text>
                 </>
@@ -96,7 +92,7 @@ export default function WallpaperSelectionModal({
                 <ActivityIndicator size="small" color="white" />
               ) : (
                 <>
-                  {isLocked && <Ionicons name="lock-closed" size={12} color="#FFD700" style={styles.lockIcon} />}
+                  {isLocked && <Ionicons name="lock-closed" size={12} color={Colors.primary} style={styles.lockIcon} />}
                   <Ionicons name="lock-closed-outline" size={24} color="white" />
                   <Text style={[styles.actionText, { color: 'white' }]}>Lock</Text>
                 </>
@@ -112,7 +108,7 @@ export default function WallpaperSelectionModal({
                 <ActivityIndicator size="small" color="white" />
               ) : (
                 <>
-                  {isLocked && <Ionicons name="lock-closed" size={12} color="#FFD700" style={styles.lockIcon} />}
+                  {isLocked && <Ionicons name="lock-closed" size={12} color={Colors.primary} style={styles.lockIcon} />}
                   <Ionicons name="layers-outline" size={24} color="white" />
                   <Text style={[styles.actionText, { color: 'white' }]}>Both</Text>
                 </>
@@ -167,7 +163,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#FFD700',
+    borderColor: Colors.primary,
   },
   premiumText: {
     color: 'white',
@@ -219,7 +215,7 @@ const styles = StyleSheet.create({
   },
   lockedButton: {
     backgroundColor: 'rgba(0,0,0,0.4)',
-    borderColor: 'rgba(255,215,0,0.3)',
+    borderColor: 'rgba(255, 0, 122, 0.3)',
     opacity: 0.8,
   },
   actionText: {

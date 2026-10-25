@@ -21,11 +21,10 @@ const ThemeCard = memo(({
   theme,
   onPress,
 }: ThemeCardProps) => {
-  const isDarkMode = useColorScheme() === 'dark';
   const { isPremium } = useSubscription();
-  const borderColor = isDarkMode ? Colors.dark.border : Colors.border;
-  const cardColor = isDarkMode ? Colors.dark.surface : Colors.background;
-  const secondaryTextColor = isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary;
+  const borderColor = Colors.border;
+  const cardColor = Colors.surface;
+  const secondaryTextColor = Colors.textSecondary;
 
   return (
     <TouchableOpacity
@@ -58,7 +57,7 @@ const ThemeCard = memo(({
             </View>
           ))}
       </View>
-      <Text style={[styles.name, { color: isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary }]} numberOfLines={1}>
+      <Text style={[styles.name, { color: Colors.textPrimary }]} numberOfLines={1}>
         {theme.name}
       </Text>
     </TouchableOpacity>
@@ -80,7 +79,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 4,
     right: 4,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: Colors.primary,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 6,
@@ -88,7 +87,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     gap: 2,
     borderWidth: 1,
-    borderColor: 'rgba(255,215,0,0.5)',
+    borderColor: 'rgba(255, 0, 122, 0.5)',
     zIndex: 10,
   },
   premiumText: {

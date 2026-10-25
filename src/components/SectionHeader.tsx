@@ -7,9 +7,8 @@ import {
   View,
   Text,
   StyleSheet,
-  useColorScheme,
 } from 'react-native';
-import { Spacing, Typography } from '../constants/design';
+import { Colors, Spacing, Typography } from '../constants/design';
 
 interface SectionHeaderProps {
   title: string;
@@ -20,9 +19,8 @@ export default function SectionHeader({
   title,
   subtitle,
 }: SectionHeaderProps) {
-  const isDarkMode = useColorScheme() === 'dark';
-  const textColor = isDarkMode ? '#FFFFFF' : '#000000';
-  const secondaryTextColor = isDarkMode ? '#AAAAAA' : '#666666';
+  const textColor = Colors.textPrimary;
+  const secondaryTextColor = Colors.textSecondary;
 
   return (
     <View style={styles.container}>

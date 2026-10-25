@@ -35,7 +35,7 @@ export default function PrimaryButton({
   icon,
 }: PrimaryButtonProps) {
   const isDarkMode = useColorScheme() === 'dark';
-  const buttonBackground = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
+  const buttonBackground = Colors.primary;
 
   return (
     <TouchableOpacity

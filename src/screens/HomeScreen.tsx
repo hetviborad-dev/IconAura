@@ -49,9 +49,9 @@ const CategoryButton = memo(({
     <TouchableOpacity
       style={[
         styles.categoryButton,
-        { borderColor: isDarkMode ? Colors.dark.border : Colors.border },
+        { borderColor: Colors.border },
         isSelected && {
-          backgroundColor: isDarkMode ? Colors.dark.textPrimary : Colors.primary
+          backgroundColor: Colors.primary
         },
       ]}
       onPress={() => onPress(id)}
@@ -60,7 +60,7 @@ const CategoryButton = memo(({
         styles.categoryText,
         {
           color: isSelected
-            ? (isDarkMode ? Colors.dark.background : '#FFFFFF')
+            ? '#FFFFFF'
             : secondaryTextColor
         }
       ]}>
@@ -174,6 +174,21 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
                 <Text style={styles.premiumButtonText}>Premium</Text>
               </TouchableOpacity>
             )}
+          </View>
+        </View>
+
+        {!isPremium && <AdBanner />}
+
+        <View style={styles.searchContainer}>
+          <View style={styles.searchBarWrapper}>
+            <TextInput
+              style={styles.searchBar}
+              placeholder="Search themes..."
+              placeholderTextColor={secondaryTextColor}
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              clearButtonMode="while-editing"
+            />
             <TouchableOpacity
               style={styles.filterButton}
               onPress={() => setFilterModalVisible(true)}
@@ -181,19 +196,6 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
               <Icon name="options-outline" size={24} color={textColor} />
             </TouchableOpacity>
           </View>
-        </View>
-
-        {!isPremium && <AdBanner />}
-
-        <View style={styles.searchContainer}>
-          <TextInput
-            style={[styles.searchBar, { backgroundColor: surfaceColor, color: textColor }]}
-            placeholder="Search themes..."
-            placeholderTextColor={secondaryTextColor}
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            clearButtonMode="while-editing"
-          />
         </View>
 
         <View style={styles.categoryContainer}>
@@ -331,17 +333,18 @@ const styles = StyleSheet.create({
   premiumButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 215, 0, 0.2)',
+    backgroundColor: 'rgba(255, 0, 122, 0.1)',
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
     borderRadius: Radius.sm,
     gap: 4,
     borderWidth: 1,
-    borderColor: 'rgba(255, 215, 0, 0.5)',
+    borderColor: Colors.primary,
   },
   premiumButtonText: {
     fontSize: Typography.sizes.caption,
     fontWeight: Typography.weights.bold,
+    color: Colors.primary,
   },
   filterButton: {
     width: TouchTarget.min,
@@ -370,12 +373,20 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.md,
   },
   searchBar: {
+    flex: 1,
     height: 48,
-    borderRadius: Radius.lg,
     paddingHorizontal: Spacing.md,
     fontSize: Typography.sizes.body,
+    color: Colors.textPrimary,
+  },
+  searchBarWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.surface,
+    borderRadius: Radius.lg,
     borderWidth: 1,
-    borderColor: 'transparent',
+    borderColor: Colors.border,
+    paddingRight: Spacing.sm,
   },
   categoryContainer: {
     paddingVertical: Spacing.md,

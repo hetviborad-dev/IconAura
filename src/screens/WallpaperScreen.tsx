@@ -5,7 +5,6 @@ import {
   Image,
   TouchableOpacity,
   ActivityIndicator,
-  useColorScheme,
   StyleSheet,
   Text,
   Alert,
@@ -42,14 +41,13 @@ function LoadingSkeleton() {
 
 export default function WallpaperScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const isDarkMode = useColorScheme() === 'dark';
   const { isPremium } = useSubscription();
   const [wallpapers, setWallpapers] = useState<WallpaperItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedWallpaper, setSelectedWallpaper] = useState<WallpaperItem | null>(null);
 
-  const backgroundColor = isDarkMode ? Colors.dark.background : Colors.background;
-  const textColor = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
+  const backgroundColor = Colors.background;
+  const textColor = Colors.textPrimary;
 
   useEffect(() => {
     async function loadWallpapers() {
@@ -127,7 +125,6 @@ export default function WallpaperScreen() {
         <WallpaperSelectionModal
           visible={!!selectedWallpaper}
           wallpaperUrl={selectedWallpaper.url}
-          isDarkMode={isDarkMode}
           isPremiumTheme={selectedWallpaper.theme.isPremium}
           isUserPremium={isPremium}
           onClose={() => setSelectedWallpaper(null)}
@@ -163,7 +160,7 @@ const styles = StyleSheet.create({
     aspectRatio: 9 / 16,
     borderRadius: Radius.sm,
     overflow: 'hidden',
-    backgroundColor: '#eee',
+    backgroundColor: Colors.surface,
     position: 'relative',
   },
   wallpaperImage: {
@@ -175,7 +172,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 6,
     right: 6,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: Colors.primary,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 6,
@@ -183,7 +180,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     gap: 2,
     borderWidth: 1,
-    borderColor: 'rgba(255,215,0,0.5)',
+    borderColor: Colors.primary,
     zIndex: 10,
   },
   premiumText: {

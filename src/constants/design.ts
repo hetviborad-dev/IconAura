@@ -4,21 +4,24 @@
  */
 
 export const Colors = {
-  // Primary
-  primary: '#000000',
+  // Accents (Icon-inspired Aura palette)
+  primary: '#FF007A', // Electric Magenta
+  secondary: '#00F5D4', // Cyber Teal
+  tertiary: '#7B2CBF', // Royal Purple
 
-  // Backgrounds
-  background: '#FFFFFF',
-  backgroundSecondary: '#FAFAFA',
+  // Backgrounds (Cosmic Dark)
+  background: '#0A0A0B',
+  backgroundSecondary: '#141416',
+  surface: '#1C1C1E',
 
   // Text
-  textPrimary: '#000000',
-  textSecondary: '#666666',
-  textTertiary: '#999999',
+  textPrimary: '#FFFFFF',
+  textSecondary: '#A0A0A0',
+  textTertiary: '#666666',
 
   // Borders & Dividers
-  border: '#E5E5E5',
-  divider: '#F0F0F0',
+  border: '#2C2C2E',
+  divider: '#1C1C1E',
 
   // Semantic colors
   success: '#10B981',
@@ -26,12 +29,12 @@ export const Colors = {
   warning: '#F59E0B',
   info: '#3B82F6',
 
-  // Dark mode
+  // Backward compatibility for existing components
   dark: {
-    background: '#000000',
-    backgroundSecondary: '#1A1A1A',
-    surface: '#1F1F1F',
-    border: '#2A2A2A',
+    background: '#0A0A0B',
+    backgroundSecondary: '#141416',
+    surface: '#1C1C1E',
+    border: '#2C2C2E',
     textPrimary: '#FFFFFF',
     textSecondary: '#A0A0A0',
     textTertiary: '#666666',

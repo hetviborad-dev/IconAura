@@ -22,13 +22,12 @@ import { useSubscription } from '../context/SubscriptionContext';
 
 export default function SettingsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const isDarkMode = useColorScheme() === 'dark';
   const { isPremium } = useSubscription();
-  const backgroundColor = isDarkMode ? '#121212' : Colors.background;
-  const textColor = isDarkMode ? '#FFFFFF' : Colors.textPrimary;
-  const secondaryTextColor = isDarkMode ? '#AAAAAA' : Colors.textSecondary;
-  const cardBackground = isDarkMode ? '#1E1E1E' : Colors.backgroundSecondary;
-  const borderColor = isDarkMode ? '#333333' : Colors.border;
+  const backgroundColor = Colors.background;
+  const textColor = Colors.textPrimary;
+  const secondaryTextColor = Colors.textSecondary;
+  const cardBackground = Colors.surface;
+  const borderColor = Colors.border;
 
   const settingsSections = [
     {

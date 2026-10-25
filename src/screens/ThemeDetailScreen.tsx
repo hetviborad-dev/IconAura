@@ -298,11 +298,11 @@ export default function ThemeDetailScreen({
     };
   }, [theme.id]);
 
-  const backgroundColor = isDarkMode ? '#121212' : Colors.background;
-  const textColor = isDarkMode ? '#FFFFFF' : Colors.textPrimary;
-  const secondaryTextColor = isDarkMode ? '#AAAAAA' : Colors.textSecondary;
-  const cardBackground = isDarkMode ? '#1E1E1E' : Colors.backgroundSecondary;
-  const borderColor = isDarkMode ? '#333333' : Colors.border;
+  const backgroundColor = Colors.background;
+  const textColor = Colors.textPrimary;
+  const secondaryTextColor = Colors.textSecondary;
+  const cardBackground = Colors.surface;
+  const borderColor = Colors.border;
 
   const handleCreateShortcut = async (
     appId: string,
@@ -719,7 +719,7 @@ export default function ThemeDetailScreen({
           <View
             style={[
               styles.modalContent,
-              { backgroundColor: isDarkMode ? '#1E1E1E' : 'white' },
+              { backgroundColor: Colors.surface },
             ]}
           >
             <View style={styles.modalHeader}>
@@ -966,7 +966,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 4,
     right: 4,
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: Colors.primary,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 6,
@@ -974,7 +974,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     gap: 2,
     borderWidth: 1,
-    borderColor: 'rgba(255,215,0,0.5)',
+    borderColor: Colors.primary,
     zIndex: 10,
   },
   wallpaperLockText: {
@@ -984,7 +984,7 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   wallpaperSectionBadge: {
-    backgroundColor: 'rgba(0,0,0,0.6)',
+    backgroundColor: Colors.primary,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 6,
@@ -992,7 +992,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     gap: 2,
     borderWidth: 1,
-    borderColor: 'rgba(255,215,0,0.5)',
+    borderColor: Colors.primary,
   },
   wallpaperSectionBadgeText: {
     color: 'white',

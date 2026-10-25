@@ -6,7 +6,6 @@ import {
   ScrollView,
   TouchableOpacity,
   Switch,
-  useColorScheme,
   ActivityIndicator,
   TextInput,
   Image,
@@ -25,7 +24,7 @@ import { useAppDetection } from '../context/AppDetectionContext';
 
 const { HomeShortcut } = NativeModules;
 
-const AppIcon = ({ appId, isDarkMode }: { appId: string; isDarkMode: boolean }) => {
+const AppIcon = ({ appId }: { appId: string }) => {
   const [icon, setIcon] = useState<string | null>(null);
 
   useEffect(() => {
@@ -42,8 +41,8 @@ const AppIcon = ({ appId, isDarkMode }: { appId: string; isDarkMode: boolean }) 
 
   if (!icon) {
     return (
-      <View style={[styles.appIconPlaceholder, { backgroundColor: isDarkMode ? '#333' : '#EEE' }]}>
-        <Ionicons name="apps" size={16} color={isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary} />
+      <View style={[styles.appIconPlaceholder, { backgroundColor: Colors.surface }]}>
+        <Ionicons name="apps" size={16} color={Colors.textSecondary} />
       </View>
     );
   }
@@ -56,12 +55,12 @@ const AppIcon = ({ appId, isDarkMode }: { appId: string; isDarkMode: boolean }) 
   );
 };
 
-const IconRowSkeleton = ({ isDarkMode }: { isDarkMode: boolean }) => {
+const IconRowSkeleton = () => {
   return (
     <SkeletonPlaceholder
       borderRadius={Radius.md}
-      highlightColor={isDarkMode ? '#2A2A2A' : '#E1E1E1'}
-      lowlightColor={isDarkMode ? '#1E1E1E' : '#F0F0F0'}
+      highlightColor={Colors.surface}
+      lowlightColor={Colors.background}
     >
       <View style={styles.iconRow}>
         <View style={styles.leftSection}>
@@ -83,14 +82,13 @@ interface IconManagementScreenProps {
 }
 
 export default function IconManagementScreen({ navigation }: IconManagementScreenProps) {
-  const isDarkMode = useColorScheme() === 'dark';
   const { appStatus } = useAppDetection();
   const [enabledIcons, setEnabledIcons] = useState<Set<AppId>>(new Set());
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const backgroundColor = isDarkMode ? Colors.dark.background : Colors.background;
-  const textColor = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
-  const secondaryTextColor = isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary;
+  const backgroundColor = Colors.background;
+  const textColor = Colors.textPrimary;
+  const secondaryTextColor = Colors.textSecondary;
 
   useEffect(() => {
     async function loadIcons() {
@@ -135,13 +133,13 @@ export default function IconManagementScreen({ navigation }: IconManagementScree
 
         <View style={styles.searchContainer}>
           <Ionicons name="search" size={20} color={secondaryTextColor} style={styles.searchIcon} />
-          <View style={[styles.searchInput, { backgroundColor: isDarkMode ? '#333' : '#EEE', borderRadius: 4 }]} />
+          <View style={[styles.searchInput, { backgroundColor: Colors.surface, borderRadius: 4 }]} />
         </View>
 
         <ScrollView contentContainerStyle={styles.content}>
-          <View style={{ height: 20, width: '60%', backgroundColor: isDarkMode ? '#333' : '#EEE', marginBottom: Spacing.xl, borderRadius: 4 }} />
+          <View style={{ height: 20, width: '60%', backgroundColor: Colors.surface, marginBottom: Spacing.xl, borderRadius: 4 }} />
           {[...Array(10)].map((_, i) => (
-            <IconRowSkeleton key={i} isDarkMode={isDarkMode} />
+            <IconRowSkeleton key={i} />
           ))}
         </ScrollView>
       </SafeAreaView>
@@ -177,9 +175,9 @@ export default function IconManagementScreen({ navigation }: IconManagementScree
         {filteredApps.map((app) => {
           const detectedPkg = appStatus[app.id]?.packageName || app.packageName;
           return (
-            <View key={app.id} style={[styles.iconRow, { backgroundColor: isDarkMode ? '#1E1E1E' : '#F9F9F9' }]}>
+            <View key={app.id} style={[styles.iconRow, { backgroundColor: Colors.surface }]}>
               <View style={styles.leftSection}>
-                <AppIcon appId={detectedPkg} isDarkMode={isDarkMode} />
+                <AppIcon appId={detectedPkg} />
                 <Text style={[styles.appName, { color: textColor }]}>{app.name}</Text>
               </View>
               <Switch

@@ -6,15 +6,12 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import { Colors, Spacing, Typography, Radius } from '../constants/design';
 
 export default function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
-  const isDarkMode = useColorScheme() === 'dark';
   const insets = useSafeAreaInsets();
 
-  const activeColor = isDarkMode ? '#FFFFFF' : Colors.textPrimary;
-  const inactiveColor = isDarkMode ? '#888888' : Colors.textTertiary;
+  const activeColor = Colors.tertiary;
+  const inactiveColor = Colors.textTertiary;
 
-  const tabBarBg = isDarkMode
-    ? 'rgba(30, 30, 30, 0.8)'
-    : 'rgba(255, 255, 255, 0.8)';
+  const tabBarBg = 'rgba(28, 28, 30, 0.8)'; // Colors.surface with opacity
 
   const translateY = useRef(new Animated.Value(0)).current;
 

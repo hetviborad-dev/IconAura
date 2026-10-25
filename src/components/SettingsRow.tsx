@@ -8,7 +8,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  useColorScheme,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Colors, Spacing, Typography, Radius } from '../constants/design';
@@ -30,11 +29,10 @@ export default function SettingsRow({
   showChevron = true,
   showBorder = true,
 }: SettingsRowProps) {
-  const isDarkMode = useColorScheme() === 'dark';
-  const textColor = isDarkMode ? '#FFFFFF' : Colors.textPrimary;
-  const secondaryTextColor = isDarkMode ? '#AAAAAA' : Colors.textSecondary;
-  const borderColor = isDarkMode ? '#333333' : Colors.border;
-  const iconColor = isDarkMode ? '#0A84FF' : '#0A84FF';
+  const textColor = Colors.textPrimary;
+  const secondaryTextColor = Colors.textSecondary;
+  const borderColor = Colors.border;
+  const iconColor = Colors.primary;
 
   return (
     <TouchableOpacity

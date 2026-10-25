@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   ScrollView,
   Modal,
-  useColorScheme,
 } from 'react-native';
 import { Colors, Radius, Spacing, Typography, TouchTarget } from '../constants/design';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -44,7 +43,6 @@ export default function AdvancedFilterModal({
   onApply,
   initialFilters,
 }: AdvancedFilterModalProps) {
-  const isDarkMode = useColorScheme() === 'dark';
   const insets = useSafeAreaInsets();
   const [selectedColors, setSelectedColors] = useState(initialFilters.colors);
   const [selectedTags, setSelectedTags] = useState(initialFilters.tags);
@@ -78,9 +76,9 @@ export default function AdvancedFilterModal({
     onClose();
   };
 
-  const backgroundColor = isDarkMode ? Colors.dark.surface : '#F5F5F5';
-  const textColor = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
-  const secondaryTextColor = isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary;
+  const backgroundColor = Colors.surface;
+  const textColor = Colors.textPrimary;
+  const secondaryTextColor = Colors.textSecondary;
 
   return (
     <Modal visible={isVisible} animationType="slide" transparent>
@@ -114,7 +112,7 @@ export default function AdvancedFilterModal({
                   ]}>
                     <View style={[
                       styles.colorChip,
-                      { backgroundColor: color.color, borderColor: isDarkMode ? Colors.dark.border : Colors.border }
+                      { backgroundColor: color.color, borderColor: Colors.border }
                     ]} />
                   </View>
                   <Text style={[styles.colorText, { color: textColor }]}>{color.name}</Text>
@@ -129,10 +127,10 @@ export default function AdvancedFilterModal({
                   key={tag}
                   style={[
                     styles.tagChip,
-                    { borderColor: isDarkMode ? Colors.dark.border : Colors.border },
+                    { borderColor: Colors.border },
                     selectedTags.includes(tag.toLowerCase()) && {
-                      backgroundColor: isDarkMode ? Colors.dark.textPrimary : Colors.primary,
-                      borderColor: isDarkMode ? Colors.dark.textPrimary : Colors.primary,
+                      backgroundColor: Colors.primary,
+                      borderColor: Colors.primary,
                     }
                   ]}
                   onPress={() => toggleTag(tag.toLowerCase())}
@@ -156,13 +154,13 @@ export default function AdvancedFilterModal({
               <TouchableOpacity
                 style={[
                   styles.applyButton,
-                  { backgroundColor: isDarkMode ? Colors.dark.textPrimary : Colors.primary }
+                  { backgroundColor: Colors.primary }
                 ]}
                 onPress={handleApply}
               >
                 <Text style={[
                   styles.applyButtonText,
-                  { color: isDarkMode ? Colors.dark.background : 'white' }
+                  { color: 'white' }
                 ]}>Apply Filters</Text>
               </TouchableOpacity>
             </View>
@@ -253,7 +251,7 @@ const styles = StyleSheet.create({
   footer: {
     marginTop: Spacing.lg,
     borderTopWidth: 1,
-    borderTopColor: 'rgba(150,150,150,0.2)',
+    borderTopColor: Colors.border,
     paddingTop: Spacing.md,
   },
   buttonContainer: {
@@ -266,7 +264,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.md,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(150,150,150,0.4)',
+    borderColor: Colors.border,
   },
   clearButtonText: {
     fontSize: Typography.sizes.body,
