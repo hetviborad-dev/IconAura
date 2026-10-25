@@ -23,7 +23,7 @@ import { ThemeCard } from '../components';
 import Skeleton from '../components/Skeleton';
 import AdvancedFilterModal from '../components/AdvancedFilterModal';
 import AdBanner from '../components/AdBanner';
-import { useSubscription } from '../hooks/useSubscription';
+import { useSubscription } from '../context/SubscriptionContext';
 import Icon from 'react-native-vector-icons/Ionicons';
 
 interface HomeScreenProps {
@@ -165,13 +165,15 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
             <Text style={[styles.headerSub, { color: secondaryTextColor }]}>Aura</Text>
           </View>
           <View style={styles.headerActions}>
-            <TouchableOpacity
-              style={styles.premiumButton}
-              onPress={() => navigation.navigate('Premium')}
-            >
-              <Icon name="star" size={18} color={Colors.primary} />
-              <Text style={styles.premiumButtonText}>Premium</Text>
-            </TouchableOpacity>
+            {!isPremium && (
+              <TouchableOpacity
+                style={styles.premiumButton}
+                onPress={() => navigation.navigate('Premium')}
+              >
+                <Icon name="star" size={18} color={Colors.primary} />
+                <Text style={styles.premiumButtonText}>Premium</Text>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity
               style={styles.filterButton}
               onPress={() => setFilterModalVisible(true)}

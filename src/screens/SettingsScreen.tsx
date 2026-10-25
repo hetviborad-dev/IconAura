@@ -18,7 +18,7 @@ import { APP_NAME, APP_VERSION } from '../data/config';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { useSubscription } from '../hooks/useSubscription';
+import { useSubscription } from '../context/SubscriptionContext';
 
 export default function SettingsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -75,16 +75,16 @@ export default function SettingsScreen() {
         },
       ],
     },
-    {
-      title: 'About',
-      items: [
-        {
-          icon: 'information-circle-outline',
-          label: APP_NAME,
-          subtitle: `Version ${APP_VERSION}`,
-        },
-      ],
-    },
+    // {
+    //   title: 'About',
+    //   items: [
+    //     {
+    //       icon: 'information-circle-outline',
+    //       label: APP_NAME,
+    //       subtitle: `Version ${APP_VERSION}`,
+    //     },
+    //   ],
+    // },
   ];
 
   return (

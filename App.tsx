@@ -5,7 +5,7 @@
  * @format
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { StatusBar, useColorScheme } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 // @ts-ignore - gesture-handler doesn't have TS types but is required by React Navigation
@@ -15,12 +15,10 @@ import { AppDetectionProvider } from './src/context/AppDetectionContext';
 import Purchases from 'react-native-purchases';
 import { SubscriptionConfig } from './src/constants/subscriptions';
 
+Purchases.configure({ apiKey: SubscriptionConfig.apiKey });
+
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
-
-  useEffect(() => {
-    Purchases.configure({ apiKey: SubscriptionConfig.apiKey });
-  }, []);
 
   return (
     <SafeAreaProvider>

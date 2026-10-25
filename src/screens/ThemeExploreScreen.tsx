@@ -14,7 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { ThemeDefinition } from '../types/data';
-import { useSubscription } from '../hooks/useSubscription';
+import { useSubscription } from '../context/SubscriptionContext';
 import { fetchPublicThemes } from '../services/themeService';
 import ThemePreviewCard from '../components/ThemePreviewCard';
 import WallpaperSelectionModal from '../components/WallpaperSelectionModal';
@@ -248,7 +248,7 @@ export default function ThemeExploreScreen() {
         </View>
       </TouchableOpacity>
 
-      {currentTheme?.isPremium && (
+      {(currentTheme?.isPremium && !isPremium) && (
         <View style={styles.premiumIndicator}>
           <Icon name="lock-closed" size={16} color="#FFD700" />
           <Text style={styles.premiumText}>Premium</Text>

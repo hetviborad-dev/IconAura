@@ -16,7 +16,7 @@ import PremiumScreen from '../screens/PremiumScreen';
 import IconManagementScreen from '../screens/IconManagementScreen';
 import WallpaperScreen from '../screens/WallpaperScreen';
 import CustomTabBar from '../components/CustomTabBar';
-import { RootStackParamList } from '../types/navigation';
+import { SubscriptionProvider } from '../context/SubscriptionContext';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 const Tab = createBottomTabNavigator();
@@ -63,19 +63,21 @@ function MainTabs() {
 
 export default function RootNavigator() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Stack.Screen name="HomeStack" component={MainTabs} />
-        <Stack.Screen name="ThemeDetail" component={ThemeDetailScreen} />
-        <Stack.Screen name="ThemeHomeScreenPreview" component={ThemeHomeScreenPreview} />
-        <Stack.Screen name="SavedThemes" component={SavedThemesScreen} />
-        <Stack.Screen name="Premium" component={PremiumScreen} />
-        <Stack.Screen name="IconManagement" component={IconManagementScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <SubscriptionProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+          }}
+        >
+          <Stack.Screen name="HomeStack" component={MainTabs} />
+          <Stack.Screen name="ThemeDetail" component={ThemeDetailScreen} />
+          <Stack.Screen name="ThemeHomeScreenPreview" component={ThemeHomeScreenPreview} />
+          <Stack.Screen name="SavedThemes" component={SavedThemesScreen} />
+          <Stack.Screen name="Premium" component={PremiumScreen} />
+          <Stack.Screen name="IconManagement" component={IconManagementScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </SubscriptionProvider>
   );
 }

@@ -10,6 +10,7 @@ import { Colors, Radius, Spacing, Typography } from '../constants/design';
 import type { ThemeDefinition } from '../types/data';
 import IconCanvas from './IconCanvas';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { useSubscription } from '../context/SubscriptionContext';
 
 interface ThemeCardProps {
   theme: ThemeDefinition;
@@ -21,6 +22,7 @@ const ThemeCard = memo(({
   onPress,
 }: ThemeCardProps) => {
   const isDarkMode = useColorScheme() === 'dark';
+  const { isPremium } = useSubscription();
   const borderColor = isDarkMode ? Colors.dark.border : Colors.border;
   const cardColor = isDarkMode ? Colors.dark.surface : Colors.background;
   const secondaryTextColor = isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary;
@@ -33,7 +35,7 @@ const ThemeCard = memo(({
       accessibilityRole="button"
       accessibilityLabel={`${theme.name} icon pack`}
     >
-      {theme.isPremium && (
+      {theme.isPremium && !isPremium && (
         <View style={styles.premiumBadge}>
           <Icon name="lock-closed" size={10} color="white" />
           <Text style={styles.premiumText}>Premium</Text>

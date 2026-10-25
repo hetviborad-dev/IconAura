@@ -17,7 +17,7 @@ import { Colors, Spacing, Typography, Layout, Radius } from '../constants/design
 import { RootStackParamList } from '../types/navigation';
 import { fetchPublicThemes } from '../services/themeService';
 import { setWallpaper } from '../services/wallpaperService';
-import { useSubscription } from '../hooks/useSubscription';
+import { useSubscription } from '../context/SubscriptionContext';
 import type { ThemeDefinition } from '../types/data';
 import WallpaperSelectionModal from '../components/WallpaperSelectionModal';
 import Skeleton from '../components/Skeleton';

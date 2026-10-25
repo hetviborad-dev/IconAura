@@ -31,7 +31,7 @@ import {
 } from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
 import { Theme } from '../types/index';
-import { useSubscription } from '../hooks/useSubscription';
+import { useSubscription } from '../context/SubscriptionContext';
 import type { AppId, ThemeDefinition } from '../types/data';
 import { getAllApps } from '../data/apps';
 import { getEnabledIcons } from '../services/local/iconStorage';
