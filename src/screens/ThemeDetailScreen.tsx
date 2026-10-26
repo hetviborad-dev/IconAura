@@ -220,7 +220,7 @@ export default function ThemeDetailScreen({
         const shuffled = [...enabledAndInstalled].sort(
           () => 0.5 - Math.random(),
         );
-        setSelectedApps(new Set(shuffled.slice(0, 4).map(app => app.id)));
+        setSelectedApps(new Set(shuffled.slice(0, 1).map(app => app.id)));
         hasInitializedSelection.current = true;
       }
     }
