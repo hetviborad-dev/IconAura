@@ -41,6 +41,7 @@ import ShortcutIconCapture from '../components/ShortcutIconCapture';
 import { useAppDetection } from '../hooks/useAppDetection';
 import {
   createShortcut,
+  createSquareWidget,
   generateShortcutId,
   onShortcutPinned,
 } from '../services/shortcutCreation';
@@ -181,6 +182,7 @@ export default function ThemeDetailScreen({
   const [searchQuery, setSearchQuery] = useState('');
   const [allInstalledApps, setAllInstalledApps] = useState<any[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isShapePickerVisible, setIsShapePickerVisible] = useState(false);
   const hasInitializedSelection = React.useRef(false);
 
   const [capturingAppId, setCapturingAppId] = useState<AppId | null>(null);
@@ -384,12 +386,61 @@ export default function ThemeDetailScreen({
       );
       return;
     }
+    setIsShapePickerVisible(true);
+  };
+
+  const applyThemeWithShape = async (shape: 'round' | 'square') => {
+    setIsShapePickerVisible(false);
+    const appsToApply = SUPPORTED_APPS.filter(app => selectedApps.has(app.id));
 
     for (const app of appsToApply) {
       const pkgName = appStatus[app.id]?.packageName || app.packageName;
-      await handleCreateShortcut(app.id, app.name, pkgName);
+
+      if (shape === 'round') {
+        await handleCreateShortcut(app.id, app.name, pkgName);
+      } else {
+        // Square flow using widgets
+        try {
+          console.log(`[Square] Applying widget for: ${app.name}`);
+
+          // Use existing capture logic to get the icon
+          setCapturingAppId(app.id);
+          let attempts = 0;
+          while (!captureIcons.current[app.id] && attempts < 20) {
+            await new Promise(resolve => setTimeout(resolve, 50));
+            attempts++;
+          }
+          const captureFn = captureIcons.current[app.id];
+          if (!captureFn) throw new Error('Capture function not ready');
+
+          await new Promise(resolve => setTimeout(resolve, 100));
+          const iconPngBase64 = await captureFn();
+          if (!iconPngBase64) throw new Error('Could not capture icon');
+
+          const shortcutId = generateShortcutId(pkgName, theme.id);
+
+          const result = await createSquareWidget({
+            appPackageName: pkgName,
+            shortcutId,
+            label: app.name,
+            iconColor: theme.icon.value,
+            backgroundColor: theme.background.value,
+            iconPngBase64,
+            themeId: theme.id,
+          });
+
+          if (!result.success) {
+            console.error(`[Square] Failed to create widget for ${app.id}: ${result.message}`);
+          }
+        } catch (err) {
+          console.error(`[Square] Error applying widget for ${app.id}:`, err);
+        } finally {
+          setCapturingAppId(null);
+        }
+      }
       await new Promise(r => setTimeout(r, 500));
     }
+    showToast(`Theme applied as ${shape}!`);
   };
 
   const handleToggleSave = async () => {
@@ -713,6 +764,38 @@ export default function ThemeDetailScreen({
           }}
         />
       )}
+
+      <Modal visible={isShapePickerVisible} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: Colors.surface, alignItems: 'center', justifyContent: 'center' }]}>
+            <Text style={[styles.modalHeaderTitle, { color: textColor, textAlign: 'center', marginBottom: 20 }]}>
+              Choose Icon Shape
+            </Text>
+            <View style={styles.shapeOptionsRow}>
+              <TouchableOpacity
+                style={styles.shapeOption}
+                onPress={() => applyThemeWithShape('round')}
+              >
+                <View style={styles.roundShapePreview} />
+                <Text style={[styles.shapeOptionText, { color: textColor }]}>Round</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.shapeOption}
+                onPress={() => applyThemeWithShape('square')}
+              >
+                <View style={styles.squareShapePreview} />
+                <Text style={[styles.shapeOptionText, { color: textColor }]}>Square</Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity
+              style={styles.closeShapePicker}
+              onPress={() => setIsShapePickerVisible(false)}
+            >
+              <Text style={[styles.closeShapeText, { color: secondaryTextColor }]}>Cancel</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
       <Modal visible={isPickerVisible} transparent animationType="slide">
         <View style={styles.modalOverlay}>
@@ -1044,6 +1127,46 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 20,
+  },
+  modalHeaderTitle: {
+    fontSize: Typography.sizes.h3,
+    fontWeight: Typography.weights.bold,
+  },
+  shapeOptionsRow: {
+    flexDirection: 'row',
+    gap: 40,
+    marginBottom: 30,
+  },
+  shapeOption: {
+    alignItems: 'center',
+    gap: 12,
+  },
+  roundShapePreview: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: Colors.primary,
+    borderWidth: 2,
+    borderColor: Colors.border,
+  },
+  squareShapePreview: {
+    width: 60,
+    height: 60,
+    borderRadius: 12,
+    backgroundColor: Colors.primary,
+    borderWidth: 2,
+    borderColor: Colors.border,
+  },
+  shapeOptionText: {
+    fontSize: Typography.sizes.body,
+    fontWeight: Typography.weights.medium,
+  },
+  closeShapePicker: {
+    marginTop: 10,
+    padding: 10,
+  },
+  closeShapeText: {
+    fontSize: Typography.sizes.caption,
   },
   searchContainer: {
     flexDirection: 'row',

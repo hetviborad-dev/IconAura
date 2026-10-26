@@ -2,6 +2,7 @@ package com.hetvi.iconaura
 
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -11,6 +12,10 @@ import android.content.pm.ShortcutManager
 import android.graphics.drawable.Icon
 import android.os.Build
 import android.util.Log
+import android.appwidget.AppWidgetManager
+import com.hetvi.iconaura.widgets.WidgetConfig
+import com.hetvi.iconaura.widgets.WidgetConfigManager
+import com.hetvi.iconaura.widgets.SquareIconWidgetProvider
 import androidx.core.content.pm.ShortcutInfoCompat
 import androidx.core.content.pm.ShortcutManagerCompat
 import androidx.core.graphics.drawable.IconCompat
@@ -269,6 +274,89 @@ val successCallback = PendingIntent.getBroadcast(
     } catch (e: Exception) {
       Log.e(TAG, "Shortcut creation failed", e)
       promise.reject("SHORTCUT_ERROR", e.message, e)
+    }
+  }
+
+  @ReactMethod
+  fun createSquareWidget(config: ReadableMap, promise: Promise) {
+    try {
+      val appPackageName = config.getString("appPackageName") ?: throw IllegalArgumentException("appPackageName required")
+      val iconPngBase64 = config.getString("iconPngBase64") ?: throw IllegalArgumentException("iconPngBase64 required")
+      val label = config.getString("label") ?: throw IllegalArgumentException("label required")
+
+      Log.i(TAG, "Requesting Square widget for: $appPackageName")
+
+      val widgetConfig = WidgetConfig(appPackageName, iconPngBase64, label)
+      val configManager = WidgetConfigManager(context)
+      configManager.savePendingConfig(widgetConfig)
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        val appWidgetManager = AppWidgetManager.getInstance(context)
+        val provider = ComponentName(context, SquareIconWidgetProvider::class.java)
+
+        val callbackIntent = Intent("com.hetvi.iconaura.WIDGET_ADDED").apply {
+          setPackage(context.packageName)
+          putExtra("widgetCreated", true)
+        }
+        val successCallback = PendingIntent.getBroadcast(
+          context,
+          0,
+          callbackIntent,
+          PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // Use a wrapper to handle the requestPinAppWidget call
+        // on some SDKs it expects (ComponentName, PendingIntent)
+        // but the compiler is reporting a mismatch.
+        var pinned = false
+
+        // Try Signature 1: (ComponentName, PendingIntent)
+        try {
+          val m1 = appWidgetManager.javaClass.getMethod("requestPinAppWidget", ComponentName::class.java, PendingIntent::class.java)
+          m1.invoke(appWidgetManager, provider, successCallback)
+          pinned = true
+        } catch (e1: Exception) {
+          Log.d(TAG, "Reflection Sig 1 failed: ${e1.message}")
+        }
+
+        if (!pinned) {
+          // Try Signature 2: (ComponentName, PendingIntent, Bundle)
+          try {
+            val m2 = appWidgetManager.javaClass.getMethod("requestPinAppWidget", ComponentName::class.java, PendingIntent::class.java, android.os.Bundle::class.java)
+            m2.invoke(appWidgetManager, provider, successCallback, android.os.Bundle())
+            pinned = true
+          } catch (e2: Exception) {
+            Log.d(TAG, "Reflection Sig 2 failed: ${e2.message}")
+          }
+        }
+
+        if (!pinned) {
+          // Try Signature 3: (ComponentName, Bundle, PendingIntent) - just in case
+          try {
+            val m3 = appWidgetManager.javaClass.getMethod("requestPinAppWidget", ComponentName::class.java, android.os.Bundle::class.java, PendingIntent::class.java)
+            m3.invoke(appWidgetManager, provider, android.os.Bundle(), successCallback)
+            pinned = true
+          } catch (e3: Exception) {
+            Log.d(TAG, "Reflection Sig 3 failed: ${e3.message}")
+          }
+        }
+
+        if (!pinned) {
+          Log.e(TAG, "All widget pinning attempts failed.")
+          promise.reject("WIDGET_PIN_ERROR", "Could not find a valid requestPinAppWidget method on this device.")
+          return
+        }
+
+        val result = WritableNativeMap()
+        result.putBoolean("success", true)
+        result.putString("message", "Widget pinning requested. User confirmation required.")
+        promise.resolve(result)
+      } else {
+        promise.reject("SDK_TOO_LOW", "App widgets pinning requires Android 8.0+")
+      }
+    } catch (e: Exception) {
+      Log.e(TAG, "Square widget creation failed", e)
+      promise.reject("WIDGET_ERROR", e.message, e)
     }
   }
 

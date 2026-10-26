@@ -21,6 +21,16 @@
         android:value="ca-app-pub-3525297377603048~1911745756"
         tools:replace="android:value" />
       <!-- Replace with your actual App ID from AdMob console -->
+      <receiver android:name=".widgets.SquareIconWidgetProvider"
+                android:exported="false">
+        <intent-filter>
+            <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+        </intent-filter>
+        <meta-data
+            android:name="android.appwidget.provider"
+            android:resource="@xml/square_icon_widget_info" />
+      </receiver>
+
       <activity
         android:name=".MainActivity"
         android:label="@string/app_name"

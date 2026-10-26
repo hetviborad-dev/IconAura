@@ -33,6 +33,16 @@ export async function createShortcut(config: ShortcutConfig): Promise<ShortcutRe
   }
 }
 
+export async function createSquareWidget(config: ShortcutConfig): Promise<ShortcutResult> {
+  try {
+    const result = await HomeShortcut.createSquareWidget(config);
+    return result;
+  } catch (error) {
+    console.error('Failed to create square widget:', error);
+    throw error;
+  }
+}
+
 /**
  * Listen for when Android confirms the shortcut was actually pinned
  *
