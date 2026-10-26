@@ -308,6 +308,21 @@ val successCallback = PendingIntent.getBroadcast(
         // Use a wrapper to handle the requestPinAppWidget call
         // on some SDKs it expects (ComponentName, PendingIntent)
         // but the compiler is reporting a mismatch.
+        // Create RemoteViews for the dialog preview
+        val previewViews = android.widget.RemoteViews(context.packageName, R.layout.square_icon_widget)
+        try {
+          val decodedBytes = android.util.Base64.decode(iconPngBase64, android.util.Base64.DEFAULT)
+          val bitmap = android.graphics.BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+          if (bitmap != null) {
+            previewViews.setImageViewBitmap(R.id.widget_icon, bitmap)
+          }
+        } catch (e: Exception) {
+          Log.e(TAG, "Failed to set preview bitmap", e)
+        }
+
+        val extras = android.os.Bundle().apply {
+          putParcelable(AppWidgetManager.EXTRA_APPWIDGET_PREVIEW, previewViews)
+        }
         var pinned = false
 
         // Try Signature 1: (ComponentName, PendingIntent)
@@ -323,7 +338,7 @@ val successCallback = PendingIntent.getBroadcast(
           // Try Signature 2: (ComponentName, PendingIntent, Bundle)
           try {
             val m2 = appWidgetManager.javaClass.getMethod("requestPinAppWidget", ComponentName::class.java, PendingIntent::class.java, android.os.Bundle::class.java)
-            m2.invoke(appWidgetManager, provider, successCallback, android.os.Bundle())
+            m2.invoke(appWidgetManager, provider, successCallback, extras)
             pinned = true
           } catch (e2: Exception) {
             Log.d(TAG, "Reflection Sig 2 failed: ${e2.message}")
@@ -334,7 +349,7 @@ val successCallback = PendingIntent.getBroadcast(
           // Try Signature 3: (ComponentName, Bundle, PendingIntent) - just in case
           try {
             val m3 = appWidgetManager.javaClass.getMethod("requestPinAppWidget", ComponentName::class.java, android.os.Bundle::class.java, PendingIntent::class.java)
-            m3.invoke(appWidgetManager, provider, android.os.Bundle(), successCallback)
+            m3.invoke(appWidgetManager, provider, extras, successCallback)
             pinned = true
           } catch (e3: Exception) {
             Log.d(TAG, "Reflection Sig 3 failed: ${e3.message}")
