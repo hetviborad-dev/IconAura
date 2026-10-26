@@ -33,7 +33,7 @@ const AppIcon = ({ appId }: { appId: string }) => {
         const result = await HomeShortcut.getCurrentAppIcon({ packageName: appId });
         setIcon(result.base64);
       } catch (e) {
-        // Fail silently
+        
       }
     }
     load();

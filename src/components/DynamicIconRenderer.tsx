@@ -1,6 +1,4 @@
-/**
- * DynamicIconRenderer - Renders icons on-demand for any theme/icon combo
- */
+
 
 import React from 'react';
 import { findNodeHandle, View } from 'react-native';

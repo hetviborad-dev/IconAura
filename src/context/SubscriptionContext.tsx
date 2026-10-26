@@ -54,12 +54,12 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    // setState({
-    //   isPremium,
-    //   loading: false,
-    //   planType,
-    //   expirationDate,
-    // });
+    
+    
+    
+    
+    
+    
 
     setState({
       isPremium,
@@ -132,7 +132,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
         if (url) return { success: true, url };
       }
 
-      // Fallback for Android/Other platforms: Direct to Google Play Store subscriptions
+      
       return {
         success: true,
         url: 'https://play.google.com/store/account/subscriptions'

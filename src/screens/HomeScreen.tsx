@@ -314,7 +314,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   );
 }
 
-// I need to move the Modal inside the return's main fragment or wrap everything in a fragment.
+
 
 const styles = StyleSheet.create({
   container: { flex: 1 },

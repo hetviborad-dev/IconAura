@@ -1,6 +1,4 @@
-/**
- * Root Navigator - Stack and tab-based navigation
- */
+
 
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';

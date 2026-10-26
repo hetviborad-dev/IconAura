@@ -28,7 +28,7 @@ function createStatus(installedApps: InstalledApp[], error: string | null = null
   const statusMap: Record<AppId, AppInstallationStatus> = {} as Record<AppId, AppInstallationStatus>;
 
   SUPPORTED_APPS.forEach((app) => {
-    // Find the first version of this app that is actually installed
+    
     const found = installedApps.find(
       (item) => item.id === app.id && item.installed === true && item.launchable !== false
     );
@@ -59,14 +59,14 @@ export const AppDetectionProvider: React.FC<{ children: React.ReactNode }> = ({ 
       const appsToCheck: AppToCheck[] = [];
 
       SUPPORTED_APPS.forEach((app) => {
-        // Add primary package name
+        
         appsToCheck.push({
           id: app.id,
           packageName: app.packageName,
           appName: app.name,
         });
 
-        // Add alternatives
+        
         if (app.packageAlternatives) {
           Object.values(app.packageAlternatives).forEach((pkg) => {
             appsToCheck.push({
@@ -91,7 +91,7 @@ export const AppDetectionProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, []);
 
   useEffect(() => {
-    // Run detection once when the app opens
+    
     refresh();
   }, [refresh]);
 

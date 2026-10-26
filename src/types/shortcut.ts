@@ -1,4 +1,4 @@
-/** Types for home-screen shortcut creation. */
+
 export interface ShortcutResult {
   shortcutId: string;
   appPackageName: string;

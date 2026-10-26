@@ -30,18 +30,7 @@ import com.facebook.react.bridge.WritableNativeMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import java.io.File
 
-/**
- * Native module for creating Android home-screen shortcuts.
- *
- * Shortcuts created by this module:
- * - Launch the target application directly
- * - Do NOT launch IconAura first
- * - Are pinned to the user's home screen
- * - Use custom icons and labels
- * - Work across Android versions (API 24+)
- *
- * Uses ShortcutManagerCompat for compatibility across Android versions.
- */
+
 class ShortcutModule(private val reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
 
@@ -73,7 +62,7 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
       }
     }
 
-    // Register receiver dynamically
+    
     val filter = IntentFilter(ACTION_SHORTCUT_ADDED)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
       reactContext.registerReceiver(receiver, filter, Context.RECEIVER_EXPORTED)
@@ -90,22 +79,22 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
       val appId = config.getString("appId") ?: throw IllegalArgumentException("appId required")
       val iconColor = config.getString("iconColor") ?: throw IllegalArgumentException("iconColor required")
       val backgroundColor = config.getString("backgroundColor") ?: throw IllegalArgumentException("backgroundColor required")
-      val patternType = config.getString("pattern") // "leopard", "crimson-bloom", or null
+      val patternType = config.getString("pattern") 
 
       Log.i(TAG, "Rendering icon: appId=$appId, colors=($iconColor, $backgroundColor), pattern=$patternType")
 
-      // Create 1024x1024 bitmap
+      
       val bitmap = android.graphics.Bitmap.createBitmap(1024, 1024, android.graphics.Bitmap.Config.ARGB_8888)
       val canvas = android.graphics.Canvas(bitmap)
 
-      // Draw based on pattern type
+      
       when (patternType) {
         "leopard" -> renderLeopardIcon(canvas, appId, iconColor, backgroundColor)
         "crimson-bloom" -> renderCrimsonBloomIcon(canvas, appId, iconColor)
         else -> renderSimpleIcon(canvas, appId, iconColor, backgroundColor)
       }
 
-      // Convert bitmap to base64 PNG
+      
       val baos = java.io.ByteArrayOutputStream()
       bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, baos)
       val base64 = android.util.Base64.encodeToString(baos.toByteArray(), android.util.Base64.NO_WRAP)
@@ -120,33 +109,33 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
   }
 
   private fun renderSimpleIcon(canvas: android.graphics.Canvas, appId: String, iconColor: String, backgroundColor: String) {
-    // Fill background
+    
     canvas.drawColor(android.graphics.Color.parseColor(backgroundColor))
 
-    // Draw icon shape (simplified - you'll expand this)
+    
     val paint = android.graphics.Paint().apply {
       color = android.graphics.Color.parseColor(iconColor)
       isAntiAlias = true
     }
 
-    // Placeholder: draw a circle with app initial
+    
     canvas.drawCircle(512f, 512f, 400f, paint)
   }
 
   private fun renderLeopardIcon(canvas: android.graphics.Canvas, appId: String, iconColor: String, backgroundColor: String) {
-    // Fill background
+    
     canvas.drawColor(android.graphics.Color.parseColor(backgroundColor))
 
-    // Draw leopard pattern + icon
-    // TODO: Load leopard pattern asset and blend with icon
+    
+    
     renderSimpleIcon(canvas, appId, iconColor, backgroundColor)
   }
 
   private fun renderCrimsonBloomIcon(canvas: android.graphics.Canvas, appId: String, iconColor: String) {
-    // Fill transparent for pattern overlay
+    
     canvas.drawColor(android.graphics.Color.TRANSPARENT, android.graphics.PorterDuff.Mode.CLEAR)
 
-    // TODO: Load crimson-bloom flower pattern and render icon on top
+    
     val paint = android.graphics.Paint().apply {
       color = android.graphics.Color.parseColor(iconColor)
       isAntiAlias = true
@@ -154,18 +143,7 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
     canvas.drawCircle(512f, 512f, 360f, paint)
   }
 
-  /**
-   * Creates a home-screen shortcut that launches the target application.
-   *
-   * @param config Configuration for shortcut creation:
-   *   - appPackageName: Package name of the target app (e.g., "com.instagram.android")
-   *   - shortcutId: Unique identifier for the shortcut (e.g., "instagram_mono_light")
-   *   - label: Display label on home screen (e.g., "Instagram")
-   *   - iconColor: Theme icon/foreground color (e.g., "#000000")
-   *   - backgroundColor: Theme background color (e.g., "#FFFFFF")
-   *   - themeId: Theme identifier (optional, for logging)
-   * @param promise Promise to resolve with result or error
-   */
+  
   @ReactMethod
   fun getCurrentAppIcon(config: ReadableMap, promise: Promise) {
     try {
@@ -205,7 +183,7 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
   @ReactMethod
   fun createShortcut(config: ReadableMap, promise: Promise) {
     try {
-      // Extract configuration
+      
       val appPackageName = config.getString("appPackageName")
         ?: throw IllegalArgumentException("appPackageName is required")
       val shortcutId = config.getString("shortcutId")
@@ -222,14 +200,14 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
 
       Log.i(TAG, "Creating shortcut: id=$shortcutId, app=$appPackageName, label=$label, theme=$themeId, colors=($iconColor, $backgroundColor)")
 
-      // Step 1: Verify target app exists and get its launch activity
+      
       val launchIntent = getLaunchIntentForApp(appPackageName)
         ?: throw IllegalStateException("Target app ($appPackageName) is not installed or does not have a launch activity")
 
-      // Step 2: Create high-resolution icon using new rendering pipeline
+      
       val iconCompat = createIconFromBase64(iconPngBase64, label)
 
-      // Step 3: Create ShortcutInfo
+      
       val shortcutInfo = ShortcutInfoCompat.Builder(context, shortcutId)
         .setShortLabel(label)
         .setLongLabel("$label")
@@ -237,7 +215,7 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
         .setIntent(launchIntent)
         .build()
 
-      // Step 4: Request pinning
+      
       val callbackIntent = Intent(ACTION_SHORTCUT_ADDED).apply {
   setPackage(context.packageName)
   putExtra("shortcutId", shortcutId)
@@ -305,10 +283,10 @@ val successCallback = PendingIntent.getBroadcast(
           PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // Use a wrapper to handle the requestPinAppWidget call
-        // on some SDKs it expects (ComponentName, PendingIntent)
-        // but the compiler is reporting a mismatch.
-        // Create RemoteViews for the dialog preview
+        
+        
+        
+        
         val previewViews = android.widget.RemoteViews(context.packageName, R.layout.square_icon_widget)
         try {
           val decodedBytes = android.util.Base64.decode(iconPngBase64, android.util.Base64.DEFAULT)
@@ -325,7 +303,7 @@ val successCallback = PendingIntent.getBroadcast(
         }
         var pinned = false
 
-        // Try Signature 1: (ComponentName, PendingIntent)
+        
         try {
           val m1 = appWidgetManager.javaClass.getMethod("requestPinAppWidget", ComponentName::class.java, PendingIntent::class.java)
           m1.invoke(appWidgetManager, provider, successCallback)
@@ -335,7 +313,7 @@ val successCallback = PendingIntent.getBroadcast(
         }
 
         if (!pinned) {
-          // Try Signature 2: (ComponentName, PendingIntent, Bundle)
+          
           try {
             val m2 = appWidgetManager.javaClass.getMethod("requestPinAppWidget", ComponentName::class.java, PendingIntent::class.java, android.os.Bundle::class.java)
             m2.invoke(appWidgetManager, provider, successCallback, extras)
@@ -346,7 +324,7 @@ val successCallback = PendingIntent.getBroadcast(
         }
 
         if (!pinned) {
-          // Try Signature 3: (ComponentName, Bundle, PendingIntent) - just in case
+          
           try {
             val m3 = appWidgetManager.javaClass.getMethod("requestPinAppWidget", ComponentName::class.java, android.os.Bundle::class.java, PendingIntent::class.java)
             m3.invoke(appWidgetManager, provider, extras, successCallback)
@@ -375,21 +353,16 @@ val successCallback = PendingIntent.getBroadcast(
     }
   }
 
-  /**
-   * Gets the launch intent for a given package.
-   *
-   * @param packageName Package name to get launch intent for
-   * @return Intent that launches the app, or null if not found
-   */
+  
   private fun getLaunchIntentForApp(packageName: String): Intent? {
     return try {
-      // First, verify the package is installed
+      
       packageManager.getPackageInfo(packageName, 0)
 
-      // Get the launch intent
+      
       val intent = packageManager.getLaunchIntentForPackage(packageName)
       if (intent != null) {
-        // Add flags to ensure clean launch
+        
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         Log.i(TAG, "Launch intent resolved for $packageName")
@@ -407,15 +380,7 @@ val successCallback = PendingIntent.getBroadcast(
     }
   }
 
-  /**
-   * Creates an IconCompat using the high-resolution rendering pipeline.
-   *
-   * Renders SVG → High-res Bitmap (1024x1024) → IconCompat
-   *
-   * @param appName App name for icon lookup (e.g., "Instagram", "WhatsApp")
-   * @param iconPngBase64 Base64 encoded PNG of the icon
-   * @return IconCompat or null if creation failed
-   */
+  
   private fun createIconFromBase64(iconPngBase64: String, appName: String): IconCompat {
     val decodedBytes = android.util.Base64.decode(iconPngBase64, android.util.Base64.DEFAULT)
     val bitmap = android.graphics.BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
@@ -425,12 +390,7 @@ val successCallback = PendingIntent.getBroadcast(
     return IconCompat.createWithBitmap(bitmap)
   }
 
-  /**
-   * Gets a display name for the target package.
-   *
-   * @param packageName Package name
-   * @return Display name or package name if not found
-   */
+  
   private fun getAppNameFromPackage(packageName: String): String {
     return try {
       val appInfo = packageManager.getApplicationInfo(packageName, 0)

@@ -1,6 +1,4 @@
-/**
- * SettingsScreen - Settings and information screen
- */
+
 
 import React from 'react';
 import {
@@ -74,16 +72,16 @@ export default function SettingsScreen() {
         },
       ],
     },
-    // {
-    //   title: 'About',
-    //   items: [
-    //     {
-    //       icon: 'information-circle-outline',
-    //       label: APP_NAME,
-    //       subtitle: `Version ${APP_VERSION}`,
-    //     },
-    //   ],
-    // },
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
   ];
 
   return (
@@ -92,10 +90,10 @@ export default function SettingsScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header */}
+        {}
         <Text style={[styles.title, { color: textColor }]}>Settings</Text>
 
-        {/* Settings Sections */}
+        {}
         {settingsSections.map((section, sectionIndex) => (
           <View key={section.title} style={styles.section}>
             <SectionHeader title={section.title} />

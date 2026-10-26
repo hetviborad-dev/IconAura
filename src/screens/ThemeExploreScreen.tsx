@@ -120,7 +120,7 @@ export default function ThemeExploreScreen() {
     if (index !== currentThemeIndex && index >= 0 && index < themes.length) {
       setCurrentThemeIndex(index);
 
-      // Trigger interstitial ad every 5 themes
+      
       if (index > 0 && index % 5 === 0 && index !== lastAdIndex.current && !isPremium) {
         showAd();
         lastAdIndex.current = index;
@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
   applyIconButton: {
     position: 'absolute',
     top: 50,
-    right: 74, // Offset from close button
+    right: 74, 
     zIndex: 100,
     width: 44,
     height: 44,
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
   saveIconButton: {
     position: 'absolute',
     top: 50,
-    right: 128, // Offset from apply button
+    right: 128, 
     zIndex: 100,
     width: 44,
     height: 44,

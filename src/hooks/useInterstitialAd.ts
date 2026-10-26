@@ -7,7 +7,7 @@ export function useInterstitialAd() {
   const [ad, setAd] = useState<InterstitialAd | null>(null);
 
   useEffect(() => {
-    // Create the ad instance
+    
     const interstitial = InterstitialAd.createForAdRequest(currentAdIds.interstitial);
 
     interstitial.addAdEventListener(AdEventType.LOADED, () => {
@@ -16,7 +16,7 @@ export function useInterstitialAd() {
 
     interstitial.addAdEventListener(AdEventType.CLOSED, () => {
       setLoaded(false);
-      // Load the next ad immediately after closing
+      
       interstitial.load();
     });
 

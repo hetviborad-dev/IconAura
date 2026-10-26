@@ -11,12 +11,7 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeArray
 import com.facebook.react.bridge.WritableNativeMap
 
-/**
- * Native module for detecting installed applications on the device.
- *
- * Handles package visibility requirements for Android 11+ (API 30+).
- * Uses the QUERY_ALL_PACKAGES permission to support app detection across all scenarios.
- */
+
 class InstalledAppsModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
 
@@ -24,12 +19,7 @@ class InstalledAppsModule(reactContext: ReactApplicationContext) :
 
   override fun getName(): String = "InstalledApps"
 
-  /**
-   * Gets installation status of supported applications.
-   *
-   * @param appPackageNames Array of package names to check
-   * @param promise Promise to resolve with app installation status
-   */
+  
   @ReactMethod
   fun getInstalledApps(appPackageNames: com.facebook.react.bridge.ReadableArray, promise: Promise) {
     try {
@@ -76,7 +66,7 @@ class InstalledAppsModule(reactContext: ReactApplicationContext) :
 
         if (launchIntent != null) {
           val appMap: WritableMap = WritableNativeMap()
-          appMap.putString("id", packageName) // Use package name as ID for system apps
+          appMap.putString("id", packageName) 
           appMap.putString("packageName", packageName)
           appMap.putString("appName", appInfo.loadLabel(packageManager).toString())
           appMap.putBoolean("installed", true)

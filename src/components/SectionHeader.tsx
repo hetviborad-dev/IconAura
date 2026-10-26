@@ -1,6 +1,4 @@
-/**
- * SectionHeader - Reusable section header with title and optional subtitle
- */
+
 
 import React from 'react';
 import {

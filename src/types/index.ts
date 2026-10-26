@@ -1,6 +1,4 @@
-/**
- * Core type definitions for IconAura
- */
+
 
 import type { ThemeId, ThemeDefinition as DataThemeDefinition } from './data';
 

@@ -1,13 +1,8 @@
-/**
- * Application definitions - source of truth for supported apps
- */
+
 
 import { AppDefinition, AppId } from '../types/data';
 
-/**
- * Supported applications with real Android package names
- * Extend this object to add more apps without modifying UI components
- */
+
 export const APPS: Record<AppId, AppDefinition> = {
   instagram: { id: 'instagram', name: 'Instagram', packageName: 'com.instagram.android', description: 'Connect with friends and share your moments', icon: { fallbackColor: '#E4405F' } },
   whatsapp: { id: 'whatsapp', name: 'WhatsApp', packageName: 'com.whatsapp', description: 'Send messages and make calls', icon: { fallbackColor: '#25D366' } },
@@ -76,19 +71,19 @@ export const APPS: Record<AppId, AppDefinition> = {
   security: { id: 'security', name: 'Security', packageName: 'com.android.security', packageAlternatives: { samsung: 'com.samsung.android.security' }, description: 'Keep your device secure', icon: { fallbackColor: '#4285F4' } },
 };
 
-/** Get app definition by ID. */
+
 export function getApp(appId: AppId): AppDefinition {
   const app = APPS[appId];
   if (!app) throw new Error(`App not found: ${appId}`);
   return app;
 }
 
-/** Get all supported apps as an array. */
+
 export function getAllApps(): AppDefinition[] {
   return Object.values(APPS);
 }
 
-/** Get MVP apps (first 2 supported apps). */
+
 export function getMvpApps(): AppDefinition[] {
   return [APPS.instagram, APPS.whatsapp];
 }

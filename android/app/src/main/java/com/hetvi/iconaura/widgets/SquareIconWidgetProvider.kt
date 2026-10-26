@@ -48,7 +48,7 @@ class SquareIconWidgetProvider : AppWidgetProvider() {
 
         if (config != null) {
             try {
-                // Decode icon
+                
                 val decodedBytes = Base64.decode(config.iconBase64, Base64.DEFAULT)
                 val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
 
@@ -58,13 +58,13 @@ class SquareIconWidgetProvider : AppWidgetProvider() {
                     Log.e(TAG, "Decoded bitmap is null for widget $appWidgetId")
                 }
 
-                // Set launch intent
+                
                 val launchIntent = context.packageManager.getLaunchIntentForPackage(config.packageName)
                 if (launchIntent != null) {
                     launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     val pendingIntent = PendingIntent.getActivity(
                         context,
-                        appWidgetId, // Use widgetId as requestCode to keep them distinct
+                        appWidgetId, 
                         launchIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
@@ -78,7 +78,7 @@ class SquareIconWidgetProvider : AppWidgetProvider() {
             }
         } else {
             Log.w(TAG, "Widget $appWidgetId has no configuration available")
-            // Optionally set a default icon here
+            
         }
 
         appWidgetManager.updateAppWidget(appWidgetId, views)
@@ -86,6 +86,6 @@ class SquareIconWidgetProvider : AppWidgetProvider() {
 
     override fun onDisabled(context: Context) {
         super.onDisabled(context)
-        // Potential cleanup for all widgets
+        
     }
 }

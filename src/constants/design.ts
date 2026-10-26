@@ -1,35 +1,32 @@
-/**
- * Design system constants for IconAura
- * Premium, minimal, modern aesthetic
- */
+
 
 export const Colors = {
-  // Accents (Icon-inspired Aura palette)
-  primary: '#FF007A', // Electric Magenta
-  secondary: '#00F5D4', // Cyber Teal
-  tertiary: '#7B2CBF', // Royal Purple
+  
+  primary: '#FF007A', 
+  secondary: '#00F5D4', 
+  tertiary: '#7B2CBF', 
 
-  // Backgrounds (Cosmic Dark)
+  
   background: '#0A0A0B',
   backgroundSecondary: '#141416',
   surface: '#1C1C1E',
 
-  // Text
+  
   textPrimary: '#FFFFFF',
   textSecondary: '#A0A0A0',
   textTertiary: '#666666',
 
-  // Borders & Dividers
+  
   border: '#2C2C2E',
   divider: '#1C1C1E',
 
-  // Semantic colors
+  
   success: '#10B981',
   error: '#EF4444',
   warning: '#F59E0B',
   info: '#3B82F6',
 
-  // Backward compatibility for existing components
+  
   dark: {
     background: '#0A0A0B',
     backgroundSecondary: '#141416',
@@ -85,7 +82,7 @@ export const Radius = {
 };
 
 export const TouchTarget = {
-  min: 44, // Minimum touch target size for accessibility
+  min: 44, 
 };
 
 export const Layout = {

@@ -1,6 +1,4 @@
-/**
- * PrimaryButton - Reusable primary action button
- */
+
 
 import React from 'react';
 import {
@@ -95,6 +93,6 @@ const styles = StyleSheet.create({
     fontWeight: Typography.weights.semibold,
   },
   icon: {
-    // Any specific icon styling
+    
   },
 });

@@ -24,7 +24,7 @@ export default function Skeleton({ width, height, borderRadius, style }: Skeleto
 
   const translateX = shimmerAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [-500, 500], // Increased range to cover larger elements
+    outputRange: [-500, 500], 
   });
 
   return (

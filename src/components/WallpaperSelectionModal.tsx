@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     padding: Spacing.lg,
-    paddingBottom: Spacing.xxxl + 20, // Increased padding to account for safe area/navigation bar
+    paddingBottom: Spacing.xxxl + 20, 
     backgroundColor: 'rgba(0,0,0,0.6)',
     borderTopLeftRadius: Radius.xl,
     borderTopRightRadius: Radius.xl,

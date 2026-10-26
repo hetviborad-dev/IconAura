@@ -1,6 +1,4 @@
-/**
- * Core type definitions for apps and themes
- */
+
 
 export type AppId =
   | 'instagram' | 'whatsapp' | 'youtube' | 'spotify' | 'telegram' | 'facebook' | 'chrome' | 'gmail'
@@ -19,9 +17,7 @@ export type ThemeId =
   | 'midnight' | 'ocean' | 'rose' | 'forest' | 'lavender' | 'sunset' | 'leopard-print' | 'crimson-bloom'
   | string;
 
-/**
- * Represents an installed application that can have custom icons
- */
+
 export interface AppDefinition {
   id: AppId;
   name: string;
@@ -33,14 +29,12 @@ export interface AppDefinition {
   };
 }
 
-/**
- * Represents a complete icon theme with colors and styling
- */
+
 export type ThemeCategoryId = 'popular' | 'simple' | 'colorful' | 'light' | 'animal-print' | string;
 
 export interface ThemeLayer {
   type: 'color' | 'pattern';
-  value: string; // Hex color code or Pattern ID
+  value: string; 
 }
 
 export interface ThemeDefinition {
@@ -56,21 +50,15 @@ export interface ThemeDefinition {
   theme_tags?: string[];
   previewUrl?: string;
   preview: {
-    /**
-     * Which apps to show in theme previews
-     */
+    
     featuredApps: AppId[];
-    /**
-     * Visual description for the preview
-     */
+    
     subtitle: string;
   };
   wallpapers: string[];
 }
 
-/**
- * Collection of apps and themes
- */
+
 export interface IconAuraData {
   apps: Record<AppId, AppDefinition>;
   themes: Record<ThemeId, ThemeDefinition>;

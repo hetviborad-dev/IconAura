@@ -1,6 +1,4 @@
-/**
- * SettingsRow - Reusable settings list item with icon and chevron
- */
+
 
 import React from 'react';
 import {
@@ -46,7 +44,7 @@ export default function SettingsRow({
       onPress={onPress}
       activeOpacity={0.7}
     >
-      {/* Icon */}
+      {}
       <View style={styles.iconContainer}>
         <Ionicons
           name={icon}
@@ -55,7 +53,7 @@ export default function SettingsRow({
         />
       </View>
 
-      {/* Text */}
+      {}
       <View style={styles.textContainer}>
         <Text style={[styles.title, { color: textColor }]}>
           {title}
@@ -67,7 +65,7 @@ export default function SettingsRow({
         )}
       </View>
 
-      {/* Chevron */}
+      {}
       {showChevron && (
         <Ionicons
           name="chevron-forward"

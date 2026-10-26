@@ -34,7 +34,7 @@ const PatternedIcon = memo(function PatternedIcon({
     return null;
   }
 
-  // IDs must be unique when multiple icons render together.
+  
   const uniqueId = `pattern-${appId}-${size}`;
   const maskId = `mask-${appId}-${size}`;
 
@@ -60,8 +60,7 @@ const PatternedIcon = memo(function PatternedIcon({
         </Pattern>
       </Defs>
 
-      {/* Keep the mask outside Defs to avoid the native
-          DefsView-to-RenderableView cast failure. */}
+      {}
       <Mask
   id={maskId}
   x="0"

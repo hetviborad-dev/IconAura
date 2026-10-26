@@ -13,7 +13,7 @@ interface IconCanvasProps {
 }
 
 export default function IconCanvas({ appId, theme, size, isCapture = false }: IconCanvasProps) {
-  // We use a fixed size for the capture canvas (e.g., 1024)
+  
   return (
     <View style={[
       styles.container,
@@ -28,7 +28,7 @@ export default function IconCanvas({ appId, theme, size, isCapture = false }: Ic
         <IconLayer
           appId={appId}
           layer={theme.icon}
-          size={size * 0.6} // Scale the icon to 60% of the canvas size
+          size={size * 0.6} 
         />
       </View>
     </View>

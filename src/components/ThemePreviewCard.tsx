@@ -14,7 +14,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 const { width, height } = Dimensions.get('window');
 
-// Default wallpaper asset
+
 const DEFAULT_WALLPAPER = require('../assets/images/wallpaper/image.jpeg');
 
 const DOCK_APPS: AppId[] = ['camera', 'phone', 'messages', 'chrome'];
@@ -27,7 +27,7 @@ export default function ThemePreviewCard({ theme }: Props) {
   const [wallpaperIndex, setWallpaperIndex] = useState(0);
   console.log(`DEBUG: ThemePreviewCard [${theme.name}] isPremium:`, theme.isPremium);
 
-  // Use theme wallpapers if available, otherwise use the default one
+  
   const wallpapers = (theme.wallpapers && theme.wallpapers.length > 0)
     ? theme.wallpapers
     : [DEFAULT_WALLPAPER];

@@ -1,6 +1,4 @@
-/**
- * ThemeDetailScreen - Detailed view of a theme with app icon previews and apply buttons
- */
+
 
 import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import {
@@ -84,7 +82,7 @@ const PickerAppIcon = memo(
             setCurrentIcons(prev => ({ ...prev, [appId]: result.base64 }));
           }
         } catch (e) {
-          // Fail silently for icons
+          
         }
       }
       load();
@@ -164,7 +162,7 @@ export default function ThemeDetailScreen({
       }
       loadIcons();
 
-      // Check if theme is saved
+      
       isThemeSaved(theme.id).then(saved => {
         if (isMounted) setIsSaved(saved);
       });
@@ -175,7 +173,7 @@ export default function ThemeDetailScreen({
     }, [theme.id]),
   );
 
-  // Selection and Icons State
+  
   const [selectedApps, setSelectedApps] = useState<Set<AppId>>(new Set());
   const [currentIcons, setCurrentIcons] = useState<Record<string, string>>({});
   const [isPickerVisible, setIsPickerVisible] = useState(false);
@@ -205,7 +203,7 @@ export default function ThemeDetailScreen({
     [],
   );
 
-  // Initial selection
+  
   useEffect(() => {
     if (
       !hasInitializedSelection.current &&
@@ -226,7 +224,7 @@ export default function ThemeDetailScreen({
     }
   }, [installedApps, enabledIcons]);
 
-  // Sync selected apps with enabled icons
+  
   useEffect(() => {
     setSelectedApps(prev => {
       const next = new Set();
@@ -239,7 +237,7 @@ export default function ThemeDetailScreen({
     });
   }, [enabledIcons]);
 
-  // Fetch current icons
+  
   useEffect(() => {
     const fetchIcons = async () => {
       const icons: Record<string, string> = {};
@@ -260,7 +258,7 @@ export default function ThemeDetailScreen({
     fetchIcons();
   }, [installedApps, appStatus]);
 
-  // Preload all installed apps for the picker to avoid lag when opening
+  
   useEffect(() => {
     const preloadAllApps = async () => {
       try {
@@ -275,7 +273,7 @@ export default function ThemeDetailScreen({
 
   console.log('installedApps', installedApps);
 
-  // Listen for native shortcut confirmations
+  
   useEffect(() => {
     const subscription = onShortcutPinned(event => {
       const app = SUPPORTED_APPS.find(a => {
@@ -347,7 +345,7 @@ export default function ThemeDetailScreen({
       const captureFn = captureIcons.current[appId as AppId];
       if (!captureFn) throw new Error('Capture function not ready');
 
-      // Small grace period for the native view to be mounted after capturingAppId change
+      
       await new Promise(resolve => setTimeout(resolve, 100));
       const iconPngBase64 = await captureFn();
       if (!iconPngBase64) throw new Error('Could not capture icon');
@@ -404,11 +402,11 @@ export default function ThemeDetailScreen({
         if (shape === 'round') {
           await handleCreateShortcut(app.id, app.name, pkgName);
         } else {
-          // Square flow using widgets
+          
           try {
             console.log(`[Square] Applying widget for: ${app.name}`);
 
-            // Use existing capture logic to get the icon
+            
             setCapturingAppId(app.id);
             let attempts = 0;
             while (!captureIcons.current[app.id] && attempts < 20) {
@@ -487,7 +485,7 @@ export default function ThemeDetailScreen({
           next.delete(appId);
         } else {
           next.add(appId);
-          // If this is a proxy app mapped to an installed app, also select the installed app
+          
           const mappedId = appMappings[appId];
           if (mappedId) {
             next.add(mappedId);
@@ -770,7 +768,7 @@ export default function ThemeDetailScreen({
           showApplyTheme={false}
           onApplyTheme={() => {
             setSelectedWallpaperUrl(null);
-            // Already in ThemeDetailScreen, so just show a toast or alert
+            
             Alert.alert('Theme', 'This theme is already selected!');
           }}
         />

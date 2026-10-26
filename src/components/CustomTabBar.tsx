@@ -11,7 +11,7 @@ export default function CustomTabBar({ state, descriptors, navigation }: BottomT
   const activeColor = Colors.primary;
   const inactiveColor = Colors.textTertiary;
 
-  const tabBarBg = 'rgba(28, 28, 30, 0.8)'; // Colors.surface with opacity
+  const tabBarBg = 'rgba(28, 28, 30, 0.8)'; 
 
   const translateY = useRef(new Animated.Value(0)).current;
 
@@ -20,7 +20,7 @@ export default function CustomTabBar({ state, descriptors, navigation }: BottomT
 
     if (activeRouteName === 'Themes') {
       Animated.timing(translateY, {
-        toValue: 150, // Move it down out of view
+        toValue: 150, 
         duration: 300,
         useNativeDriver: true,
       }).start();
@@ -49,7 +49,7 @@ export default function CustomTabBar({ state, descriptors, navigation }: BottomT
           const label = options.tabBarLabel ?? options.title ?? route.name;
           const isFocused = state.index === index;
 
-          // Use an explicit mapping to avoid any ambiguity
+          
           const iconName = route.name === 'Home' ? 'home' :
                            route.name === 'Themes' ? 'color-palette' :
                            route.name === 'Wallpapers' ? 'image' :

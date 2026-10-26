@@ -1,6 +1,4 @@
-/**
- * AppIconCard - Preview of an app with a custom icon and apply button
- */
+
 
 import React from 'react';
 import {
@@ -58,12 +56,12 @@ export default function AppIconCard({
         },
       ]}
     >
-      {/* Left: Icon Preview */}
+      {}
       <View style={styles.iconPreview}>
         <IconCanvas appId={appId} theme={theme} size={56} />
       </View>
 
-      {/* Middle: App Info */}
+      {}
       <View style={styles.infoContainer}>
         <Text
           style={[styles.appName, { color: textColor }]}
@@ -84,7 +82,7 @@ export default function AppIconCard({
         </Text>
       </View>
 
-      {/* Right: Apply Button */}
+      {}
       {onApply && (
         <TouchableOpacity
           style={[

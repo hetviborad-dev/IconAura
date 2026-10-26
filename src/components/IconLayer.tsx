@@ -12,7 +12,7 @@ interface IconLayerProps {
 }
 
 export default function IconLayer({ appId, layer, size }: IconLayerProps) {
-  // Handle Pattern-based Icons (e.g., Leopard Print)
+  
   if (layer.type === 'pattern') {
     const patternUrl = layer.value.startsWith('http') ? layer.value : null;
 
@@ -24,7 +24,7 @@ export default function IconLayer({ appId, layer, size }: IconLayerProps) {
     return <PatternedIcon appId={appId} patternImage={{ uri: patternUrl }} size={size} />;
   }
 
-  // Handle Color-based Icons (SVGs)
+  
   if (!appId) return null;
   const Icon = APP_ICON_COMPONENTS[appId];
   if (typeof Icon !== 'function') {

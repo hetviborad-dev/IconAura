@@ -1,6 +1,4 @@
-/**
- * Navigation type definitions and parameters
- */
+
 
 import { Theme, ThemeDefinition } from './data';
 

@@ -26,7 +26,7 @@ export async function fetchCategories(): Promise<{ id: string; name: string }[]>
     }));
 }
 
-// Helper to get category ID from slug
+
 async function getCategoryId(slug: string) {
   const { data, error } = await supabase
     .from('categories')
@@ -47,7 +47,7 @@ export async function fetchHomeThemes(filters?: {
     return { categories: [], themesMap: {} };
   }
 
-  // 1. Fetch all categories ordered by rank
+  
   const { data: categories, error: catError } = await supabase
     .from('categories')
     .select('id, name, slug, order_index')
@@ -58,10 +58,10 @@ export async function fetchHomeThemes(filters?: {
     return { categories: [], themesMap: {} };
   }
 
-  // Fail-safe: manually sort categories in JS to ensure order_index is respected
+  
   const sortedCategories = (categories || []).sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
 
-  // 2. Fetch all public themes with their category slug
+  
   let query = supabase
     .from('themes')
     .select('*, categories(slug)')
@@ -82,10 +82,10 @@ export async function fetchHomeThemes(filters?: {
     return { categories: sortedCategories || [], themesMap: {} };
   }
 
-  // 3. Map themes to their categories
+  
   const themesMap: Record<string, ThemeDefinition[]> = {};
   themes.forEach(row => {
-    // Handle both object and array responses for the joined category
+    
     const categoryData = Array.isArray(row.categories) ? row.categories[0] : row.categories;
     const categorySlug = categoryData?.slug;
 
@@ -117,11 +117,11 @@ export async function fetchTheme(themeId: ThemeId): Promise<ThemeDefinition> {
     throw new Error('Supabase client not found');
   }
 
-  // Determine if we are searching by UUID (id) or friendly name (slug)
+  
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(themeId);
   const searchColumn = isUuid ? 'id' : 'slug';
 
-  // Fetch from Supabase
+  
   const { data, error } = await supabase
     .from('themes')
     .select('*, categories(name)')
@@ -132,7 +132,7 @@ export async function fetchTheme(themeId: ThemeId): Promise<ThemeDefinition> {
     throw new Error(`Theme not found: ${themeId}`);
   }
 
-  // Map Supabase row to ThemeDefinition
+  
   const config = data.config as any;
   const categoryName = data.categories?.name || config.category || 'popular';
 
@@ -224,7 +224,7 @@ export async function fetchThemesByCategory(category: string): Promise<ThemeDefi
 
   console.log(`DEBUG: fetchThemesByCategory called for category: ${category}`);
 
-  // We search by both category_id (new) and config->>category (old) for backward compatibility
+  
   const categoryId = await getCategoryId(category);
 
   const { data, error } = await supabase
