@@ -9,6 +9,7 @@ import {
   StyleSheet,
   useColorScheme,
   ViewStyle,
+  ActivityIndicator,
 } from 'react-native';
 import { Colors, Spacing, Typography, Radius, TouchTarget } from '../constants/design';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -19,6 +20,7 @@ interface PrimaryButtonProps {
   style?: ViewStyle;
   fullWidth?: boolean;
   disabled?: boolean;
+  loading?: boolean;
   icon?: {
     name: string;
     size?: number;
@@ -32,6 +34,7 @@ export default function PrimaryButton({
   style,
   fullWidth = false,
   disabled = false,
+  loading = false,
   icon,
 }: PrimaryButtonProps) {
   const isDarkMode = useColorScheme() === 'dark';
@@ -45,20 +48,24 @@ export default function PrimaryButton({
           backgroundColor: buttonBackground,
         },
         fullWidth && styles.fullWidth,
-        disabled && styles.disabled,
+        (disabled || loading) && styles.disabled,
         style,
       ]}
       onPress={onPress}
       activeOpacity={0.7}
-      disabled={disabled}
+      disabled={disabled || loading}
     >
-      {icon && (
-        <Icon
-          name={icon.name}
-          size={icon.size || 20}
-          color={icon.color || '#FFFFFF'}
-          style={styles.icon}
-        />
+      {loading ? (
+        <ActivityIndicator size="small" color="#FFFFFF" />
+      ) : (
+        icon && (
+          <Icon
+            name={icon.name}
+            size={icon.size || 20}
+            color={icon.color || '#FFFFFF'}
+            style={styles.icon}
+          />
+        )
       )}
       <Text style={styles.buttonText}>{title}</Text>
     </TouchableOpacity>

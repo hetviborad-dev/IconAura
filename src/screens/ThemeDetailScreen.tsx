@@ -185,6 +185,7 @@ export default function ThemeDetailScreen({
   const [allInstalledApps, setAllInstalledApps] = useState<any[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isShapePickerVisible, setIsShapePickerVisible] = useState(false);
+  const [isApplyingIcons, setIsApplyingIcons] = useState(false);
   const hasInitializedSelection = React.useRef(false);
 
   const [capturingAppId, setCapturingAppId] = useState<AppId | null>(null);
@@ -393,56 +394,63 @@ export default function ThemeDetailScreen({
 
   const applyThemeWithShape = async (shape: 'round' | 'square') => {
     setIsShapePickerVisible(false);
-    const appsToApply = SUPPORTED_APPS.filter(app => selectedApps.has(app.id));
+    setIsApplyingIcons(true);
+    try {
+      const appsToApply = SUPPORTED_APPS.filter(app => selectedApps.has(app.id));
 
-    for (const app of appsToApply) {
-      const pkgName = appStatus[app.id]?.packageName || app.packageName;
+      for (const app of appsToApply) {
+        const pkgName = appStatus[app.id]?.packageName || app.packageName;
 
-      if (shape === 'round') {
-        await handleCreateShortcut(app.id, app.name, pkgName);
-      } else {
-        // Square flow using widgets
-        try {
-          console.log(`[Square] Applying widget for: ${app.name}`);
+        if (shape === 'round') {
+          await handleCreateShortcut(app.id, app.name, pkgName);
+        } else {
+          // Square flow using widgets
+          try {
+            console.log(`[Square] Applying widget for: ${app.name}`);
 
-          // Use existing capture logic to get the icon
-          setCapturingAppId(app.id);
-          let attempts = 0;
-          while (!captureIcons.current[app.id] && attempts < 20) {
-            await new Promise(resolve => setTimeout(resolve, 50));
-            attempts++;
+            // Use existing capture logic to get the icon
+            setCapturingAppId(app.id);
+            let attempts = 0;
+            while (!captureIcons.current[app.id] && attempts < 20) {
+              await new Promise(resolve => setTimeout(resolve, 50));
+              attempts++;
+            }
+            const captureFn = captureIcons.current[app.id];
+            if (!captureFn) throw new Error('Capture function not ready');
+
+            await new Promise(resolve => setTimeout(resolve, 100));
+            const iconPngBase64 = await captureFn();
+            if (!iconPngBase64) throw new Error('Could not capture icon');
+
+            const shortcutId = generateShortcutId(pkgName, theme.id);
+
+            const result = await createSquareWidget({
+              appPackageName: pkgName,
+              shortcutId,
+              label: app.name,
+              iconColor: theme.icon.value,
+              backgroundColor: theme.background.value,
+              iconPngBase64,
+              themeId: theme.id,
+            });
+
+            if (!result.success) {
+              console.error(`[Square] Failed to create widget for ${app.id}: ${result.message}`);
+            }
+          } catch (err) {
+            console.error(`[Square] Error applying widget for ${app.id}:`, err);
+          } finally {
+            setCapturingAppId(null);
           }
-          const captureFn = captureIcons.current[app.id];
-          if (!captureFn) throw new Error('Capture function not ready');
-
-          await new Promise(resolve => setTimeout(resolve, 100));
-          const iconPngBase64 = await captureFn();
-          if (!iconPngBase64) throw new Error('Could not capture icon');
-
-          const shortcutId = generateShortcutId(pkgName, theme.id);
-
-          const result = await createSquareWidget({
-            appPackageName: pkgName,
-            shortcutId,
-            label: app.name,
-            iconColor: theme.icon.value,
-            backgroundColor: theme.background.value,
-            iconPngBase64,
-            themeId: theme.id,
-          });
-
-          if (!result.success) {
-            console.error(`[Square] Failed to create widget for ${app.id}: ${result.message}`);
-          }
-        } catch (err) {
-          console.error(`[Square] Error applying widget for ${app.id}:`, err);
-        } finally {
-          setCapturingAppId(null);
         }
       }
-      await new Promise(r => setTimeout(r, 500));
+      showToast(`Theme applied as ${shape}!`);
+    } catch (err) {
+      console.error(`Error applying theme with shape ${shape}:`, err);
+      Alert.alert('Error', 'An unexpected error occurred while applying the theme.');
+    } finally {
+      setIsApplyingIcons(false);
     }
-    showToast(`Theme applied as ${shape}!`);
   };
 
   const handleToggleSave = async () => {
@@ -726,6 +734,7 @@ export default function ThemeDetailScreen({
             title="Set Icons"
             onPress={handleSetIcons}
             fullWidth
+            loading={isApplyingIcons}
             icon={theme.isPremium && !isPremium ? { name: 'lock-closed' } : undefined}
           />
         </View>

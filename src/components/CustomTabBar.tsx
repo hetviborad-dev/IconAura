@@ -8,7 +8,7 @@ import { Colors, Spacing, Typography, Radius } from '../constants/design';
 export default function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
 
-  const activeColor = Colors.tertiary;
+  const activeColor = Colors.primary;
   const inactiveColor = Colors.textTertiary;
 
   const tabBarBg = 'rgba(28, 28, 30, 0.8)'; // Colors.surface with opacity
