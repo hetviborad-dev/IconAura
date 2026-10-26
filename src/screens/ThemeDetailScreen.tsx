@@ -18,6 +18,8 @@ import {
   Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import WhatsAppIcon from '../assets/icons/simple-icons--whatsapp.svg';
+import LogoIcon from '../assets/appsIcons/logo.svg';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -766,27 +768,64 @@ export default function ThemeDetailScreen({
       )}
 
       <Modal visible={isShapePickerVisible} transparent animationType="fade">
-        <View style={styles.modalOverlay}>
+        <View style={[styles.modalOverlay, { justifyContent: 'center' }]}>
           <View style={[styles.modalContent, { backgroundColor: Colors.surface, alignItems: 'center', justifyContent: 'center' }]}>
-            <Text style={[styles.modalHeaderTitle, { color: textColor, textAlign: 'center', marginBottom: 20 }]}>
-              Choose Icon Shape
+            <Text style={[styles.modalHeaderTitle, { color: textColor, textAlign: 'center' }]}>
+              Which style do you want to set?
             </Text>
+            <Text style={[styles.modalSubtitle, { color: secondaryTextColor, textAlign: 'center', marginBottom: 24 }]}>
+              You can add both at once.
+            </Text>
+
             <View style={styles.shapeOptionsRow}>
               <TouchableOpacity
                 style={styles.shapeOption}
                 onPress={() => applyThemeWithShape('round')}
               >
-                <View style={styles.roundShapePreview} />
-                <Text style={[styles.shapeOptionText, { color: textColor }]}>Round</Text>
+                <Text style={[styles.shapeOptionTitle, { color: textColor }]}>Round</Text>
+                <View style={styles.shapePreviewContainer}>
+                  <View style={styles.roundShapePreview}>
+                    <WhatsAppIcon width={'65%'} height="65%" />
+                  </View>
+                  <View style={styles.previewBadge}>
+                    <LogoIcon width="15" height="15" />
+                  </View>
+                </View>
+                <View style={styles.infoContainer}>
+                  <View style={styles.infoRow}>
+                    <Ionicons name="alert-circle" size={14} color="#FFC107" />
+                    <Text style={[styles.infoText, { color: secondaryTextColor }]}>Watermarked (due to Google specs)</Text>
+                  </View>
+                  <View style={styles.infoRow}>
+                    <Ionicons name="checkmark-circle" size={14} color="#FFC107" />
+                    <Text style={[styles.infoText, { color: secondaryTextColor }]}>Can be added to the Dock & Folder</Text>
+                  </View>
+                </View>
               </TouchableOpacity>
+
               <TouchableOpacity
                 style={styles.shapeOption}
                 onPress={() => applyThemeWithShape('square')}
               >
-                <View style={styles.squareShapePreview} />
-                <Text style={[styles.shapeOptionText, { color: textColor }]}>Square</Text>
+                <Text style={[styles.shapeOptionTitle, { color: textColor }]}>Square</Text>
+                <View style={styles.shapePreviewContainer}>
+                  <View style={styles.squareShapePreview}>
+                    <WhatsAppIcon width={'65%'} height="65%" />
+                  </View>
+                </View>
+                <View style={styles.infoContainer}>
+                  <View style={styles.infoRow}>
+                    <Ionicons name="checkmark-circle" size={14} color="#FFC107" />
+                    <Text style={[styles.infoText, { color: secondaryTextColor }]}>No Watermark</Text>
+                  </View>
+                  <View style={styles.infoRow}>
+                    <Ionicons name="alert-circle" size={14} color="#FFC107" />
+                    <Text style={[styles.infoText, { color: secondaryTextColor }]}>Cannot be added to Dock & Folder</Text>
+                  </View>
+                </View>
               </TouchableOpacity>
             </View>
+
             <TouchableOpacity
               style={styles.closeShapePicker}
               onPress={() => setIsShapePickerVisible(false)}
@@ -1115,10 +1154,12 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    padding: 20,
-    height: '85%',
+    borderRadius: 24,
+    padding: 24,
+    width: '90%',
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingBottom: 40,
   },
   modalListContainer: { flex: 1 },
@@ -1134,32 +1175,74 @@ const styles = StyleSheet.create({
   },
   shapeOptionsRow: {
     flexDirection: 'row',
-    gap: 40,
+    justifyContent: 'center',
+    gap: 24,
     marginBottom: 30,
   },
   shapeOption: {
     alignItems: 'center',
     gap: 12,
+    width: 140,
+  },
+  shapeOptionTitle: {
+    fontSize: Typography.sizes.body,
+    fontWeight: Typography.weights.semibold,
+  },
+  shapePreviewContainer: {
+    width: 80,
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+    position: 'relative',
+  },
+  previewBadge: {
+    position: 'absolute',
+    bottom: 12,
+    right: 12,
+    backgroundColor: Colors.background,
+    borderRadius: 7,
+    padding: 3,
+  },
+  infoContainer: {
+    gap: 6,
+    alignItems: 'flex-start',
+    width: '100%',
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  infoText: {
+    fontSize: Typography.sizes.caption,
+    fontWeight: Typography.weights.regular,
+    lineHeight: 14,
   },
   roundShapePreview: {
     width: 60,
     height: 60,
-    borderRadius: 30,
+    borderRadius: 25,
     backgroundColor: Colors.primary,
     borderWidth: 2,
     borderColor: Colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   squareShapePreview: {
     width: 60,
     height: 60,
-    borderRadius: 12,
+    borderRadius: 10,
     backgroundColor: Colors.primary,
     borderWidth: 2,
     borderColor: Colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
-  shapeOptionText: {
-    fontSize: Typography.sizes.body,
-    fontWeight: Typography.weights.medium,
+  modalSubtitle: {
+    fontSize: Typography.sizes.bodySmall,
+    fontWeight: Typography.weights.regular,
+    marginBottom: 24,
   },
   closeShapePicker: {
     marginTop: 10,
