@@ -9,8 +9,8 @@
 
     <ImageView
         android:id="@+id/widget_icon"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
         android:scaleType="centerCrop"
         android:contentDescription="App Icon" />
 
@@ -18,7 +18,8 @@
         android:id="@+id/widget_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="12sp"
+        android:textSize="11sp"
+        android:layout_marginTop="5dp"
         android:gravity="center"
         android:maxLines="1"
         android:ellipsize="end"

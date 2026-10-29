@@ -550,6 +550,7 @@ export default function ThemeDetailScreen({
           <ShortcutIconCapture
             appId={capturingAppId}
             theme={theme}
+            shape={selectedShape}
             onCaptureReady={registerCapture}
           />
         </View>

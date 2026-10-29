@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import type { AppId } from '../types/data';
 import type { ThemeDefinition } from '../types/data';
@@ -10,17 +10,24 @@ interface IconCanvasProps {
   theme: ThemeDefinition;
   size: number;
   isCapture?: boolean;
+  shape?: 'round' | 'square';
 }
 
-export default function IconCanvas({ appId, theme, size, isCapture = false }: IconCanvasProps) {
-  
+export default function IconCanvas({ appId, theme, size, isCapture = false, shape }: IconCanvasProps) {
+
+  const borderRadius = useMemo(() => {
+    if (shape === 'round') return size / 2;
+    if (shape === 'square') return size * 0.1;
+    return isCapture ? 0 : size * 0.22;
+  }, [shape, size, isCapture]);
+
   return (
     <View style={[
       styles.container,
       {
         width: size,
         height: size,
-        borderRadius: isCapture ? 0 : size * 0.22
+        borderRadius: borderRadius
       }
     ]}>
       <BackgroundLayer layer={theme.background} size={size} />
@@ -28,7 +35,7 @@ export default function IconCanvas({ appId, theme, size, isCapture = false }: Ic
         <IconLayer
           appId={appId}
           layer={theme.icon}
-          size={size * 0.6} 
+          size={size * 0.6}
         />
       </View>
     </View>
