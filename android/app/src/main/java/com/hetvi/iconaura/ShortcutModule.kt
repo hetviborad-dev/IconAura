@@ -290,7 +290,8 @@ val successCallback = PendingIntent.getBroadcast(
         
         
         
-        val previewViews = android.widget.RemoteViews(context.packageName, R.layout.square_icon_widget)
+        val layoutId = if (showLabel) R.layout.square_icon_widget_with_name else R.layout.square_icon_widget_without_name
+        val previewViews = android.widget.RemoteViews(context.packageName, layoutId)
         try {
           val decodedBytes = android.util.Base64.decode(iconPngBase64, android.util.Base64.DEFAULT)
           val bitmap = android.graphics.BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)

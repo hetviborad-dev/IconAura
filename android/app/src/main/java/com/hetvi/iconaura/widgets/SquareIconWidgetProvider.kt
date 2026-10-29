@@ -44,7 +44,8 @@ class SquareIconWidgetProvider : AppWidgetProvider() {
             }
         }
 
-        val views = RemoteViews(context.packageName, R.layout.square_icon_widget)
+        val layoutId = if (config?.showLabel == true) R.layout.square_icon_widget_with_name else R.layout.square_icon_widget_without_name
+        val views = RemoteViews(context.packageName, layoutId)
 
         if (config != null) {
             try {
