@@ -58,17 +58,25 @@ class SquareIconWidgetProvider : AppWidgetProvider() {
                     Log.e(TAG, "Decoded bitmap is null for widget $appWidgetId")
                 }
 
-                
+                if (config.showLabel) {
+                    views.setViewVisibility(R.id.widget_label, android.view.View.VISIBLE)
+                    views.setTextViewText(R.id.widget_label, config.label)
+                    views.setTextColor(R.id.widget_label, android.graphics.Color.parseColor(config.labelColor))
+                } else {
+                    views.setViewVisibility(R.id.widget_label, android.view.View.GONE)
+                }
+
                 val launchIntent = context.packageManager.getLaunchIntentForPackage(config.packageName)
                 if (launchIntent != null) {
                     launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     val pendingIntent = PendingIntent.getActivity(
                         context,
-                        appWidgetId, 
+                        appWidgetId,
                         launchIntent,
                         PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
                     )
                     views.setOnClickPendingIntent(R.id.widget_icon, pendingIntent)
+                    views.setOnClickPendingIntent(R.id.widget_label, pendingIntent)
                 } else {
                     Log.e(TAG, "No launch intent found for ${config.packageName}")
                 }

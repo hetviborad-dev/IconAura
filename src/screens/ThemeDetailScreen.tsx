@@ -46,8 +46,10 @@ import {
   onShortcutPinned,
 } from '../services/shortcutCreation';
 import { fetchAllInstalledApps } from '../services/appDetection';
+import { getContrastColor } from '../utils/helpers';
 import AppSelectionRow from '../components/AppSelectionRow';
 import PrimaryButton from '../components/PrimaryButton';
+import ShapeNameSelectionModal from '../components/ShapeNameSelectionModal';
 import WallpaperSelectionModal from '../components/WallpaperSelectionModal';
 import { NativeModules } from 'react-native';
 
@@ -183,6 +185,8 @@ export default function ThemeDetailScreen({
   const [allInstalledApps, setAllInstalledApps] = useState<any[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isShapePickerVisible, setIsShapePickerVisible] = useState(false);
+  const [selectedShape, setSelectedShape] = useState<'round' | 'square' | null>(null);
+  const [isNamePickerVisible, setIsNamePickerVisible] = useState(false);
   const [isApplyingIcons, setIsApplyingIcons] = useState(false);
   const hasInitializedSelection = React.useRef(false);
 
@@ -390,23 +394,29 @@ export default function ThemeDetailScreen({
     setIsShapePickerVisible(true);
   };
 
-  const applyThemeWithShape = async (shape: 'round' | 'square') => {
+  const handleShapeSelection = (shape: 'round' | 'square') => {
+    setSelectedShape(shape);
     setIsShapePickerVisible(false);
+    setIsNamePickerVisible(true);
+  };
+
+  const finalApplyTheme = async (withName: boolean) => {
+    if (!selectedShape) return;
+
     setIsApplyingIcons(true);
     try {
       const appsToApply = SUPPORTED_APPS.filter(app => selectedApps.has(app.id));
 
       for (const app of appsToApply) {
         const pkgName = appStatus[app.id]?.packageName || app.packageName;
+        const label = withName ? app.name : '';
 
-        if (shape === 'round') {
-          await handleCreateShortcut(app.id, app.name, pkgName);
+        if (selectedShape === 'round') {
+          await handleCreateShortcut(app.id, label, pkgName);
         } else {
-          
           try {
             console.log(`[Square] Applying widget for: ${app.name}`);
 
-            
             setCapturingAppId(app.id);
             let attempts = 0;
             while (!captureIcons.current[app.id] && attempts < 20) {
@@ -425,11 +435,13 @@ export default function ThemeDetailScreen({
             const result = await createSquareWidget({
               appPackageName: pkgName,
               shortcutId,
-              label: app.name,
+              label,
               iconColor: theme.icon.value,
               backgroundColor: theme.background.value,
               iconPngBase64,
               themeId: theme.id,
+              showLabel: withName,
+              labelColor: getContrastColor(theme.background.value),
             });
 
             if (!result.success) {
@@ -442,12 +454,14 @@ export default function ThemeDetailScreen({
           }
         }
       }
-      showToast(`Theme applied as ${shape}!`);
+      showToast(`Theme applied as ${selectedShape} ${withName ? 'with' : 'without'} names!`);
     } catch (err) {
-      console.error(`Error applying theme with shape ${shape}:`, err);
+      console.error(`Error applying theme with shape ${selectedShape}:`, err);
       Alert.alert('Error', 'An unexpected error occurred while applying the theme.');
     } finally {
       setIsApplyingIcons(false);
+      setIsNamePickerVisible(false);
+      setSelectedShape(null);
     }
   };
 
@@ -774,6 +788,16 @@ export default function ThemeDetailScreen({
         />
       )}
 
+      <ShapeNameSelectionModal
+        visible={isNamePickerVisible}
+        isDarkMode={isDarkMode}
+        onClose={() => {
+          setIsNamePickerVisible(false);
+          setSelectedShape(null);
+        }}
+        onSelect={finalApplyTheme}
+      />
+
       <Modal visible={isShapePickerVisible} transparent animationType="fade">
         <View style={[styles.modalOverlay, { justifyContent: 'center' }]}>
           <View style={[styles.modalContent, { backgroundColor: Colors.surface, alignItems: 'center', justifyContent: 'center' }]}>
@@ -787,7 +811,7 @@ export default function ThemeDetailScreen({
             <View style={styles.shapeOptionsRow}>
               <TouchableOpacity
                 style={styles.shapeOption}
-                onPress={() => applyThemeWithShape('round')}
+                onPress={() => handleShapeSelection('round')}
               >
                 <Text style={[styles.shapeOptionTitle, { color: textColor }]}>Round</Text>
                 <View style={styles.shapePreviewContainer}>
@@ -812,7 +836,7 @@ export default function ThemeDetailScreen({
 
               <TouchableOpacity
                 style={styles.shapeOption}
-                onPress={() => applyThemeWithShape('square')}
+                onPress={() => handleShapeSelection('square')}
               >
                 <Text style={[styles.shapeOptionTitle, { color: textColor }]}>Square</Text>
                 <View style={styles.shapePreviewContainer}>

@@ -8,7 +8,9 @@ import com.google.gson.reflect.TypeToken
 data class WidgetConfig(
     val packageName: String,
     val iconBase64: String,
-    val label: String
+    val label: String,
+    val showLabel: Boolean,
+    val labelColor: String
 )
 
 class WidgetConfigManager(context: Context) {

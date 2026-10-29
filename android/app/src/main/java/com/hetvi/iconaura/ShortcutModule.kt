@@ -264,7 +264,10 @@ val successCallback = PendingIntent.getBroadcast(
 
       Log.i(TAG, "Requesting Square widget for: $appPackageName")
 
-      val widgetConfig = WidgetConfig(appPackageName, iconPngBase64, label)
+      val showLabel = config.getBoolean("showLabel")
+      val labelColor = config.getString("labelColor") ?: "#FFFFFF"
+
+      val widgetConfig = WidgetConfig(appPackageName, iconPngBase64, label, showLabel, labelColor)
       val configManager = WidgetConfigManager(context)
       configManager.savePendingConfig(widgetConfig)
 
