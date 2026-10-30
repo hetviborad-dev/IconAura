@@ -16,7 +16,6 @@ interface IconCanvasProps {
 export default function IconCanvas({ appId, theme, size, isCapture = false, shape }: IconCanvasProps) {
 
   const borderRadius = useMemo(() => {
-    if (shape === 'round') return size / 2;
     if (shape === 'square') return size * 0.1;
     return isCapture ? 0 : size * 0.22;
   }, [shape, size, isCapture]);
