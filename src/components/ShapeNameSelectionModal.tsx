@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -18,7 +18,7 @@ import WhatsAppIcon from '../assets/icons/simple-icons--whatsapp.svg';
 interface ShapeNameSelectionModalProps {
   visible: boolean;
   onClose: () => void;
-  onSelect: (withName: boolean) => void;
+  onSelect: (withName: boolean, color: string) => void;
   isDarkMode: boolean;
 }
 
@@ -30,6 +30,15 @@ const ShapeNameSelectionModal: React.FC<ShapeNameSelectionModalProps> = ({
 }) => {
   const textColor = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
   const secondaryTextColor = isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary;
+  const [withName, setWithName] = useState(true);
+  const [color, setColor] = useState('white');
+
+  useEffect(() => {
+    if (visible) {
+      setWithName(true);
+      setColor('white');
+    }
+  }, [visible]);
 
   return (
     <Modal visible={visible} transparent animationType="fade">
@@ -44,8 +53,8 @@ const ShapeNameSelectionModal: React.FC<ShapeNameSelectionModalProps> = ({
 
           <View style={styles.optionsContainer}>
             <TouchableOpacity
-              style={styles.optionButton}
-              onPress={() => onSelect(true)}
+              style={[styles.optionButton, withName && styles.optionButtonSelected]}
+              onPress={() => setWithName(true)}
             >
               <View style={styles.optionContent}>
                 <View style={styles.previewContainer}>
@@ -66,8 +75,8 @@ const ShapeNameSelectionModal: React.FC<ShapeNameSelectionModalProps> = ({
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={styles.optionButton}
-              onPress={() => onSelect(false)}
+              style={[styles.optionButton, !withName && styles.optionButtonSelected]}
+              onPress={() => setWithName(false)}
             >
               <View style={styles.optionContent}>
                 <View style={styles.previewContainer}>
@@ -86,6 +95,35 @@ const ShapeNameSelectionModal: React.FC<ShapeNameSelectionModalProps> = ({
               </View>
             </TouchableOpacity>
           </View>
+
+          <View style={styles.colorSection}>
+            <Text style={[styles.colorTitle, { color: textColor }]}>App Name Color</Text>
+            <View style={styles.colorOptions}>
+              <TouchableOpacity
+                style={[styles.colorOption, color === 'white' && styles.colorOptionSelected]}
+                onPress={() => setColor('white')}
+                disabled={!withName}
+              >
+                <View style={[styles.colorSwatch, { backgroundColor: '#FFFFFF' }]} />
+                <Text style={[styles.colorOptionText, { color: textColor }]}>White</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.colorOption, color === 'black' && styles.colorOptionSelected]}
+                onPress={() => setColor('black')}
+                disabled={!withName}
+              >
+                <View style={[styles.colorSwatch, { backgroundColor: '#000000' }]} />
+                <Text style={[styles.colorOptionText, { color: textColor }]}>Black</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <TouchableOpacity
+            style={styles.doneButton}
+            onPress={() => onSelect(withName, withName ? color : '')}
+          >
+            <Text style={styles.doneButtonText}>Done</Text>
+          </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.closeButton}
@@ -188,6 +226,17 @@ const styles = StyleSheet.create({
     fontSize: Typography.sizes.bodySmall,
     fontWeight: Typography.weights.medium,
   },
+  optionButtonSelected: { borderColor: Colors.primary, backgroundColor: 'rgba(255,0,122,0.1)' },
+  colorSection: { width: '100%', marginBottom: Spacing.lg, alignItems: 'center' },
+  colorTitle: { fontSize: Typography.sizes.bodySmall, fontWeight: Typography.weights.semibold, marginBottom: Spacing.sm },
+  colorOptions: { flexDirection: 'row', gap: Spacing.md },
+  colorOption: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, padding: Spacing.sm, borderRadius: Radius.md, borderWidth: 1, borderColor: Colors.border },
+  colorOptionSelected: { borderColor: Colors.primary, backgroundColor: 'rgba(255,0,122,0.1)' },
+  colorSwatch: { width: 18, height: 18, borderRadius: 9, borderWidth: 1, borderColor: Colors.border },
+  colorOptionText: { fontSize: Typography.sizes.caption, fontWeight: Typography.weights.medium },
+  doneButton: { width: '100%', backgroundColor: Colors.primary, paddingVertical: Spacing.md, borderRadius: Radius.md, alignItems: 'center', marginBottom: Spacing.sm },
+  doneButtonText: { color: '#FFFFFF', fontSize: Typography.sizes.body, fontWeight: Typography.weights.bold },
+
 });
 
 export default ShapeNameSelectionModal;

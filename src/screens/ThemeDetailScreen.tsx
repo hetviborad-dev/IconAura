@@ -285,7 +285,9 @@ export default function ThemeDetailScreen({
         if (
           event.shortcutId === primaryId ||
           event.shortcutId === `${primaryId}_named` ||
-          event.shortcutId === `${primaryId}_unnamed`
+          event.shortcutId === `${primaryId}_unnamed` ||
+          event.shortcutId.startsWith(`${primaryId}_named_`) ||
+          event.shortcutId.startsWith(`${primaryId}_unnamed_`)
         ) {
           return true;
         }
@@ -297,7 +299,9 @@ export default function ThemeDetailScreen({
               return (
                 event.shortcutId === altBase ||
                 event.shortcutId === `${altBase}_named` ||
-                event.shortcutId === `${altBase}_unnamed`
+                event.shortcutId === `${altBase}_unnamed` ||
+                event.shortcutId.startsWith(`${altBase}_named_`) ||
+                event.shortcutId.startsWith(`${altBase}_unnamed_`)
               );
             },
           );
@@ -328,6 +332,7 @@ export default function ThemeDetailScreen({
     appId: string,
     appName: string,
     packageName: string,
+    color: string = 'white',
   ) => {
     try {
       console.log(
@@ -351,7 +356,8 @@ export default function ThemeDetailScreen({
       }
 
       const hasName = !!appName?.trim();
-      const shortcutId = `${generateShortcutId(packageName, theme.id)}_${hasName ? 'named' : 'unnamed'}`;
+      const colorSuffix = color && color.trim() ? color.trim().toLowerCase() : 'none';
+      const shortcutId = `${generateShortcutId(packageName, theme.id)}_${hasName ? 'named' : 'unnamed'}_${colorSuffix}`;
       setCapturingAppId(appId as AppId);
 
       let attempts = 0;
@@ -376,6 +382,7 @@ export default function ThemeDetailScreen({
         backgroundColor: theme.background.value,
         iconPngBase64,
         themeId: theme.id,
+        labelColor: color,
       });
 
       if (result.success) {
@@ -414,7 +421,7 @@ export default function ThemeDetailScreen({
     setIsNamePickerVisible(true);
   };
 
-  const finalApplyTheme = async (withName: boolean) => {
+  const finalApplyTheme = async (withName: boolean, color: string = 'white') => {
     if (!selectedShape) return;
 
     setIsApplyingIcons(true);
@@ -426,7 +433,7 @@ export default function ThemeDetailScreen({
         const label = withName ? app.name : '';
 
         if (selectedShape === 'round') {
-          await handleCreateShortcut(app.id, label, pkgName);
+          await handleCreateShortcut(app.id, label, pkgName, color);
         } else {
           try {
             console.log(`[Square] Applying widget for: ${app.name}`);

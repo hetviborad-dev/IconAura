@@ -190,9 +190,29 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
         ?: throw IllegalArgumentException("shortcutId is required")
       val rawLabel = config.getString("label")
         ?: throw IllegalArgumentException("label is required")
+
       // A completely empty label causes many launchers to fall back to the app name,
       // so use a blank (invisible) character for "no name" shortcuts.
       val label = if (rawLabel.isBlank()) "⠀" else rawLabel
+
+      val labelColor = config.getString("labelColor")
+      val displayLabel: CharSequence = if (!labelColor.isNullOrEmpty() && label.trim().isNotEmpty()) {
+        val spannable = android.text.SpannableString(label)
+        val colorValue = when (labelColor.lowercase()) {
+          "white" -> android.graphics.Color.WHITE
+          "black" -> android.graphics.Color.BLACK
+          else -> try { android.graphics.Color.parseColor(labelColor) } catch (_: Exception) { android.graphics.Color.WHITE }
+        }
+        spannable.setSpan(
+          android.text.style.ForegroundColorSpan(colorValue),
+          0,
+          spannable.length,
+          android.text.Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        )
+        spannable
+      } else {
+        label
+      }
       val iconColor = config.getString("iconColor")
         ?: throw IllegalArgumentException("iconColor is required")
       val backgroundColor = config.getString("backgroundColor")
@@ -212,8 +232,8 @@ class ShortcutModule(private val reactContext: ReactApplicationContext) :
 
       
       val shortcutInfo = ShortcutInfoCompat.Builder(context, shortcutId)
-        .setShortLabel(label)
-        .setLongLabel("$label")
+        .setShortLabel(displayLabel)
+        .setLongLabel(displayLabel)
         .setIcon(iconCompat)
         .setIntent(launchIntent)
         .build()

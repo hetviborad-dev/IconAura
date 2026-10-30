@@ -16,6 +16,8 @@ export interface ShortcutConfig {
   backgroundColor: string;
   iconPngBase64: string;
   themeId?: string;
+  labelColor?: string;
+  showLabel?: boolean;
 }
 
 export interface HomeShortcutModule {
