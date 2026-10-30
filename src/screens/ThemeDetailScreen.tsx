@@ -462,7 +462,9 @@ export default function ThemeDetailScreen({
               iconPngBase64,
               themeId: theme.id,
               showLabel: withName,
-              labelColor: getContrastColor(theme.background.value),
+              labelColor: withName
+                ? (color === 'white' ? '#FFFFFF' : color === 'black' ? '#000000' : (color || getContrastColor(theme.background.value)))
+                : '#FFFFFF',
             });
 
             if (!result.success) {

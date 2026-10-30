@@ -13,6 +13,7 @@ import {
   Radius,
 } from '../constants/design';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import WhatsAppIcon from '../assets/icons/simple-icons--whatsapp.svg';
 
 interface ShapeNameSelectionModalProps {
@@ -35,10 +36,26 @@ const ShapeNameSelectionModal: React.FC<ShapeNameSelectionModalProps> = ({
 
   useEffect(() => {
     if (visible) {
-      setWithName(true);
-      setColor('white');
+      (async () => {
+        try {
+          const savedWithName = await AsyncStorage.getItem('iconLabelWithName');
+          const savedColor = await AsyncStorage.getItem('iconLabelColor');
+          setWithName(savedWithName === null ? true : savedWithName === 'true');
+          setColor(savedColor || 'white');
+        } catch {
+          setWithName(true);
+          setColor('white');
+        }
+      })();
     }
   }, [visible]);
+
+  const persistPrefs = async (name: boolean, pickedColor: string) => {
+    try {
+      await AsyncStorage.setItem('iconLabelWithName', String(name));
+      await AsyncStorage.setItem('iconLabelColor', name ? pickedColor : (pickedColor || 'white'));
+    } catch {}
+  };
 
   return (
     <Modal visible={visible} transparent animationType="fade">
@@ -96,31 +113,34 @@ const ShapeNameSelectionModal: React.FC<ShapeNameSelectionModalProps> = ({
             </TouchableOpacity>
           </View>
 
-          <View style={styles.colorSection}>
-            <Text style={[styles.colorTitle, { color: textColor }]}>App Name Color</Text>
-            <View style={styles.colorOptions}>
-              <TouchableOpacity
-                style={[styles.colorOption, color === 'white' && styles.colorOptionSelected]}
-                onPress={() => setColor('white')}
-                disabled={!withName}
-              >
-                <View style={[styles.colorSwatch, { backgroundColor: '#FFFFFF' }]} />
-                <Text style={[styles.colorOptionText, { color: textColor }]}>White</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.colorOption, color === 'black' && styles.colorOptionSelected]}
-                onPress={() => setColor('black')}
-                disabled={!withName}
-              >
-                <View style={[styles.colorSwatch, { backgroundColor: '#000000' }]} />
-                <Text style={[styles.colorOptionText, { color: textColor }]}>Black</Text>
-              </TouchableOpacity>
+          {withName && (
+            <View style={styles.colorSection}>
+              <Text style={[styles.colorTitle, { color: textColor }]}>App Name Color</Text>
+              <View style={styles.colorOptions}>
+                <TouchableOpacity
+                  style={[styles.colorOption, color === 'white' && styles.colorOptionSelected]}
+                  onPress={() => setColor('white')}
+                >
+                  <View style={[styles.colorSwatch, { backgroundColor: '#FFFFFF' }]} />
+                  <Text style={[styles.colorOptionText, { color: textColor }]}>White</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.colorOption, color === 'black' && styles.colorOptionSelected]}
+                  onPress={() => setColor('black')}
+                >
+                  <View style={[styles.colorSwatch, { backgroundColor: '#000000' }]} />
+                  <Text style={[styles.colorOptionText, { color: textColor }]}>Black</Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
+          )}
 
           <TouchableOpacity
             style={styles.doneButton}
-            onPress={() => onSelect(withName, withName ? color : '')}
+            onPress={() => {
+              persistPrefs(withName, color);
+              onSelect(withName, withName ? color : '');
+            }}
           >
             <Text style={styles.doneButtonText}>Done</Text>
           </TouchableOpacity>
