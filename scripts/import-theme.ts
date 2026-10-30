@@ -107,7 +107,7 @@ async function importSingleTheme(options: any) {
 
     // 2. Handle All Wallpapers
     const wallpapersSubfolder = path.join(themeFolder, 'Wallpapers');
-    const uploadedWallpapers: string[] = [];
+    const uploadedWallpapers: { url: string; preview: string }[] = [];
 
     if (fs.existsSync(wallpapersSubfolder)) {
       const wallpaperFiles = fs.readdirSync(wallpapersSubfolder).filter(f =>
@@ -129,7 +129,11 @@ async function importSingleTheme(options: any) {
           folder: `iconaura/themes/${slug}/Wallpapers`,
           public_id: `wallpaper_${path.parse(file).name}`,
         });
-        uploadedWallpapers.push(res.secure_url);
+        const previewUrl = res.secure_url.replace(
+          '/upload/',
+          '/upload/c_fill,w_360,h_640,q_auto,f_auto/'
+        );
+        uploadedWallpapers.push({ url: res.secure_url, preview: previewUrl });
         fs.unlinkSync(outputPath);
       }
       console.log(`  ✅ Uploaded ${uploadedWallpapers.length} wallpapers.`);
@@ -175,7 +179,14 @@ async function importSingleTheme(options: any) {
       .single();
 
     const currentWallpapers = existingTheme?.config?.wallpapers || [];
-    const allWallpapers = Array.from(new Set([...currentWallpapers, ...uploadedWallpapers]));
+    const mergedWallpapers = [...currentWallpapers, ...uploadedWallpapers];
+    const seenWallpapers = new Set<string>();
+    const allWallpapers = mergedWallpapers.filter(item => {
+      const url = typeof item === 'string' ? item : item?.url;
+      if (!url || seenWallpapers.has(url)) return false;
+      seenWallpapers.add(url);
+      return true;
+    });
 
     const finalIconValue = (iconType === 'pattern' && uploadedIconPatternUrl) ? uploadedIconPatternUrl : iconValue;
     const finalBgValue = (bgType === 'pattern' && uploadedBgPatternUrl) ? uploadedBgPatternUrl : bgValue;

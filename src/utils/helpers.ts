@@ -25,3 +25,23 @@ export function isValidPackageName(packageName: string): boolean {
 export function generateShortcutId(): string {
   return `shortcut_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 }
+
+
+export function getCloudinaryImageUrl(
+  url: string,
+  width?: number,
+  height?: number,
+  quality: string = 'auto',
+): string {
+  if (!url || !url.includes('/upload/')) return url;
+
+  const transforms = [
+    'c_fill',
+    width ? `w_${width}` : '',
+    height ? `h_${height}` : '',
+    `q_${quality}`,
+    'f_auto',
+  ].filter(Boolean).join(',');
+
+  return url.replace('/upload/', `/upload/${transforms}/`);
+}

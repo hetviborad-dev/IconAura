@@ -80,6 +80,11 @@ export default function PremiumScreen({ navigation }: any) {
       contentContainerStyle={styles.scrollContent}
       showsVerticalScrollIndicator={false}
     >
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <Icon name="chevron-back" size={24} color="#FFFFFF" />
+        <Text style={styles.backText}>Back</Text>
+      </TouchableOpacity>
+
       <View style={styles.hero}>
         <View style={styles.crownGlow}>
           <View style={styles.crownCircle}>
@@ -142,7 +147,7 @@ export default function PremiumScreen({ navigation }: any) {
             onPress={() => navigation.navigate('HomeStack', { screen: 'Themes' })}
           >
             <View style={styles.actionIcon}>
-              <Icon name="palette" size={22} color="#FFD700" />
+              <Icon name="color-palette-outline" size={22} color="#FFD700" />
             </View>
             <Text style={styles.actionButtonText}>Explore themes</Text>
           </TouchableOpacity>
@@ -151,7 +156,7 @@ export default function PremiumScreen({ navigation }: any) {
             onPress={() => navigation.navigate('HomeStack', { screen: 'Wallpapers' })}
           >
             <View style={styles.actionIcon}>
-              <Icon name="image" size={22} color="#FFD700" />
+              <Icon name="images-outline" size={22} color="#FFD700" />
             </View>
             <Text style={styles.actionButtonText}>Set wallpaper</Text>
           </TouchableOpacity>
@@ -195,15 +200,6 @@ export default function PremiumScreen({ navigation }: any) {
           <Text style={styles.restoreText}>Restore purchases</Text>
         </TouchableOpacity>
 
-        <View style={styles.supportRow}>
-          <TouchableOpacity onPress={() => Linking.openURL('https://play.google.com/store/account/subscriptions')}>
-            <Text style={styles.supportLink}>Manage in Play Store</Text>
-          </TouchableOpacity>
-          <Text style={styles.supportDivider}>•</Text>
-          <TouchableOpacity onPress={() => Linking.openURL('mailto:support@iconaura.app')}>
-            <Text style={styles.supportLink}>Help</Text>
-          </TouchableOpacity>
-        </View>
       </View>
     </ScrollView>
   );
@@ -231,6 +227,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 52,
     paddingBottom: 48,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    alignSelf: 'flex-start',
+    marginBottom: 18,
+    paddingHorizontal: 4,
+    paddingVertical: 4,
+  },
+  backText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
   },
   hero: {
     alignItems: 'center',

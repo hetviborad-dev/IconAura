@@ -38,6 +38,12 @@ async function getCategoryId(slug: string) {
   return data;
 }
 
+function normalizeWallpaper(input: any): { url: string; preview?: string } {
+  if (typeof input === 'string') return { url: input };
+  const preview = (input?.preview || '').replace(',e_blur:300', '');
+  return { url: input?.url, preview: preview || undefined };
+}
+
 export async function fetchHomeThemes(filters?: {
   colors?: string[];
   tags?: string[];
@@ -103,7 +109,7 @@ export async function fetchHomeThemes(filters?: {
         isPremium: row.is_premium || false,
         previewUrl: row.preview_url,
         preview: config.preview || { featuredApps: [], subtitle: '' },
-        wallpapers: config.wallpapers || [],
+        wallpapers: (config.wallpapers || []).map(normalizeWallpaper),
       });
     }
   });
@@ -150,7 +156,7 @@ export async function fetchTheme(themeId: ThemeId): Promise<ThemeDefinition> {
       featuredApps: [],
       subtitle: '',
     },
-    wallpapers: config.wallpapers || [],
+    wallpapers: (config.wallpapers || []).map(normalizeWallpaper),
   };
 }
 
@@ -206,7 +212,7 @@ export async function fetchPublicThemes(
         featuredApps: [],
         subtitle: '',
       },
-      wallpapers: config.wallpapers || [],
+      wallpapers: (config.wallpapers || []).map(normalizeWallpaper),
     };
   });
 
@@ -257,7 +263,7 @@ export async function fetchThemesByCategory(category: string): Promise<ThemeDefi
         featuredApps: [],
         subtitle: '',
       },
-      wallpapers: config.wallpapers || [],
+      wallpapers: (config.wallpapers || []).map(normalizeWallpaper),
     };
   });
 }

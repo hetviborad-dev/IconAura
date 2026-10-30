@@ -37,6 +37,11 @@ export interface ThemeLayer {
   value: string; 
 }
 
+export interface WallpaperAsset {
+  url: string;
+  preview?: string;
+}
+
 export interface ThemeDefinition {
   id: ThemeId;
   name: string;
@@ -55,7 +60,7 @@ export interface ThemeDefinition {
     
     subtitle: string;
   };
-  wallpapers: string[];
+  wallpapers: WallpaperAsset[];
 }
 
 

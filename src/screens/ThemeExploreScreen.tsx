@@ -157,7 +157,7 @@ export default function ThemeExploreScreen() {
     }
     const theme = themes[currentThemeIndex];
     const wallpaperUrl = (theme.wallpapers && theme.wallpapers.length > 0)
-      ? theme.wallpapers[0]
+      ? (typeof theme.wallpapers[0] === 'string' ? theme.wallpapers[0] : theme.wallpapers[0].url)
       : '';
 
     if (!wallpaperUrl) {
@@ -260,7 +260,7 @@ export default function ThemeExploreScreen() {
         visible={modalVisible}
         isDarkMode={isDarkMode}
         wallpaperUrl={(currentTheme?.wallpapers && currentTheme.wallpapers.length > 0)
-          ? currentTheme.wallpapers[0]
+          ? (typeof currentTheme.wallpapers[0] === 'string' ? currentTheme.wallpapers[0] : currentTheme.wallpapers[0].url)
           : ''}
         onClose={() => setModalVisible(false)}
         onApply={handleApplyWallpaper}

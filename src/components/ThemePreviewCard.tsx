@@ -19,6 +19,8 @@ const DEFAULT_WALLPAPER = require('../assets/images/wallpaper/image.jpeg');
 
 const DOCK_APPS: AppId[] = ['camera', 'phone', 'messages', 'chrome'];
 
+import { getCloudinaryImageUrl } from '../utils/helpers';
+
 interface Props {
   theme: ThemeDefinition;
 }
@@ -29,7 +31,7 @@ export default function ThemePreviewCard({ theme }: Props) {
 
   
   const wallpapers = (theme.wallpapers && theme.wallpapers.length > 0)
-    ? theme.wallpapers
+    ? theme.wallpapers.map((w) => getCloudinaryImageUrl(typeof w === 'string' ? w : w.url, 720, 1280))
     : [DEFAULT_WALLPAPER];
 
   const handleWallpaperScroll = (event: any) => {

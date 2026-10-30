@@ -643,7 +643,9 @@ export default function ThemeDetailScreen({
               showsHorizontalScrollIndicator={false}
               contentContainerStyle={styles.wallpapersList}
             >
-              {theme.wallpapers.map((url, index) => (
+              {theme.wallpapers.map((asset, index) => {
+                const url = typeof asset === 'string' ? asset : asset.url;
+                return (
                 <TouchableOpacity
                   key={index}
                   style={styles.wallpaperThumbnail}
@@ -661,7 +663,8 @@ export default function ThemeDetailScreen({
                     </View>
                   )}
                 </TouchableOpacity>
-              ))}
+                );
+              })}
             </ScrollView>
           </View>
         )}

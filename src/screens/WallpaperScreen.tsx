@@ -24,6 +24,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 
 interface WallpaperItem {
   url: string;
+  preview?: string;
   theme: ThemeDefinition;
 }
 
@@ -38,6 +39,8 @@ function LoadingSkeleton() {
     </View>
   );
 }
+
+import { getCloudinaryImageUrl } from '../utils/helpers';
 
 export default function WallpaperScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -58,8 +61,10 @@ export default function WallpaperScreen() {
         const allWallpapers: WallpaperItem[] = [];
 
         themes.forEach(theme => {
-          (theme.wallpapers || []).forEach(url => {
-            allWallpapers.push({ url, theme });
+          (theme.wallpapers || []).forEach(asset => {
+            const url = typeof asset === 'string' ? asset : asset.url;
+            const preview = typeof asset === 'string' ? undefined : asset.preview;
+            allWallpapers.push({ url, preview, theme });
           });
         });
 
@@ -93,7 +98,7 @@ export default function WallpaperScreen() {
       onPress={() => setSelectedWallpaper(item)}
       activeOpacity={0.8}
     >
-      <Image source={{ uri: item.url }} style={styles.wallpaperImage} />
+      <Image source={{ uri: item.preview || getCloudinaryImageUrl(item.url, 360, 640) }} style={styles.wallpaperImage} />
       {item.theme.isPremium && !isPremium && (
         <View style={styles.premiumBadge}>
           <Icon name="lock-closed" size={12} color="white" />
