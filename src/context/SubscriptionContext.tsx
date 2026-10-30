@@ -82,9 +82,10 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     checkSubscription();
 
-    const listener = Purchases.addCustomerInfoUpdateListener((info) => {
+    const customerInfoListener = (info: CustomerInfo) => {
       updateStateFromCustomerInfo(info);
-    });
+    };
+    Purchases.addCustomerInfoUpdateListener(customerInfoListener);
 
     const subscription = AppState.addEventListener('change', (nextAppState: AppStateStatus) => {
       if (nextAppState === 'active') {
@@ -93,7 +94,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     });
 
     return () => {
-      listener();
+      Purchases.removeCustomerInfoUpdateListener(customerInfoListener);
       subscription.remove();
     };
   }, [checkSubscription, updateStateFromCustomerInfo]);
