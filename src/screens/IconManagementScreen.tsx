@@ -24,14 +24,29 @@ import { useAppDetection } from '../context/AppDetectionContext';
 
 const { HomeShortcut } = NativeModules;
 
-const AppIcon = ({ appId }: { appId: string }) => {
+const AppIcon = ({ appId, appName, fallbackColor }: { appId: string; appName?: string; fallbackColor?: string }) => {
   const [icon, setIcon] = useState<string | null>(null);
 
   useEffect(() => {
     async function load() {
       try {
-        const result = await HomeShortcut.getCurrentAppIcon({ packageName: appId });
-        setIcon(result.base64);
+        const app = getAllApps().find((candidate: any) => candidate.id === appId);
+        const packages = app
+          ? [app.packageName, ...Object.values(app.packageAlternatives || {})]
+          : [appId];
+
+        for (const packageName of packages) {
+          try {
+            const result = await HomeShortcut.getCurrentAppIcon({ packageName: String(packageName) });
+            if (result?.base64) {
+              setIcon(result.base64);
+              return;
+            }
+          } catch (e) {
+            
+          }
+        }
+        throw new Error('No icon');
       } catch (e) {
         
       }
@@ -40,9 +55,15 @@ const AppIcon = ({ appId }: { appId: string }) => {
   }, [appId]);
 
   if (!icon) {
+    const letter = (appName || appId || '?').charAt(0).toUpperCase();
     return (
-      <View style={[styles.appIconPlaceholder, { backgroundColor: Colors.surface }]}>
-        <Ionicons name="apps" size={16} color={Colors.textSecondary} />
+      <View
+        style={[
+          styles.appIcon,
+          { backgroundColor: fallbackColor || Colors.primary, alignItems: 'center', justifyContent: 'center' },
+        ]}
+      >
+        <Text style={{ color: '#FFFFFF', fontWeight: '700', fontSize: 12 }}>{letter}</Text>
       </View>
     );
   }
@@ -177,7 +198,7 @@ export default function IconManagementScreen({ navigation }: IconManagementScree
           return (
             <View key={app.id} style={[styles.iconRow, { backgroundColor: Colors.surface }]}>
               <View style={styles.leftSection}>
-                <AppIcon appId={detectedPkg} />
+                <AppIcon appId={app.id} appName={app.name} fallbackColor={app.icon?.fallbackColor} />
                 <Text style={[styles.appName, { color: textColor }]}>{app.name}</Text>
               </View>
               <Switch
