@@ -282,11 +282,24 @@ export default function ThemeDetailScreen({
     const subscription = onShortcutPinned(event => {
       const app = SUPPORTED_APPS.find(a => {
         const primaryId = generateShortcutId(a.packageName, theme.id);
-        if (primaryId === event.shortcutId) return true;
+        if (
+          event.shortcutId === primaryId ||
+          event.shortcutId === `${primaryId}_named` ||
+          event.shortcutId === `${primaryId}_unnamed`
+        ) {
+          return true;
+        }
 
         if (a.packageAlternatives) {
           return Object.values(a.packageAlternatives).some(
-            pkg => generateShortcutId(pkg, theme.id) === event.shortcutId,
+            pkg => {
+              const altBase = generateShortcutId(pkg, theme.id);
+              return (
+                event.shortcutId === altBase ||
+                event.shortcutId === `${altBase}_named` ||
+                event.shortcutId === `${altBase}_unnamed`
+              );
+            },
           );
         }
         return false;
@@ -337,7 +350,8 @@ export default function ThemeDetailScreen({
         );
       }
 
-      const shortcutId = generateShortcutId(packageName, theme.id);
+      const hasName = !!appName?.trim();
+      const shortcutId = `${generateShortcutId(packageName, theme.id)}_${hasName ? 'named' : 'unnamed'}`;
       setCapturingAppId(appId as AppId);
 
       let attempts = 0;
