@@ -9,16 +9,20 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useWindowDimensions } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { ThemeDefinition } from '../types/data';
 import { getSavedThemes, unsaveTheme } from '../services/local/themeStorage';
+import { ThemeCard } from '../components';
 import { Colors, Spacing, Typography, Radius } from '../constants/design';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import IconCanvas from '../components/IconCanvas';
 
 export default function SavedThemesScreen({ navigation }: { navigation: NativeStackNavigationProp<RootStackParamList> }) {
   const [savedThemes, setSavedThemes] = useState<ThemeDefinition[]>([]);
   const [loading, setLoading] = useState(true);
+  const { width: screenWidth } = useWindowDimensions();
 
   useEffect(() => {
     loadSavedThemes();
@@ -76,20 +80,36 @@ export default function SavedThemesScreen({ navigation }: { navigation: NativeSt
         data={savedThemes}
         keyExtractor={item => item.id}
         contentContainerStyle={styles.listContent}
+        numColumns={3}
         renderItem={({ item }) => (
           <TouchableOpacity
-            style={styles.themeItem}
+            style={[styles.themeItem, { width: (screenWidth - 48) / 3 }]}
             onPress={() => navigation.navigate('ThemeDetail', { theme: item })}
+            activeOpacity={0.85}
           >
-            <View style={styles.themeInfo}>
-              <Text style={styles.themeName}>{item.name}</Text>
-              <Text style={styles.themeCategory}>{item.category}</Text>
+            <View
+              style={[
+                styles.preview,
+                {
+                  backgroundColor:
+                    item.background.type === 'color' ? item.background.value : 'transparent',
+                },
+              ]}
+            >
+              {(item.featuredApps || []).slice(0, 4).map((appId) => (
+                <View key={appId} style={styles.iconTile}>
+                  <IconCanvas appId={appId} theme={item} size={55} />
+                </View>
+              ))}
             </View>
+            <Text style={styles.themeName} numberOfLines={1}>
+              {item.name}
+            </Text>
             <TouchableOpacity
               onPress={() => handleUnsave(item.id)}
               style={styles.unsaveButton}
             >
-              <Ionicons name="trash-outline" size={20} color="#FF4B4B" />
+              <Ionicons name="trash-outline" size={16} color="#FF4B4B" />
             </TouchableOpacity>
           </TouchableOpacity>
         )}
@@ -134,15 +154,50 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.xxl,
   },
   themeItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: Spacing.md,
-    backgroundColor: Colors.backgroundSecondary,
+    margin: 4,
+    padding: Spacing.xs,
     borderRadius: Radius.md,
-    marginBottom: Spacing.sm,
+    backgroundColor: Colors.backgroundSecondary,
     borderWidth: 1,
     borderColor: Colors.border,
+    position: 'relative',
+  },
+  preview: {
+    width: '100%',
+    aspectRatio: 1,
+    padding: Spacing.xs,
+    borderRadius: Radius.sm,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    alignContent: 'space-between',
+    overflow: 'hidden',
+  },
+  iconTile: {
+    width: '48%',
+    height: '48%',
+    borderRadius: Radius.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  themeName: {
+    marginTop: Spacing.xs,
+    fontSize: Typography.sizes.caption,
+    fontWeight: Typography.weights.semibold,
+    color: Colors.textPrimary,
+    textAlign: 'center',
+  },
+  unsaveButton: {
+    position: 'absolute',
+    top: 6,
+    right: 6,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    borderRadius: 12,
+    padding: 4,
+    zIndex: 20,
   },
   themeInfo: {
     flexDirection: 'column',
@@ -155,9 +210,5 @@ const styles = StyleSheet.create({
   themeCategory: {
     fontSize: Typography.sizes.caption,
     color: Colors.textSecondary,
-  },
-  unsaveButton: {
-    padding: 8,
-    borderRadius: Radius.sm,
   },
 });
