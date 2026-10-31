@@ -1,6 +1,8 @@
 
 
 import React from 'react';
+import { Platform } from 'react-native';
+import BootSplash from 'react-native-bootsplash';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -62,7 +64,11 @@ function MainTabs() {
 export default function RootNavigator() {
   return (
     <SubscriptionProvider>
-      <NavigationContainer>
+      <NavigationContainer onReady={() => {
+        if (Platform.OS === 'android') {
+          BootSplash.hide();
+        }
+      }}>
         <Stack.Navigator
           screenOptions={{
             headerShown: false,
