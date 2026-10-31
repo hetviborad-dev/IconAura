@@ -106,9 +106,9 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
   },
   tabItem: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 16,
   },
   label: {
     fontSize: 12,
