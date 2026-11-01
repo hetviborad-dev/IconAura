@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   View,
   FlatList,
   Image,
   TouchableOpacity,
+  RefreshControl,
   ActivityIndicator,
   StyleSheet,
   Text,
@@ -30,13 +32,20 @@ interface WallpaperItem {
 
 function LoadingSkeleton() {
   return (
-    <View style={styles.grid}>
-      {[...Array(12)].map((_, i) => (
-        <View key={i} style={styles.wallpaperContainer}>
+    <FlatList
+      data={[...Array(12)]}
+      renderItem={() => (
+        <View style={styles.wallpaperContainer}>
           <Skeleton borderRadius={Radius.sm} />
         </View>
-      ))}
-    </View>
+      )}
+      keyExtractor={(item, index) => `skeleton-${index}`}
+      numColumns={2}
+      contentContainerStyle={styles.grid}
+      showsVerticalScrollIndicator={false}
+      scrollEnabled={false}
+      pointerEvents="none"
+    />
   );
 }
 
@@ -47,43 +56,54 @@ export default function WallpaperScreen() {
   const { isPremium } = useSubscription();
   const [wallpapers, setWallpapers] = useState<WallpaperItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [selectedWallpaper, setSelectedWallpaper] = useState<WallpaperItem | null>(null);
 
   const backgroundColor = Colors.background;
   const textColor = Colors.textPrimary;
 
-  useEffect(() => {
-    async function loadWallpapers() {
-      try {
-        setLoading(true);
-        let page = 1;
-        const themes: ThemeDefinition[] = [];
-        while (true) {
-          const result = await fetchPublicThemes(page, 50);
-          themes.push(...result.data);
-          if (!result.hasMore || !result.data.length) break;
-          page += 1;
-        }
-
-        const allWallpapers: WallpaperItem[] = [];
-
-        themes.forEach(theme => {
-          (theme.wallpapers || []).forEach(asset => {
-            const url = typeof asset === 'string' ? asset : asset.url;
-            const preview = typeof asset === 'string' ? undefined : asset.preview;
-            allWallpapers.push({ url, preview, theme });
-          });
-        });
-
-        setWallpapers(allWallpapers);
-      } catch (e) {
-        console.error('Failed to load wallpapers:', e);
-      } finally {
-        setLoading(false);
-      }
+  const loadWallpapers = useCallback(async (isRefresh = false) => {
+    if (isRefresh) {
+      setRefreshing(true);
+    } else {
+      setLoading(true);
     }
-    loadWallpapers();
+
+    try {
+      let page = 1;
+      const themes: ThemeDefinition[] = [];
+      while (true) {
+        const result = await fetchPublicThemes(page, 50);
+        themes.push(...result.data);
+        if (!result.hasMore || !result.data.length) break;
+        page += 1;
+      }
+
+      const allWallpapers: WallpaperItem[] = [];
+
+      themes.forEach(theme => {
+        (theme.wallpapers || []).forEach(asset => {
+          const url = typeof asset === 'string' ? asset : asset.url;
+          const preview = typeof asset === 'string' ? undefined : asset.preview;
+          allWallpapers.push({ url, preview, theme });
+        });
+      });
+
+      setWallpapers(allWallpapers);
+    } catch (e) {
+      console.error('Failed to load wallpapers:', e);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadWallpapers(false);
+      return undefined;
+    }, [loadWallpapers]),
+  );
 
   const handleApplyWallpaper = async (target: 'home' | 'lock' | 'both') => {
     if (selectedWallpaper?.theme.isPremium && !isPremium) {
@@ -130,6 +150,14 @@ export default function WallpaperScreen() {
           numColumns={2}
           contentContainerStyle={styles.grid}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => loadWallpapers(true)}
+              colors={[Colors.primary]}
+              tintColor={Colors.primary}
+            />
+          }
         />
       )}
 
@@ -141,6 +169,7 @@ export default function WallpaperScreen() {
           isUserPremium={isPremium}
           onClose={() => setSelectedWallpaper(null)}
           onApply={handleApplyWallpaper}
+          isDarkMode={false}
           showApplyTheme={true}
           onApplyTheme={() => {
             setSelectedWallpaper(null);
