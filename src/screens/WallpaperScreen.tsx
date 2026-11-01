@@ -56,8 +56,15 @@ export default function WallpaperScreen() {
     async function loadWallpapers() {
       try {
         setLoading(true);
-        const result = await fetchPublicThemes();
-        const themes = result.data;
+        let page = 1;
+        const themes: ThemeDefinition[] = [];
+        while (true) {
+          const result = await fetchPublicThemes(page, 50);
+          themes.push(...result.data);
+          if (!result.hasMore || !result.data.length) break;
+          page += 1;
+        }
+
         const allWallpapers: WallpaperItem[] = [];
 
         themes.forEach(theme => {
