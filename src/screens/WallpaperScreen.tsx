@@ -51,12 +51,30 @@ function LoadingSkeleton() {
 
 import { getCloudinaryImageUrl } from '../utils/helpers';
 
+function flattenThemes(themes: ThemeDefinition[]): WallpaperItem[] {
+  const items: WallpaperItem[] = [];
+  themes.forEach(theme => {
+    (theme.wallpapers || []).forEach(asset => {
+      items.push({
+        url: typeof asset === 'string' ? asset : asset.url,
+        preview: typeof asset === 'string' ? undefined : asset.preview,
+        theme,
+      });
+    });
+  });
+  return items;
+}
+const PAGE_SIZE = 20;
+
 export default function WallpaperScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { isPremium } = useSubscription();
   const [wallpapers, setWallpapers] = useState<WallpaperItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [selectedWallpaper, setSelectedWallpaper] = useState<WallpaperItem | null>(null);
 
   const backgroundColor = Colors.background;
@@ -70,26 +88,10 @@ export default function WallpaperScreen() {
     }
 
     try {
-      let page = 1;
-      const themes: ThemeDefinition[] = [];
-      while (true) {
-        const result = await fetchPublicThemes(page, 50);
-        themes.push(...result.data);
-        if (!result.hasMore || !result.data.length) break;
-        page += 1;
-      }
-
-      const allWallpapers: WallpaperItem[] = [];
-
-      themes.forEach(theme => {
-        (theme.wallpapers || []).forEach(asset => {
-          const url = typeof asset === 'string' ? asset : asset.url;
-          const preview = typeof asset === 'string' ? undefined : asset.preview;
-          allWallpapers.push({ url, preview, theme });
-        });
-      });
-
-      setWallpapers(allWallpapers);
+      const result = await fetchPublicThemes(1, PAGE_SIZE);
+      setWallpapers(flattenThemes(result.data));
+      setPage(1);
+      setHasMore(result.hasMore);
     } catch (e) {
       console.error('Failed to load wallpapers:', e);
     } finally {
@@ -98,9 +100,25 @@ export default function WallpaperScreen() {
     }
   }, []);
 
+  const loadMoreWallpapers = useCallback(async () => {
+    if (loading || refreshing || loadingMore || !hasMore) return;
+    setLoadingMore(true);
+    try {
+      const nextPage = page + 1;
+      const result = await fetchPublicThemes(nextPage, PAGE_SIZE);
+      setWallpapers(prev => [...prev, ...flattenThemes(result.data)]);
+      setPage(nextPage);
+      setHasMore(result.hasMore);
+    } catch (e) {
+      console.error('Failed to load more wallpapers:', e);
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [loading, refreshing, loadingMore, hasMore, page]);
+
   useFocusEffect(
     useCallback(() => {
-      loadWallpapers(false);
+      loadWallpapers(true);
       return undefined;
     }, [loadWallpapers]),
   );
@@ -150,6 +168,17 @@ export default function WallpaperScreen() {
           numColumns={2}
           contentContainerStyle={styles.grid}
           showsVerticalScrollIndicator={false}
+          onEndReached={loadMoreWallpapers}
+          onEndReachedThreshold={0.5}
+          ListFooterComponent={
+            loadingMore ? (
+              <ActivityIndicator
+                size="small"
+                color={Colors.primary}
+                style={{ marginVertical: 16 }}
+              />
+            ) : undefined
+          }
           refreshControl={
             <RefreshControl
               refreshing={refreshing}

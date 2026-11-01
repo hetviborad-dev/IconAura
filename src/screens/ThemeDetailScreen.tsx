@@ -827,7 +827,7 @@ export default function ThemeDetailScreen({
 
       <Modal visible={isShapePickerVisible} transparent animationType="fade">
         <View style={[styles.modalOverlay, { justifyContent: 'center' }]}>
-          <View style={[styles.modalContent, { backgroundColor: Colors.surface, alignItems: 'center', justifyContent: 'center' }]}>
+          <View style={[styles.modalContent, { backgroundColor: Colors.surface, alignItems: 'center', justifyContent: 'center', height: 'auto', maxHeight: '75%', width: '92%', padding: 24, borderRadius: 24 }]}>
             <Text style={[styles.modalHeaderTitle, { color: textColor, textAlign: 'center' }]}>
               Which style do you want to set?
             </Text>
