@@ -7,6 +7,7 @@ import {
   useColorScheme,
   Text,
   StyleSheet,
+  Linking,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Colors, Spacing, Typography, Radius, Layout } from '../constants/design';
@@ -69,6 +70,7 @@ export default function SettingsScreen() {
           icon: 'shield-checkmark-outline',
           label: 'Privacy Policy',
           subtitle: 'Read our privacy policy',
+          onPress: () => Linking.openURL('https://sites.google.com/view/iconaura/privacy-policy').catch(() => {}),
         },
       ],
     },

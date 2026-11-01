@@ -51,18 +51,36 @@ export default function SavedThemesScreen({ navigation }: { navigation: NativeSt
 
   if (loading) {
     return (
-      <View style={styles.center}>
-        <ActivityIndicator size="large" color={Colors.primary} />
-      </View>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Ionicons name="chevron-back" size={24} color={Colors.textPrimary} />
+          </TouchableOpacity>
+          <Text style={styles.title}>Saved Themes</Text>
+          <View style={{ width: 24 }} />
+        </View>
+        <View style={styles.center}>
+          <ActivityIndicator size="large" color={Colors.primary} />
+        </View>
+      </SafeAreaView>
     );
   }
 
   if (savedThemes.length === 0) {
     return (
-      <View style={styles.center}>
-        <Ionicons name="heart-outline" size={64} color="#888" />
-        <Text style={styles.emptyText}>No saved themes yet</Text>
-      </View>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Ionicons name="chevron-back" size={24} color={Colors.textPrimary} />
+          </TouchableOpacity>
+          <Text style={styles.title}>Saved Themes</Text>
+          <View style={{ width: 24 }} />
+        </View>
+        <View style={styles.center}>
+          <Ionicons name="heart-outline" size={64} color="#888" />
+          <Text style={styles.emptyText}>No saved themes yet</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
