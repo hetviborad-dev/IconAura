@@ -23,7 +23,7 @@ const BENEFITS = [
   { icon: 'sparkles', text: '100+ premium icon themes' },
   { icon: 'layers-outline', text: 'Exclusive icon styles & layouts' },
   { icon: 'images-outline', text: 'HD matching wallpapers' },
-  { icon: 'megaphone-off', text: 'Completely ad-free experience' },
+  { icon: 'volume-mute-outline', text: 'Completely ad-free experience' },
   { icon: 'flash-outline', text: 'Priority updates & new themes' },
 ];
 
