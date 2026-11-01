@@ -43,7 +43,15 @@ const supabase = createClient(
 async function importSingleTheme(options: any) {
   const { name, slug, category, description, iconType, iconValue, bgType, bgValue, folder, color_tags, theme_tags } = options;
 
-  const themeFolder = path.join(folder, slug);
+  // Support category-wise folders: import_themes/<category>/<slug>
+  // (falls back to the legacy flat import_themes/<slug> layout)
+  const categorySlug = (category || '').toLowerCase().replace(/\s+/g, '-');
+  const candidateFolders = [
+    path.join(folder, category, slug),
+    path.join(folder, categorySlug, slug),
+    path.join(folder, slug),
+  ];
+  const themeFolder = candidateFolders.find(p => fs.existsSync(p)) || path.join(folder, categorySlug, slug);
   const needsImages = iconType === 'pattern' || bgType === 'pattern';
 
   if (needsImages && !fs.existsSync(themeFolder)) {
@@ -58,10 +66,12 @@ async function importSingleTheme(options: any) {
 
     // 1. Handle Pattern Images
     const findPatternFile = (prefix: string) =>
-      files.find(f =>
-        f.toLowerCase().startsWith(prefix) &&
-        ['.jpg', '.jpeg', '.png', '.webp'].some(ext => f.toLowerCase().endsWith(ext))
-      );
+      files.find(f => {
+        const lower = f.toLowerCase();
+        return lower.startsWith(prefix) &&
+          !lower.includes('_processed') &&
+          ['.jpg', '.jpeg', '.png', '.webp'].some(ext => lower.endsWith(ext));
+      });
 
     const iconPatternFile = findPatternFile('icon-pattern');
     const bgPatternFile = findPatternFile('bg-pattern');
@@ -243,7 +253,11 @@ program
       process.exit(1);
     }
 
-    const themes = JSON.parse(fs.readFileSync('scripts/themes.json', 'utf8'));
+    const rawThemes = JSON.parse(fs.readFileSync('scripts/themes.json', 'utf8'));
+    // Support category-grouped themes.json: [{ category, themes: [...] }]
+    const themes = Array.isArray(rawThemes) && rawThemes.length && Array.isArray(rawThemes[0]?.themes)
+      ? rawThemes.flatMap((group: any) => group.themes || [])
+      : rawThemes;
 
     if (all) {
       for (const theme of themes) {
