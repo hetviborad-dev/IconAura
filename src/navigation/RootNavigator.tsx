@@ -78,7 +78,11 @@ export default function RootNavigator() {
           <Stack.Screen name="ThemeDetail" component={ThemeDetailScreen} />
           <Stack.Screen name="ThemeHomeScreenPreview" component={ThemeHomeScreenPreview} />
           <Stack.Screen name="SavedThemes" component={SavedThemesScreen} />
-          <Stack.Screen name="Premium" component={PremiumScreen} />
+          <Stack.Screen
+            name="Premium"
+            component={PremiumScreen}
+            options={{ presentation: 'modal', animation: 'slide_from_bottom' }}
+          />
           <Stack.Screen name="IconManagement" component={IconManagementScreen} />
         </Stack.Navigator>
       </NavigationContainer>

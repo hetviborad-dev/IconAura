@@ -8,6 +8,8 @@ export interface SubscriptionState {
   loading: boolean;
   planType: 'none' | 'monthly' | 'yearly' | 'lifetime';
   expirationDate: string | null;
+  currentOffering: any;
+  offeringLoading: boolean;
 }
 
 interface SubscriptionContextType extends SubscriptionState {
@@ -26,6 +28,8 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     loading: true,
     planType: 'none',
     expirationDate: null,
+    currentOffering: null,
+    offeringLoading: true,
   });
 
   const updateStateFromCustomerInfo = useCallback((customerInfo: CustomerInfo) => {
@@ -71,11 +75,24 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
 
   const checkSubscription = useCallback(async () => {
     try {
-      const customerInfo = await Purchases.getCustomerInfo();
+      const [customerInfo, offerings] = await Promise.all([
+        Purchases.getCustomerInfo(),
+        Purchases.getOfferings().catch((err: any) => {
+          console.error('RevenueCat Offerings Error:', err);
+          return null;
+        }),
+      ]);
+
+      if (offerings?.current) {
+        setState(prev => ({ ...prev, currentOffering: offerings.current, offeringLoading: false }));
+      } else {
+        setState(prev => ({ ...prev, offeringLoading: false }));
+      }
+
       updateStateFromCustomerInfo(customerInfo);
     } catch (e) {
       console.error('RevenueCat Error:', e);
-      setState(prev => ({ ...prev, loading: false }));
+      setState(prev => ({ ...prev, loading: false, offeringLoading: false }));
     }
   }, [updateStateFromCustomerInfo]);
 

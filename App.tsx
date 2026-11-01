@@ -17,6 +17,10 @@ import { SubscriptionConfig } from './src/constants/subscriptions';
 
 Purchases.configure({ apiKey: SubscriptionConfig.apiKey });
 
+// Warm up RevenueCat offerings as early as possible so the paywall
+// can render without waiting for a network fetch on navigation.
+Purchases.getOfferings().catch(() => {});
+
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
 
