@@ -1214,10 +1214,10 @@ const styles = StyleSheet.create({
   modalContent: {
     borderRadius: 24,
     padding: 24,
-    width: '90%',
+    width: '100%',
+    height: '82%',
     alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     paddingBottom: 40,
   },
   modalListContainer: { flex: 1 },
