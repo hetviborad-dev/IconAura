@@ -39,7 +39,6 @@ export function useInterstitialAd() {
     if (loaded && ad) {
       ad.show();
     } else {
-      console.log('Ad not loaded yet');
       ad?.load();
     }
   };

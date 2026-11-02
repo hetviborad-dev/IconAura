@@ -27,7 +27,6 @@ interface Props {
 
 export default function ThemePreviewCard({ theme }: Props) {
   const [wallpaperIndex, setWallpaperIndex] = useState(0);
-  console.log(`DEBUG: ThemePreviewCard [${theme.name}] isPremium:`, theme.isPremium);
 
   
   const wallpapers = (theme.wallpapers && theme.wallpapers.length > 0)
@@ -103,7 +102,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
   },
   backgroundLayer: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 1,
   },
   wallpaper: {
@@ -111,7 +110,7 @@ const styles = StyleSheet.create({
     height: height,
   },
   uiLayer: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     zIndex: 10,
     pointerEvents: 'box-none',
   },

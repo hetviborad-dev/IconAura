@@ -60,10 +60,9 @@ export default function WallpaperSelectionModal({
             source={{ uri: wallpaperUrl }}
             style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%' }}
             resizeMode="cover"
-            onError={(e) => console.log('WallpaperSelectionModal image error:', e.nativeEvent, wallpaperUrl)}
           />
         ) : (
-          <View style={[StyleSheet.absoluteFillObject, { backgroundColor: Colors.background }]} />
+          <View style={[StyleSheet.absoluteFill, { backgroundColor: Colors.background }]} />
         )}
 
         <View style={[styles.topBar, { top: insets.top + 20 }]}>

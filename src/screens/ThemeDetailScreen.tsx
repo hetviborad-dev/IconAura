@@ -138,9 +138,7 @@ export default function ThemeDetailScreen({
 }: ThemeDetailScreenProps) {
   const isDarkMode = useColorScheme() === 'dark';
   const { theme } = route.params;
-  console.log(`DEBUG: ThemeDetailScreen [${theme.name}] isPremium:`, theme.isPremium);
   const { isPremium } = useSubscription();
-  console.log('ThemeDetailScreen - theme:', theme);
   const [enabledIcons, setEnabledIcons] = useState<Set<AppId>>(new Set());
   const { appStatus, loading, error, refresh } = useAppDetection();
   const [isSaved, setIsSaved] = useState(false);
@@ -275,7 +273,6 @@ export default function ThemeDetailScreen({
     preloadAllApps();
   }, []);
 
-  console.log('installedApps', installedApps);
 
   
   useEffect(() => {
@@ -335,24 +332,14 @@ export default function ThemeDetailScreen({
     color: string = 'white',
   ) => {
     try {
-      console.log(
-        `[Shortcut] Creating for appId: ${appId}, pkg: ${packageName}`,
-      );
 
       let targetPackageName = packageName;
       const mappedId = appMappings[appId as AppId];
 
       if (mappedId) {
-        console.log(`[Shortcut] Found mapping: ${appId} -> ${mappedId}`);
         const mappedApp = SUPPORTED_APPS.find(a => a.id === mappedId);
         targetPackageName = mappedApp ? mappedApp.packageName : mappedId;
-        console.log(
-          `[Shortcut] Target package updated to: ${targetPackageName}`,
-        );
       } else {
-        console.log(
-          `[Shortcut] No mapping for ${appId}, using original package: ${targetPackageName}`,
-        );
       }
 
       const hasName = !!appName?.trim();
@@ -436,7 +423,6 @@ export default function ThemeDetailScreen({
           await handleCreateShortcut(app.id, label, pkgName, color);
         } else {
           try {
-            console.log(`[Square] Applying widget for: ${app.name}`);
 
             setCapturingAppId(app.id);
             let attempts = 0;

@@ -15,13 +15,16 @@ import { useSubscription } from '../context/SubscriptionContext';
 interface ThemeCardProps {
   theme: ThemeDefinition;
   onPress: () => void;
+  isPremium?: boolean;
 }
 
 const ThemeCard = memo(({
   theme,
   onPress,
+  isPremium: isPremiumProp,
 }: ThemeCardProps) => {
-  const { isPremium } = useSubscription();
+  const { isPremium: contextPremium } = useSubscription();
+  const isPremium = isPremiumProp ?? contextPremium;
   const borderColor = Colors.border;
   const cardColor = Colors.surface;
   const secondaryTextColor = Colors.textSecondary;

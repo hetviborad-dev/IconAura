@@ -13,7 +13,6 @@ export default function BackgroundLayer({ layer, size }: BackgroundLayerProps) {
   }
 
   const patternUrl = layer.value.startsWith('http') ? layer.value : null;
-  console.log('BackgroundLayer patternUrl:', patternUrl);
 
   if (!patternUrl) {
     console.warn(`Background pattern URL not found in layer value: ${layer.value}`);

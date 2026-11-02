@@ -101,11 +101,9 @@ export default function PremiumScreen({ navigation }: any) {
         <RevenueCatUI.Paywall
           options={currentOffering ? { offering: currentOffering } : undefined}
           onPurchaseCompleted={async (customerInfo: any) => {
-            console.log('Purchase completed!', customerInfo);
             updateSubscriptionState(customerInfo);
           }}
           onRestoreCompleted={async (customerInfo: any) => {
-            console.log('Restore completed!', customerInfo);
             updateSubscriptionState(customerInfo);
           }}
         />

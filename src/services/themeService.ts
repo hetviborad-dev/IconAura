@@ -82,7 +82,6 @@ export async function fetchHomeThemes(filters?: {
   }
 
   const { data: themes, error: themeError } = await query;
-  console.log('DEBUG: fetchPublicThemes data[0]:', themes?.[0]);
   if (themeError) {
     console.error('Error fetching themes:', themeError);
     return { categories: sortedCategories || [], themesMap: {} };
@@ -228,10 +227,10 @@ export async function fetchThemesByCategory(category: string): Promise<ThemeDefi
     return [];
   }
 
-  console.log(`DEBUG: fetchThemesByCategory called for category: ${category}`);
 
   
-  const categoryId = await getCategoryId(category);
+  const categoryRow = await getCategoryId(category);
+  const categoryId = categoryRow?.id;
 
   const { data, error } = await supabase
     .from('themes')
@@ -240,11 +239,9 @@ export async function fetchThemesByCategory(category: string): Promise<ThemeDefi
     .or(`category_id.eq.${categoryId || '00000000-0000-0000-0000-000000000000'},config->>category.eq.${category}`);
 
   if (error) {
-    console.error(`DEBUG: Error fetching themes for ${category}:`, error);
     return [];
   }
 
-  console.log(`DEBUG: Found ${data?.length || 0} themes for category ${category}`);
 
   return (data || []).map(row => {
     const config = row.config as any;

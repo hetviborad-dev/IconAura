@@ -115,7 +115,6 @@ export default function SettingsScreen() {
                   icon={item.icon}
                   title={item.label}
                   subtitle={item.subtitle}
-                  onPress={item.onPress || (() => console.log(`Pressed: ${item.label}`))}
                   showBorder={itemIndex < section.items.length - 1}
                 />
               ))}
