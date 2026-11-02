@@ -82,7 +82,8 @@ const AppIcon = ({ appId, appName, fallbackColor, installed = true }: { appId: s
       <View
         style={[
           styles.appIcon,
-          { backgroundColor: fallbackColor || Colors.primary, alignItems: 'center', justifyContent: 'center' },
+          styles.fallbackCenter,
+          { backgroundColor: fallbackColor || Colors.primary },
         ]}
       >
         <FontText color="#FFFFFF" size={12} name="bold">{letter}</FontText>
@@ -103,14 +104,14 @@ const IconRowSkeleton = () => {
     <SkeletonPlaceholder
       borderRadius={Radius.md}
       highlightColor={Colors.surface}
-      lowlightColor={Colors.background}
+      backgroundColor={Colors.background}
     >
       <View style={styles.iconRow}>
         <View style={styles.leftSection}>
-          <View style={[styles.appIcon, { marginRight: Spacing.sm }]} />
-          <View style={{ width: 120, height: 20, borderRadius: 4 }} />
+          <View style={[styles.appIcon, styles.mrSm]} />
+          <View style={styles.skeletonText} />
         </View>
-        <View style={{ width: 40, height: 20, borderRadius: 10 }} />
+        <View style={styles.skeletonBadge} />
       </View>
     </SkeletonPlaceholder>
   );
@@ -171,16 +172,16 @@ export default function IconManagementScreen({ navigation }: IconManagementScree
             <Ionicons name="chevron-back" size={28} color={textColor} />
           </TouchableOpacity>
           <FontText color={textColor} size={Typography.sizes.h2} name="bold">Manage Icons</FontText>
-          <View style={{ width: 28 }} />
+          <View style={styles.spacer28} />
         </View>
 
         <View style={styles.searchContainer}>
           <Ionicons name="search" size={20} color={secondaryTextColor} style={styles.searchIcon} />
-          <View style={[styles.searchInput, { backgroundColor: Colors.surface, borderRadius: 4 }]} />
+          <View style={[styles.searchInput, styles.searchInputPlaceholder]} />
         </View>
 
         <ScrollView contentContainerStyle={styles.content}>
-          <View style={{ height: 20, width: '60%', backgroundColor: Colors.surface, marginBottom: Spacing.xl, borderRadius: 4 }} />
+          <View style={styles.loadingTitle} />
           {[...Array(10)].map((_, i) => (
             <IconRowSkeleton key={i} />
           ))}
@@ -196,7 +197,7 @@ export default function IconManagementScreen({ navigation }: IconManagementScree
           <Ionicons name="chevron-back" size={28} color={textColor} />
         </TouchableOpacity>
         <FontText color={textColor} size={Typography.sizes.h2} name="bold">Manage Icons</FontText>
-        <View style={{ width: 28 }} />
+        <View style={styles.spacer28} />
       </View>
 
       <View style={styles.searchContainer}>
@@ -218,7 +219,7 @@ export default function IconManagementScreen({ navigation }: IconManagementScree
         maxToRenderPerBatch={20}
         windowSize={8}
         ListHeaderComponent={
-          <FontText color={secondaryTextColor} size={Typography.sizes.body} style={{ marginBottom: Spacing.xl, lineHeight: 20 }}>
+          <FontText color={secondaryTextColor} size={Typography.sizes.body} style={styles.listHeader}>
             Select which icons should be visible in the theme editor.
           </FontText>
         }
@@ -280,4 +281,12 @@ const styles = StyleSheet.create({
   },
   leftSection: { flexDirection: 'row', alignItems: 'center' },
   appIcon: { width: 24, height: 24, borderRadius: 4, marginRight: Spacing.sm },
+  fallbackCenter: { alignItems: 'center', justifyContent: 'center' },
+  mrSm: { marginRight: Spacing.sm },
+  skeletonText: { width: 120, height: 20, borderRadius: 4 },
+  skeletonBadge: { width: 40, height: 20, borderRadius: 10 },
+  spacer28: { width: 28 },
+  searchInputPlaceholder: { backgroundColor: Colors.surface, borderRadius: 4 },
+  loadingTitle: { height: 20, width: '60%', backgroundColor: Colors.surface, marginBottom: Spacing.xl, borderRadius: 4 },
+  listHeader: { marginBottom: Spacing.xl, lineHeight: 20 },
 });

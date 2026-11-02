@@ -32,19 +32,19 @@ export default function CustomTabBar({ state, descriptors, navigation }: BottomT
         useNativeDriver: true,
       }).start();
     }
-  }, [state.index, translateY]);
+  }, [state.index, state.routes, translateY]);
+
+  const containerDynamic = { bottom: insets.bottom + 16, transform: [{ translateY }] };
+  const tabBarDynamic = { backgroundColor: tabBarBg };
 
   return (
     <Animated.View
       style={[
         styles.container,
-        {
-          bottom: insets.bottom + 16,
-          transform: [{ translateY }]
-        }
+        containerDynamic,
       ]}
     >
-      <View style={[styles.tabBar, { backgroundColor: tabBarBg }]}>
+      <View style={[styles.tabBar, tabBarDynamic]}>
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
           const rawLabel = options.tabBarLabel ?? options.title;
@@ -74,7 +74,7 @@ export default function CustomTabBar({ state, descriptors, navigation }: BottomT
                 size={24}
                 color={isFocused ? activeColor : inactiveColor}
               />
-              <FontText color={isFocused ? activeColor : inactiveColor} size={12} name="semibold" style={{ marginTop: 4 }}>
+              <FontText color={isFocused ? activeColor : inactiveColor} size={12} name="semibold" style={styles.tabLabel}>
                 {label}
               </FontText>
             </TouchableOpacity>
@@ -108,6 +108,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
+  },
+  tabLabel: {
+    marginTop: 4,
   },
   tabItem: {
     flex: 1,

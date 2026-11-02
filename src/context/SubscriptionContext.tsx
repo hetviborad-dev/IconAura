@@ -42,10 +42,11 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     let expirationDate: string | null = null;
 
     if (entitlement) {
-      expirationDate = entitlement.expirationDate instanceof Date
-        ? entitlement.expirationDate.toISOString()
-        : (typeof entitlement.expirationDate === 'string'
-            ? entitlement.expirationDate
+      const expiration = entitlement.expirationDate as any;
+      expirationDate = expiration instanceof Date
+        ? expiration.toISOString()
+        : (typeof expiration === 'string'
+            ? expiration
             : null);
 
       const productId = entitlement.productIdentifier || '';
@@ -59,18 +60,13 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     }
 
     
-    
-    
-    
-    
-    
-
-    setState({
+    setState(prev => ({
+      ...prev,
       isPremium,
       loading: false,
       planType,
       expirationDate,
-    });
+    }));
   }, []);
 
   const checkSubscription = useCallback(async () => {
@@ -125,9 +121,9 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
       return { success: true, isPremium: entitlement !== undefined };
     } catch (e: any) {
       if (e.userCancelled) {
-        return { success: false, error: 'User cancelled' };
+        return { success: false, isPremium: false, error: 'User cancelled' };
       }
-      return { success: false, error: e.message };
+      return { success: false, isPremium: false, error: e.message };
     }
   };
 
@@ -139,14 +135,15 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
       const entitlement = customerInfo.entitlements.active[SubscriptionConfig.premiumEntitlementId];
       return { success: true, isPremium: entitlement !== undefined };
     } catch (e: any) {
-      return { success: false, error: e.message };
+      return { success: false, isPremium: false, error: e.message };
     }
   };
 
   const getManageSubscriptionUrl = async () => {
     try {
-      if (typeof Purchases.getManagementURL === 'function') {
-        const url = await Purchases.getManagementURL();
+      const purchasesAny = Purchases as any;
+      if (typeof purchasesAny.getManagementURL === 'function') {
+        const url = await purchasesAny.getManagementURL();
         if (url) return { success: true, url };
       }
 
@@ -156,7 +153,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
         url: 'https://play.google.com/store/account/subscriptions'
       };
     } catch (e: any) {
-      return { success: false, error: e.message };
+      return { success: false, isPremium: false, error: e.message };
     }
   };
 

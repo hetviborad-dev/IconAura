@@ -214,7 +214,7 @@ async function importSingleTheme(options: any) {
       wallpapers: allWallpapers,
     };
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('themes')
       .upsert({
         name,
@@ -265,7 +265,7 @@ program
       }
       console.log('\n✨ All themes processed successfully!');
     } else if (slug) {
-      const theme = themes.find(t => t.slug === slug);
+      const theme = themes.find((t: any) => t.slug === slug);
       if (!theme) {
         console.error(`Error: Theme with slug ${slug} not found in themes.json`);
         process.exit(1);

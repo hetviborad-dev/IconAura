@@ -36,6 +36,9 @@ export default function ThemePreviewCard({ theme }: Props) {
     setWallpaperIndex(index);
   };
 
+  const activeDot = { backgroundColor: 'white' };
+  const inactiveDot = { backgroundColor: 'rgba(255,255,255,0.5)' };
+
   return (
     <View style={styles.container}>
       <View style={styles.backgroundLayer}>
@@ -66,7 +69,7 @@ export default function ThemePreviewCard({ theme }: Props) {
                   key={index}
                   style={[
                     styles.dot,
-                    { backgroundColor: wallpaperIndex === index ? 'white' : 'rgba(255,255,255,0.5)' },
+                    wallpaperIndex === index ? activeDot : inactiveDot,
                   ]}
                 />
               ))}

@@ -9,20 +9,23 @@ interface BackgroundLayerProps {
 
 export default function BackgroundLayer({ layer, size }: BackgroundLayerProps) {
   if (layer.type === 'color') {
-    return <View style={[styles.canvas, { backgroundColor: layer.value }]} />;
+    const colorStyle = { backgroundColor: layer.value };
+    return <View style={[styles.canvas, colorStyle]} />;
   }
 
+  const sizeStyle = { width: size, height: size };
   const patternUrl = layer.value.startsWith('http') ? layer.value : null;
 
   if (!patternUrl) {
     console.warn(`Background pattern URL not found in layer value: ${layer.value}`);
-    return <View style={[styles.canvas, { backgroundColor: '#eee' }]} />;
+    const fallbackStyle = { backgroundColor: '#eee' };
+    return <View style={[styles.canvas, fallbackStyle]} />;
   }
 
   return (
     <Image
       source={{ uri: patternUrl }}
-      style={[styles.canvas, { width: size, height: size }]}
+      style={[styles.canvas, sizeStyle]}
       resizeMode="cover"
     />
   );

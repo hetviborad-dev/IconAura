@@ -20,7 +20,7 @@ interface PatternedIconProps {
   size: number;
 }
 
-const PatternedIcon = memo(function PatternedIcon({
+const PatternedIcon = memo(function PatternedIconComponent({
   appId,
   patternImage,
   size,

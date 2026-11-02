@@ -20,7 +20,7 @@ export default function Skeleton({ width, height, borderRadius, style }: Skeleto
         useNativeDriver: true,
       })
     ).start();
-  }, []);
+  }, [shimmerAnim]);
 
   const translateX = shimmerAnim.interpolate({
     inputRange: [0, 1],

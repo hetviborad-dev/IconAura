@@ -147,7 +147,7 @@ export default function WallpaperScreen() {
       {item.theme.isPremium && !isPremium && (
         <View style={styles.premiumBadge}>
           <Icon name="lock-closed" size={12} color="white" />
-          <FontText color="#FFFFFF" size={8} name="bold" style={{ textTransform: 'uppercase' }}>Premium</FontText>
+          <FontText color="#FFFFFF" size={8} name="bold" style={styles.uppercaseText}>Premium</FontText>
         </View>
       )}
     </TouchableOpacity>
@@ -175,7 +175,7 @@ export default function WallpaperScreen() {
               <ActivityIndicator
                 size="small"
                 color={Colors.primary}
-                style={{ marginVertical: 16 }}
+                style={styles.activityIndicator}
               />
             ) : undefined
           }
@@ -215,6 +215,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Layout.screenPadding,
     paddingVertical: Spacing.xl,
   },
+  uppercaseText: { textTransform: 'uppercase' },
+  activityIndicator: { marginVertical: 16 },
   grid: {
     paddingHorizontal: Layout.screenPadding,
     paddingBottom: Spacing.xxxl,

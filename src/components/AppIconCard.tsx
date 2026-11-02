@@ -45,16 +45,17 @@ export default function AppIconCard({
 
   const isProcessing = status === 'Waiting for Android confirmation...' || status === 'Preparing icon...';
 
+  const buttonDynamic = { backgroundColor: buttonBackground };
+
+  const cardDynamic = {
+    backgroundColor: cardBackground,
+    borderColor,
+    opacity: disabled && !isProcessing ? 0.5 : 1,
+  };
+
   return (
     <View
-      style={[
-        styles.card,
-        {
-          backgroundColor: cardBackground,
-          borderColor,
-          opacity: disabled && !isProcessing ? 0.5 : 1,
-        },
-      ]}
+      style={[styles.card, cardDynamic]}
     >
       {}
       <View style={styles.iconPreview}>
@@ -84,12 +85,7 @@ export default function AppIconCard({
       {}
       {onApply && (
         <TouchableOpacity
-          style={[
-            styles.applyButton,
-            {
-              backgroundColor: buttonBackground,
-            },
-          ]}
+          style={[styles.applyButton, buttonDynamic]}
           onPress={onApply}
           disabled={disabled}
           activeOpacity={disabled ? 1 : 0.7}

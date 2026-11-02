@@ -26,6 +26,11 @@ const AppSelectionRow = memo(({
   isDarkMode,
 }: AppSelectionRowProps) => {
   const borderColor = isDarkMode ? Colors.dark.border : Colors.border;
+  const checkboxOuterDynamic = {
+    borderColor: isSelected ? Colors.primary : (!disabled ? '#CCCCCC' : borderColor),
+    backgroundColor: isSelected ? Colors.primary + '15' : 'transparent',
+  };
+  const plusDynamic = { borderColor };
 
   return (
     <View style={[styles.container, disabled && styles.disabledContainer]}>
@@ -38,10 +43,7 @@ const AppSelectionRow = memo(({
       >
         <View style={[
           styles.checkboxOuter,
-          {
-            borderColor: isSelected ? Colors.primary : (!disabled ? '#CCCCCC' : borderColor),
-            backgroundColor: isSelected ? Colors.primary + '15' : 'transparent'
-          }
+          checkboxOuterDynamic
         ]}>
           {isSelected && (
             <View style={styles.checkboxInner}>
@@ -64,7 +66,7 @@ const AppSelectionRow = memo(({
             style={styles.currentIcon}
           />
         ) : (
-          <View style={[styles.plusContainer, { borderColor }]}>
+          <View style={[styles.plusContainer, plusDynamic]}>
             <Ionicons name="add" size={20} color={isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary} />
           </View>
         )}

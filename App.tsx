@@ -33,11 +33,7 @@ function App() {
   return (
     <SafeAreaProvider>
       <AppDetectionProvider>
-        <StatusBar
-          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-          backgroundColor="transparent"
-          translucent={true}
-        />
+        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
         <RootNavigator />
       </AppDetectionProvider>
     </SafeAreaProvider>

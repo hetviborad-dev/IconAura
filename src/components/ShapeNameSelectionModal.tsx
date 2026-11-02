@@ -60,10 +60,10 @@ const ShapeNameSelectionModal: React.FC<ShapeNameSelectionModalProps> = ({
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.modalOverlay}>
         <View style={[styles.modalContent, { backgroundColor: Colors.surface }]}>
-          <FontText color={textColor} size={Typography.sizes.h3} name="bold" style={{ textAlign: 'center', marginBottom: Spacing.xs }}>
+          <FontText color={textColor} size={Typography.sizes.h3} name="bold" style={styles.titleText}>
             Icon Label Preference
           </FontText>
-          <FontText color={secondaryTextColor} size={Typography.sizes.bodySmall} name="regular" style={{ textAlign: 'center', marginBottom: Spacing.xl }}>
+          <FontText color={secondaryTextColor} size={Typography.sizes.bodySmall} name="regular" style={styles.subtitleText}>
             Would you like to keep the app names under the icons?
           </FontText>
 
@@ -77,13 +77,13 @@ const ShapeNameSelectionModal: React.FC<ShapeNameSelectionModalProps> = ({
                   <View style={styles.iconPreview}>
                     <WhatsAppIcon width={'60%'} height="60%" />
                   </View>
-                  <FontText color={textColor} size={8} name="medium" style={{ textAlign: 'center' }}>WhatsApp</FontText>
+                  <FontText color={textColor} size={8} name="medium" style={styles.centerText}>WhatsApp</FontText>
                 </View>
                 <View style={styles.optionTextContainer}>
                   <FontText color={textColor} size={Typography.sizes.body} name="semibold">
                     With Name
                   </FontText>
-                  <FontText color={secondaryTextColor} size={Typography.sizes.caption} style={{ marginTop: 2 }}>
+                  <FontText color={secondaryTextColor} size={Typography.sizes.caption} style={styles.mt2}>
                     Display the app name below the icon
                   </FontText>
                 </View>
@@ -104,7 +104,7 @@ const ShapeNameSelectionModal: React.FC<ShapeNameSelectionModalProps> = ({
                   <FontText color={textColor} size={Typography.sizes.body} name="semibold">
                     Without Name
                   </FontText>
-                  <FontText color={secondaryTextColor} size={Typography.sizes.caption} style={{ marginTop: 2 }}>
+                  <FontText color={secondaryTextColor} size={Typography.sizes.caption} style={styles.mt2}>
                     Hide the app name for a cleaner look
                   </FontText>
                 </View>
@@ -120,14 +120,14 @@ const ShapeNameSelectionModal: React.FC<ShapeNameSelectionModalProps> = ({
                   style={[styles.colorOption, color === 'white' && styles.colorOptionSelected]}
                   onPress={() => setColor('white')}
                 >
-                  <View style={[styles.colorSwatch, { backgroundColor: '#FFFFFF' }]} />
+                  <View style={[styles.colorSwatch, styles.swatchWhite]} />
                   <FontText color={textColor} size={Typography.sizes.caption} name="medium">White</FontText>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.colorOption, color === 'black' && styles.colorOptionSelected]}
                   onPress={() => setColor('black')}
                 >
-                  <View style={[styles.colorSwatch, { backgroundColor: '#000000' }]} />
+                  <View style={[styles.colorSwatch, styles.swatchBlack]} />
                   <FontText color={textColor} size={Typography.sizes.caption} name="medium">Black</FontText>
                 </TouchableOpacity>
               </View>
@@ -222,6 +222,12 @@ const styles = StyleSheet.create({
   colorOptionSelected: { borderColor: Colors.primary, backgroundColor: 'rgba(255,0,122,0.1)' },
   colorSwatch: { width: 18, height: 18, borderRadius: 9, borderWidth: 1, borderColor: Colors.border },
   doneButton: { width: '100%', backgroundColor: Colors.primary, paddingVertical: Spacing.md, borderRadius: Radius.md, alignItems: 'center', marginBottom: Spacing.sm },
+  titleText: { textAlign: 'center', marginBottom: Spacing.xs },
+  subtitleText: { textAlign: 'center', marginBottom: Spacing.xl },
+  centerText: { textAlign: 'center' },
+  mt2: { marginTop: 2 },
+  swatchWhite: { backgroundColor: '#FFFFFF' },
+  swatchBlack: { backgroundColor: '#000000' },
 });
 
 export default ShapeNameSelectionModal;

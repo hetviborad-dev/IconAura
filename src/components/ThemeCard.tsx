@@ -26,10 +26,12 @@ const ThemeCard = memo(({
   const isPremium = isPremiumProp ?? contextPremium;
   const borderColor = Colors.border;
   const cardColor = Colors.surface;
+  const cardDynamic = { backgroundColor: cardColor, borderColor };
+  const previewDynamic = { backgroundColor: theme.background.type === 'color' ? theme.background.value : 'transparent', borderColor };
 
   return (
     <TouchableOpacity
-      style={[styles.card, { backgroundColor: cardColor, borderColor }]}
+      style={[styles.card, cardDynamic]}
       onPress={onPress}
       activeOpacity={0.8}
       accessibilityRole="button"
@@ -38,16 +40,13 @@ const ThemeCard = memo(({
       {theme.isPremium && !isPremium && (
         <View style={styles.premiumBadge}>
           <Icon name="lock-closed" size={10} color="white" />
-          <FontText color="#FFFFFF" size={8} name="bold" style={{ textTransform: 'uppercase' }}>Premium</FontText>
+          <FontText color="#FFFFFF" size={8} name="bold" style={styles.uppercaseText}>Premium</FontText>
         </View>
       )}
       <View
         style={[
           styles.preview,
-          {
-            backgroundColor: theme.background.type === 'color' ? theme.background.value : 'transparent',
-            borderColor,
-          },
+          previewDynamic,
         ]}
       >
         {theme.featuredApps
@@ -58,7 +57,7 @@ const ThemeCard = memo(({
             </View>
           ))}
       </View>
-      <FontText color={Colors.textPrimary} size={Typography.sizes.caption} name="semibold" style={{ marginTop: Spacing.sm, left: 4 }} numberOfLines={1}>
+      <FontText color={Colors.textPrimary} size={Typography.sizes.caption} name="semibold" style={styles.nameText} numberOfLines={1}>
         {theme.name}
       </FontText>
     </TouchableOpacity>
@@ -101,6 +100,13 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     alignContent: 'space-between',
+  },
+  uppercaseText: {
+    textTransform: 'uppercase',
+  },
+  nameText: {
+    marginTop: Spacing.sm,
+    left: 4,
   },
   iconTile: {
     width: 45,

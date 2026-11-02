@@ -29,9 +29,7 @@ export function useInterstitialAd() {
     interstitial.load();
 
     return () => {
-      interstitial.setAdEventListener(AdEventType.LOADED, () => {});
-      interstitial.setAdEventListener(AdEventType.CLOSED, () => {});
-      interstitial.setAdEventListener(AdEventType.ERROR, () => {});
+      interstitial.removeAllListeners();
     };
   }, []);
 

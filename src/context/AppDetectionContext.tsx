@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { AppId } from '../types/data';
-import type { InstalledApp } from '../types/native';
+import type { InstalledApp, AppToCheck } from '../types/native';
 import { checkInstalledApps } from '../services/appDetection';
 import { getAllApps } from '../data/apps';
 

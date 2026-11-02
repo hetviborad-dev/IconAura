@@ -56,7 +56,7 @@ export default function WallpaperSelectionModal({
         {wallpaperUrl ? (
           <Image
             source={{ uri: wallpaperUrl }}
-            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%' }}
+            style={styles.wallpaperFill}
             resizeMode="cover"
           />
         ) : (
@@ -88,6 +88,10 @@ export default function WallpaperSelectionModal({
                 const icon =
                   key === 'home' ? 'home-outline' : key === 'lock' ? 'phone-portrait-outline' : 'layers-outline';
                 const label = key === 'home' ? 'Home' : key === 'lock' ? 'Lock' : 'Both';
+                const segmentLabelDynamic = {
+                  fontFamily: font,
+                  color: isActive ? '#FFFFFF' : '#FFF5EE',
+                };
                 return (
                   <TouchableOpacity
                     key={key}
@@ -99,7 +103,7 @@ export default function WallpaperSelectionModal({
                     <FontText
                       style={[
                         styles.segmentLabel,
-                        { fontFamily: font, color: isActive ? '#FFFFFF' : '#FFF5EE', fontWeight: isActive ? '700' : '500' },
+                        segmentLabelDynamic,
                       ]}
                     >
                       {label}
@@ -134,9 +138,9 @@ export default function WallpaperSelectionModal({
             {showApplyTheme && (
               <TouchableOpacity style={styles.secondaryButton} onPress={onApplyTheme} activeOpacity={0.8}>
                 <View style={styles.swatches}>
-                  <View style={[styles.swatch, { backgroundColor: '#B58A5A' }]} />
-                  <View style={[styles.swatch, { backgroundColor: '#F2B8AA' }]} />
-                  <View style={[styles.swatch, { backgroundColor: '#2A1710' }]} />
+                  <View style={[styles.swatch, styles.swatchBrown]} />
+                  <View style={[styles.swatch, styles.swatchPink]} />
+                  <View style={[styles.swatch, styles.swatchDark]} />
                 </View>
                 <FontText style={[styles.secondaryText, { fontFamily: font }]}>Apply matching theme</FontText>
               </TouchableOpacity>
@@ -279,6 +283,24 @@ const styles = StyleSheet.create({
     marginLeft: -4,
     borderWidth: 1.5,
     borderColor: '#262020',
+  },
+  wallpaperFill: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    width: '100%',
+    height: '100%',
+  },
+  swatchBrown: {
+    backgroundColor: '#B58A5A',
+  },
+  swatchPink: {
+    backgroundColor: '#F2B8AA',
+  },
+  swatchDark: {
+    backgroundColor: '#2A1710',
   },
   secondaryText: {
     fontSize: 15,

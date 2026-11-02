@@ -47,11 +47,11 @@ export default function ThemeCategorySection({
     return (
       <View style={styles.section}>
         <FontText color={darkMode ? Colors.dark.textPrimary : Colors.textPrimary} size={Typography.sizes.h3} name="bold">{title ? title.charAt(0).toUpperCase() + title.slice(1) : title}</FontText>
-        <View style={{ flexDirection: 'row', gap: Spacing.md, marginTop: Spacing.md }}>
+        <View style={styles.loadingRow}>
           {[...Array(4)].map((_, i) => (
-            <View key={i} style={{ alignItems: 'center' }}>
+            <View key={i} style={styles.loadingItem}>
               <Skeleton width={110} height={110} borderRadius={Radius.md} />
-              <Skeleton width={80} height={12} borderRadius={4} style={{ marginTop: Spacing.sm }} />
+              <Skeleton width={80} height={12} borderRadius={4} style={styles.skeletonSpacing} />
             </View>
           ))}
         </View>
@@ -96,6 +96,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: Spacing.md,
+  },
+  loadingRow: {
+    flexDirection: 'row',
+    gap: Spacing.md,
+    marginTop: Spacing.md,
+  },
+  loadingItem: {
+    alignItems: 'center',
+  },
+  skeletonSpacing: {
+    marginTop: Spacing.sm,
   },
   row: { paddingRight: Spacing.lg },
 });

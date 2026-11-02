@@ -9,9 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { Colors } from '../constants/design';
-import { RootStackParamList } from '../types/navigation';
 import { ThemeDefinition } from '../types/data';
 import { useSubscription } from '../context/SubscriptionContext';
 import { fetchPublicThemes } from '../services/themeService';
@@ -25,6 +23,14 @@ import Skeleton from '../components/Skeleton';
 import FontText from '../components/FontText';
 
 const { height } = Dimensions.get('window');
+
+const ExploreFooter = ({ loadingMore }: { loadingMore: boolean }) => (
+  loadingMore ? (
+    <View style={styles.footerLoader}>
+      <ActivityIndicator size="small" color="white" />
+    </View>
+  ) : null
+);
 
 function LoadingSkeleton() {
   return (
@@ -52,7 +58,7 @@ function LoadingSkeleton() {
 }
 
 export default function ThemeExploreScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const navigation = useNavigation<any>();
   const { isPremium } = useSubscription();
   const [themes, setThemes] = useState<ThemeDefinition[]>([]);
   const [loading, setLoading] = useState(true);
@@ -191,7 +197,6 @@ export default function ThemeExploreScreen() {
           <ThemePreviewCard theme={item} />
         )}
         pagingEnabled
-        vertical
         showsVerticalScrollIndicator={false}
         onScroll={handleScroll}
         scrollEventThrottle={16}
@@ -200,13 +205,7 @@ export default function ThemeExploreScreen() {
         decelerationRate="fast"
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.5}
-        ListFooterComponent={() => (
-          loadingMore ? (
-            <View style={styles.footerLoader}>
-              <ActivityIndicator size="small" color="white" />
-            </View>
-          ) : null
-        )}
+        ListFooterComponent={<ExploreFooter loadingMore={loadingMore} />}
       />
 
       <TouchableOpacity
@@ -249,7 +248,7 @@ export default function ThemeExploreScreen() {
       {(currentTheme?.isPremium && !isPremium) && (
         <View style={styles.premiumIndicator}>
           <Icon name="lock-closed" size={16} color={Colors.primary} />
-          <FontText color={Colors.primary} size={14} name="bold" style={{ textTransform: 'uppercase' }}>Premium</FontText>
+          <FontText color={Colors.primary} size={14} name="bold" style={styles.uppercaseText}>Premium</FontText>
         </View>
       )}
 
@@ -344,5 +343,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: 'black',
+  },
+  uppercaseText: {
+    textTransform: 'uppercase',
   },
 });

@@ -1,23 +1,15 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   View,
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
-import { ThemeDefinition } from '../types/data';
 import ThemePreviewCard from '../components/ThemePreviewCard';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-interface Props {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'ThemeHomeScreenPreview'>;
-  route: {
-    params: {
-      theme: ThemeDefinition;
-    };
-  };
-}
+type Props = NativeStackScreenProps<RootStackParamList, 'ThemeHomeScreenPreview'>;
 
 export default function ThemeHomeScreenPreview({ navigation, route }: Props) {
   const { theme } = route.params;

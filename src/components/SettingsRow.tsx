@@ -26,16 +26,13 @@ export default function SettingsRow({
   const secondaryTextColor = Colors.textSecondary;
   const borderColor = Colors.border;
   const iconColor = Colors.primary;
+  const borderDynamic = showBorder
+    ? { borderBottomColor: borderColor, borderBottomWidth: 1 }
+    : undefined;
 
   return (
     <TouchableOpacity
-      style={[
-        styles.row,
-        showBorder && {
-          borderBottomColor: borderColor,
-          borderBottomWidth: 1,
-        },
-      ]}
+      style={[styles.row, borderDynamic]}
       onPress={onPress}
       activeOpacity={0.7}
     >

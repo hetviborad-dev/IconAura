@@ -1,6 +1,6 @@
 
 
-import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   View,
   StyleSheet,
@@ -17,7 +17,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import WhatsAppIcon from '../assets/icons/simple-icons--whatsapp.svg';
 import LogoIcon from '../assets/appsIcons/logo.svg';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
@@ -30,7 +30,7 @@ import {
 } from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
 import { useSubscription } from '../context/SubscriptionContext';
-import type { AppId, ThemeDefinition } from '../types/data';
+import type { AppId } from '../types/data';
 import { getAllApps } from '../data/apps';
 import { getEnabledIcons } from '../services/local/iconStorage';
 import { setWallpaper } from '../services/wallpaperService';
@@ -46,6 +46,7 @@ import {
 import { fetchAllInstalledApps } from '../services/appDetection';
 import { getContrastColor } from '../utils/helpers';
 import AppSelectionRow from '../components/AppSelectionRow';
+import PickerAppIcon from '../components/PickerAppIcon';
 import PrimaryButton from '../components/PrimaryButton';
 import ShapeNameSelectionModal from '../components/ShapeNameSelectionModal';
 import WallpaperSelectionModal from '../components/WallpaperSelectionModal';
@@ -54,82 +55,9 @@ import FontText from '../components/FontText';
 
 const { HomeShortcut } = NativeModules;
 
-const PickerAppIcon = memo(
-  ({
-    appId,
-    currentIcons,
-    setCurrentIcons,
-    isDarkMode,
-  }: {
-    appId: string;
-    currentIcons: Record<string, string>;
-    setCurrentIcons: React.Dispatch<
-      React.SetStateAction<Record<string, string>>
-    >;
-    isDarkMode: boolean;
-  }) => {
-    const [icon, setIcon] = useState(currentIcons[appId]);
-
-    useEffect(() => {
-      if (icon) return;
-      let isMounted = true;
-      async function load() {
-        try {
-          const result = await HomeShortcut.getCurrentAppIcon({
-            packageName: appId,
-          });
-          if (isMounted) {
-            setIcon(result.base64);
-            setCurrentIcons(prev => ({ ...prev, [appId]: result.base64 }));
-          }
-        } catch {
-          
-        }
-      }
-      load();
-      return () => {
-        isMounted = false;
-      };
-    }, [appId, setCurrentIcons]);
-
-    if (!icon) {
-      return (
-        <View
-          style={[
-            styles.appOptionIconPlaceholder,
-            { backgroundColor: isDarkMode ? '#333' : '#EEE' },
-          ]}
-        >
-          <Ionicons
-            name="apps"
-            size={20}
-            color={
-              isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary
-            }
-          />
-        </View>
-      );
-    }
-
-    return (
-      <Image
-        source={{ uri: `data:image/png;base64,${icon}` }}
-        style={styles.appOptionIcon}
-      />
-    );
-  },
-);
-
 const SUPPORTED_APPS = getAllApps();
 
-interface ThemeDetailScreenProps {
-  navigation: NativeStackNavigationProp<RootStackParamList, 'ThemeDetail'>;
-  route: {
-    params: {
-      theme: ThemeDefinition;
-    };
-  };
-}
+type ThemeDetailScreenProps = NativeStackScreenProps<RootStackParamList, 'ThemeDetail'>;
 
 export default function ThemeDetailScreen({
   navigation,
@@ -182,12 +110,12 @@ export default function ThemeDetailScreen({
   const [allInstalledApps, setAllInstalledApps] = useState<any[]>([]);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [isShapePickerVisible, setIsShapePickerVisible] = useState(false);
-  const [selectedShape, setSelectedShape] = useState<'round' | 'square' | null>(null);
+  const [selectedShape, setSelectedShape] = useState<'round' | 'square' | undefined>(undefined);
   const [isNamePickerVisible, setIsNamePickerVisible] = useState(false);
   const [isApplyingIcons, setIsApplyingIcons] = useState(false);
   const hasInitializedSelection = React.useRef(false);
 
-  const [capturingAppId, setCapturingAppId] = useState<AppId | null>(null);
+  const [capturingAppId, setCapturingAppId] = useState<AppId | undefined>(undefined);
   const [selectedWallpaperUrl, setSelectedWallpaperUrl] = useState<
     string | null
   >(null);
@@ -223,12 +151,12 @@ export default function ThemeDetailScreen({
         hasInitializedSelection.current = true;
       }
     }
-  }, [installedApps, enabledIcons]);
+  }, [installedApps, enabledIcons, selectedApps.size]);
 
   
   useEffect(() => {
     setSelectedApps(prev => {
-      const next = new Set();
+      const next = new Set<string>();
       prev.forEach(id => {
         if (enabledIcons.has(id)) {
           next.add(id);
@@ -378,7 +306,7 @@ export default function ThemeDetailScreen({
     } catch (err) {
       console.error(`[Shortcut] Error creating shortcut for ${appId}:`, err);
     } finally {
-      setCapturingAppId(null);
+      setCapturingAppId(undefined);
     }
   };
 
@@ -455,7 +383,7 @@ export default function ThemeDetailScreen({
           } catch (err) {
             console.error(`[Square] Error applying widget for ${app.id}:`, err);
           } finally {
-            setCapturingAppId(null);
+            setCapturingAppId(undefined);
           }
         }
       }
@@ -466,7 +394,7 @@ export default function ThemeDetailScreen({
     } finally {
       setIsApplyingIcons(false);
       setIsNamePickerVisible(false);
-      setSelectedShape(null);
+      setSelectedShape(undefined);
     }
   };
 
@@ -505,9 +433,9 @@ export default function ThemeDetailScreen({
         } else {
           next.add(appId);
           
-          const mappedId = appMappings[appId];
-          if (mappedId) {
-            next.add(mappedId);
+          const targetMappedId = appMappings[appId];
+          if (targetMappedId) {
+            next.add(targetMappedId);
           }
         }
         return next;
@@ -537,18 +465,21 @@ export default function ThemeDetailScreen({
     });
   }, [installedApps, allInstalledApps, searchQuery, isPickerVisible]);
 
-  const handleOpenPicker = (appId: any) => {
+  const handleOpenPicker = (appId: AppId) => {
     setProxyAppId(appId);
     setIsPickerVisible(true);
     setSearchQuery('');
   };
 
+  const containerDynamic = { backgroundColor: isDarkMode ? '#121212' : Colors.background };
+  const previewButtonDynamic = {
+    backgroundColor: isDarkMode ? '#333' : Colors.backgroundSecondary,
+    borderColor: isDarkMode ? '#444' : Colors.border,
+  };
+
   return (
     <SafeAreaView
-      style={[
-        styles.container,
-        { backgroundColor: isDarkMode ? '#121212' : Colors.background },
-      ]}
+      style={[styles.container, containerDynamic]}
     >
       <>
         <View style={styles.hiddenCaptures} pointerEvents="none">
@@ -568,7 +499,7 @@ export default function ThemeDetailScreen({
             >
               <Ionicons name="chevron-back" size={28} color={textColor} />
             </TouchableOpacity>
-            <FontText color={textColor} size={Typography.sizes.h2} name="bold" style={{ textAlign: 'center' }}>
+            <FontText color={textColor} size={Typography.sizes.h2} name="bold" style={styles.textAlignCenter}>
               {theme.name}
             </FontText>
             <View style={styles.headerActions}>
@@ -583,13 +514,7 @@ export default function ThemeDetailScreen({
                 />
               </TouchableOpacity>
               <TouchableOpacity
-                style={[
-                  styles.previewButtonSmall,
-                  {
-                    backgroundColor: isDarkMode ? '#333' : Colors.backgroundSecondary,
-                    borderColor: isDarkMode ? '#444' : Colors.border,
-                  },
-                ]}
+                style={[styles.previewButtonSmall, previewButtonDynamic]}
                 onPress={() => navigation.navigate('ThemeHomeScreenPreview', { theme })}
               >
                 <Ionicons name="eye-outline" size={24} color={textColor} />
@@ -609,14 +534,14 @@ export default function ThemeDetailScreen({
 
         {theme.wallpapers && theme.wallpapers.length > 0 && (
           <View style={styles.wallpapersSection}>
-            <View style={[styles.sectionHeader, { paddingHorizontal: 0, flexDirection: 'row', alignItems: 'center', gap: 8 }]}>
+            <View style={[styles.sectionHeader, styles.sectionHeaderInline]}>
               <FontText color={textColor} size={Typography.sizes.h3} name="semibold">
                 Matching Wallpapers
               </FontText>
               {theme.isPremium && !isPremium && (
                 <View style={styles.wallpaperSectionBadge}>
                   <Ionicons name="lock-closed" size={12} color="white" />
-                  <FontText color="#FFFFFF" size={10} name="bold" style={{ textTransform: 'uppercase' }}>Premium</FontText>
+                  <FontText color="#FFFFFF" size={10} name="bold" style={styles.uppercaseText}>Premium</FontText>
                 </View>
               )}
             </View>
@@ -642,7 +567,7 @@ export default function ThemeDetailScreen({
                   {theme.isPremium && !isPremium && (
                     <View style={styles.wallpaperLockBadge}>
                       <Ionicons name="lock-closed" size={12} color="white" />
-                      <FontText color="#FFFFFF" size={8} name="bold" style={{ textTransform: 'uppercase' }}>Premium</FontText>
+                      <FontText color="#FFFFFF" size={8} name="bold" style={styles.uppercaseText}>Premium</FontText>
                     </View>
                   )}
                 </TouchableOpacity>
@@ -655,7 +580,7 @@ export default function ThemeDetailScreen({
           <FontText color={textColor} size={Typography.sizes.h3} name="semibold">
             Set Icons
           </FontText>
-          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={styles.rowCenter}>
             <FontText
               style={[styles.selectionCount, { color: secondaryTextColor }]}
             >
@@ -670,7 +595,7 @@ export default function ThemeDetailScreen({
                 size={16}
                 color={Colors.primary}
               />
-              <FontText color={Colors.primary} size={Typography.sizes.caption} name="medium" style={{ marginLeft: 4 }}>Manage Icons</FontText>
+              <FontText color={Colors.primary} size={Typography.sizes.caption} name="medium" style={styles.ml4}>Manage Icons</FontText>
             </TouchableOpacity>
           </View>
         </View>
@@ -680,38 +605,24 @@ export default function ThemeDetailScreen({
         >
           <View style={styles.appsSection}>
             {loading ? (
-              <View style={{ marginTop: Spacing.md }}>
+              <View style={styles.mtMd}>
                 <SkeletonPlaceholder
                   borderRadius={4}
                   highlightColor={isDarkMode ? '#2A2A2A' : '#E1E1E1'}
-                  lowlightColor={isDarkMode ? '#1E1E1E' : '#F0F0F0'}
+                  backgroundColor={isDarkMode ? '#1E1E1E' : '#F0F0F0'}
                 >
                   {[...Array(6)].map((_, i) => (
                     <View
                       key={i}
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        marginBottom: Spacing.sm,
-                      }}
+                      style={styles.skeletonRow}
                     >
                       <View
-                        style={{
-                          width: 40,
-                          height: 40,
-                          borderRadius: 8,
-                          marginRight: Spacing.sm,
-                        }}
+                        style={styles.skeletonIcon}
                       />
                       <View
-                        style={{
-                          width: '70%',
-                          height: 20,
-                          borderRadius: 4,
-                          marginRight: Spacing.sm,
-                        }}
+                        style={styles.skeletonBar}
                       />
-                      <View style={{ width: 20, height: 20, borderRadius: 10 }} />
+                      <View style={styles.skeletonDot} />
                     </View>
                   ))}
                 </SkeletonPlaceholder>
@@ -763,7 +674,7 @@ export default function ThemeDetailScreen({
 
       {toastMessage && (
         <View style={styles.toast}>
-          <FontText color="#FFF" size={Typography.sizes.body} style={{ textAlign: 'center' }}>{toastMessage}</FontText>
+          <FontText color="#FFF" size={Typography.sizes.body} style={styles.textAlignCenter}>{toastMessage}</FontText>
         </View>
       )}
 
@@ -801,18 +712,18 @@ export default function ThemeDetailScreen({
         isDarkMode={isDarkMode}
         onClose={() => {
           setIsNamePickerVisible(false);
-          setSelectedShape(null);
+          setSelectedShape(undefined);
         }}
         onSelect={finalApplyTheme}
       />
 
       <Modal visible={isShapePickerVisible} transparent animationType="fade">
-        <View style={[styles.modalOverlay, { justifyContent: 'center' }]}>
-          <View style={[styles.modalContent, { backgroundColor: Colors.surface, alignItems: 'center', justifyContent: 'center', height: 'auto', maxHeight: '75%', width: '92%', padding: 24, borderRadius: 24 }]}>
-            <FontText color={textColor} size={Typography.sizes.h3} name="bold" style={{ textAlign: 'center' }}>
+        <View style={[styles.modalOverlay, styles.justifyCenter]}>
+          <View style={styles.modalContentShapePicker}>
+            <FontText color={textColor} size={Typography.sizes.h3} name="bold" style={styles.textAlignCenter}>
               Which style do you want to set?
             </FontText>
-            <FontText color={secondaryTextColor} size={Typography.sizes.bodySmall} name="regular" style={{ textAlign: 'center', marginBottom: 24 }}>
+            <FontText color={secondaryTextColor} size={Typography.sizes.bodySmall} name="regular" style={styles.textCenterMb24}>
               You can add both at once.
             </FontText>
 
@@ -833,11 +744,11 @@ export default function ThemeDetailScreen({
                 <View style={styles.infoContainer}>
                   <View style={styles.infoRow}>
                     <Ionicons name="alert-circle" size={14} color="#FFC107" />
-                    <FontText color={secondaryTextColor} size={Typography.sizes.caption} name="regular" style={{ lineHeight: 14 }}>Watermarked (due to Google specs)</FontText>
+                    <FontText color={secondaryTextColor} size={Typography.sizes.caption} name="regular" style={styles.lh14}>Watermarked (due to Google specs)</FontText>
                   </View>
                   <View style={styles.infoRow}>
                     <Ionicons name="checkmark-circle" size={14} color="#FFC107" />
-                    <FontText color={secondaryTextColor} size={Typography.sizes.caption} name="regular" style={{ lineHeight: 14 }}>Can be added to the Dock & Folder</FontText>
+                    <FontText color={secondaryTextColor} size={Typography.sizes.caption} name="regular" style={styles.lh14}>Can be added to the Dock & Folder</FontText>
                   </View>
                 </View>
               </TouchableOpacity>
@@ -855,11 +766,11 @@ export default function ThemeDetailScreen({
                 <View style={styles.infoContainer}>
                   <View style={styles.infoRow}>
                     <Ionicons name="checkmark-circle" size={14} color="#FFC107" />
-                    <FontText color={secondaryTextColor} size={Typography.sizes.caption} name="regular" style={{ lineHeight: 14 }}>No Watermark</FontText>
+                    <FontText color={secondaryTextColor} size={Typography.sizes.caption} name="regular" style={styles.lh14}>No Watermark</FontText>
                   </View>
                   <View style={styles.infoRow}>
                     <Ionicons name="alert-circle" size={14} color="#FFC107" />
-                    <FontText color={secondaryTextColor} size={Typography.sizes.caption} name="regular" style={{ lineHeight: 14 }}>Cannot be added to Dock & Folder</FontText>
+                    <FontText color={secondaryTextColor} size={Typography.sizes.caption} name="regular" style={styles.lh14}>Cannot be added to Dock & Folder</FontText>
                   </View>
                 </View>
               </TouchableOpacity>
@@ -869,7 +780,7 @@ export default function ThemeDetailScreen({
               style={styles.closeShapePicker}
               onPress={() => setIsShapePickerVisible(false)}
             >
-              <FontText color={secondaryTextColor} size={Typography.sizes.caption} style={{ marginTop: 10 }}>Cancel</FontText>
+              <FontText color={secondaryTextColor} size={Typography.sizes.caption} style={styles.mt10}>Cancel</FontText>
             </TouchableOpacity>
           </View>
         </View>
@@ -913,7 +824,7 @@ export default function ThemeDetailScreen({
               {allInstalledApps.length === 0 ? (
                 <View style={styles.loadingState}>
                   <ActivityIndicator size="large" color={Colors.primary} />
-                  <FontText color={secondaryTextColor} size={Typography.sizes.body} style={{ marginTop: Spacing.md }}>
+                  <FontText color={secondaryTextColor} size={Typography.sizes.body} style={styles.mtMd}>
                     Fetching apps from device...
                   </FontText>
                 </View>
@@ -971,10 +882,10 @@ export default function ThemeDetailScreen({
                             setCurrentIcons={setCurrentIcons}
                             isDarkMode={isDarkMode}
                           />
-                          <FontText color={textColor} size={Typography.sizes.body} name="medium" style={{ flex: 1 }}>
+                          <FontText color={textColor} size={Typography.sizes.body} name="medium" style={styles.flex1}>
                             {item.appName}
                           </FontText>
-                          <FontText color={secondaryTextColor} size={Typography.sizes.caption} style={{ opacity: 0.6 }}>
+                          <FontText color={secondaryTextColor} size={Typography.sizes.caption} style={styles.opacity6}>
                             {' '}
                             (Default)
                           </FontText>
@@ -1250,4 +1161,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 12,
   },
+
+  textAlignCenter: { textAlign: 'center' },
+  uppercaseText: { textTransform: 'uppercase' },
+  rowCenter: { flexDirection: 'row', alignItems: 'center' },
+  ml4: { marginLeft: 4 },
+  mtMd: { marginTop: Spacing.md },
+  skeletonRow: { flexDirection: 'row', alignItems: 'center', marginBottom: Spacing.sm },
+  skeletonIcon: { width: 40, height: 40, borderRadius: 8, marginRight: Spacing.sm },
+  skeletonBar: { width: '70%', height: 20, borderRadius: 4, marginRight: Spacing.sm },
+  skeletonDot: { width: 20, height: 20, borderRadius: 10 },
+  textCenterMb24: { textAlign: 'center', marginBottom: 24 },
+  lh14: { lineHeight: 14 },
+  mt10: { marginTop: 10 },
+  flex1: { flex: 1 },
+  opacity6: { opacity: 0.6 },
+
+  justifyCenter: { justifyContent: 'center' },
+  modalContentShapePicker: {
+    backgroundColor: Colors.surface,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: 'auto',
+    maxHeight: '75%',
+    width: '92%',
+    padding: 24,
+    borderRadius: 24,
+  },
+  sectionHeaderInline: { paddingHorizontal: 0, flexDirection: 'row', alignItems: 'center', gap: 8 },
 });

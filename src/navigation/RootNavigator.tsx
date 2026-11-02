@@ -5,6 +5,7 @@ import { Platform } from 'react-native';
 import BootSplash from 'react-native-bootsplash';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../types/navigation';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from '../screens/HomeScreen';
 import ThemeDetailScreen from '../screens/ThemeDetailScreen';
@@ -16,6 +17,8 @@ import PremiumScreen from '../screens/PremiumScreen';
 import IconManagementScreen from '../screens/IconManagementScreen';
 import WallpaperScreen from '../screens/WallpaperScreen';
 import CustomTabBar from '../components/CustomTabBar';
+
+const renderTabBar = (props: any) => <CustomTabBar {...props} />;
 import { SubscriptionProvider } from '../context/SubscriptionContext';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -24,7 +27,7 @@ const Tab = createBottomTabNavigator();
 function MainTabs() {
   return (
     <Tab.Navigator
-      tabBar={(props) => <CustomTabBar {...props} />}
+      tabBar={renderTabBar}
       screenOptions={{
         headerShown: false,
       }}

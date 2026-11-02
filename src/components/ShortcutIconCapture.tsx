@@ -6,7 +6,7 @@ import type { ThemeDefinition } from '../types/data';
 import IconCanvas from './IconCanvas';
 
 interface ShortcutIconCaptureProps {
-  appId: AppId;
+  appId?: AppId;
   theme: ThemeDefinition;
   shape?: 'round' | 'square';
   onCaptureReady: (appId: AppId, capture: () => Promise<string>) => void;

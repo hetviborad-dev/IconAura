@@ -23,6 +23,12 @@ export default function SavedThemesScreen({ navigation }: { navigation: NativeSt
   const [loading, setLoading] = useState(true);
   const { width: screenWidth } = useWindowDimensions();
 
+  const themeItemDynamicStyle = (width: number) => ({ width: (width - 48) / 3 });
+
+  const previewDynamicStyle = (item: ThemeDefinition) => ({
+    backgroundColor: item.background.type === 'color' ? item.background.value : 'transparent',
+  });
+
   useEffect(() => {
     loadSavedThemes();
   }, []);
@@ -55,8 +61,8 @@ export default function SavedThemesScreen({ navigation }: { navigation: NativeSt
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <Ionicons name="chevron-back" size={24} color={Colors.textPrimary} />
           </TouchableOpacity>
-          <FontText color={Colors.textPrimary} size={Typography.sizes.h2} name="bold" style={{ marginBottom: Spacing.md }}>Saved Themes</FontText>
-          <View style={{ width: 24 }} />
+          <FontText color={Colors.textPrimary} size={Typography.sizes.h2} name="bold" style={styles.headingText}>Saved Themes</FontText>
+          <View style={styles.spacer24} />
         </View>
         <View style={styles.center}>
           <ActivityIndicator size="large" color={Colors.primary} />
@@ -72,12 +78,12 @@ export default function SavedThemesScreen({ navigation }: { navigation: NativeSt
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <Ionicons name="chevron-back" size={24} color={Colors.textPrimary} />
           </TouchableOpacity>
-          <FontText color={Colors.textPrimary} size={Typography.sizes.h2} name="bold" style={{ marginBottom: Spacing.md }}>Saved Themes</FontText>
-          <View style={{ width: 24 }} />
+          <FontText color={Colors.textPrimary} size={Typography.sizes.h2} name="bold" style={styles.headingText}>Saved Themes</FontText>
+          <View style={styles.spacer24} />
         </View>
         <View style={styles.center}>
           <Ionicons name="heart-outline" size={64} color="#888" />
-          <FontText color={Colors.textSecondary} size={Typography.sizes.body} style={{ marginTop: 12 }}>No saved themes yet</FontText>
+          <FontText color={Colors.textSecondary} size={Typography.sizes.body} style={styles.emptyText}>No saved themes yet</FontText>
         </View>
       </SafeAreaView>
     );
@@ -90,7 +96,7 @@ export default function SavedThemesScreen({ navigation }: { navigation: NativeSt
           <Ionicons name="chevron-back" size={24} color={Colors.textPrimary} />
         </TouchableOpacity>
         <FontText color={Colors.textPrimary} size={Typography.sizes.h2} name="bold" style={{ marginBottom: Spacing.md }}>Saved Themes</FontText>
-        <View style={{ width: 24 }} />
+        <View style={styles.spacer24} />
       </View>
 
       <FlatList
@@ -100,17 +106,14 @@ export default function SavedThemesScreen({ navigation }: { navigation: NativeSt
         numColumns={3}
         renderItem={({ item }) => (
           <TouchableOpacity
-            style={[styles.themeItem, { width: (screenWidth - 48) / 3 }]}
+            style={[styles.themeItem, themeItemDynamicStyle(screenWidth)]}
             onPress={() => navigation.navigate('ThemeDetail', { theme: item })}
             activeOpacity={0.85}
           >
             <View
               style={[
                 styles.preview,
-                {
-                  backgroundColor:
-                    item.background.type === 'color' ? item.background.value : 'transparent',
-                },
+                previewDynamicStyle(item),
               ]}
             >
               {(item.featuredApps || []).slice(0, 4).map((appId) => (
@@ -119,7 +122,7 @@ export default function SavedThemesScreen({ navigation }: { navigation: NativeSt
                 </View>
               ))}
             </View>
-            <FontText color={Colors.textPrimary} size={Typography.sizes.caption} name="semibold" style={{ marginTop: Spacing.xs, textAlign: 'center' }} numberOfLines={1}>
+            <FontText color={Colors.textPrimary} size={Typography.sizes.caption} name="semibold" style={styles.themeName} numberOfLines={1}>
               {item.name}
             </FontText>
             <TouchableOpacity
@@ -199,4 +202,8 @@ const styles = StyleSheet.create({
     padding: 4,
     zIndex: 20,
   },
+  headingText: { marginBottom: Spacing.md },
+  spacer24: { width: 24 },
+  emptyText: { marginTop: 12 },
+  themeName: { marginTop: Spacing.xs, textAlign: 'center' },
 });
