@@ -334,8 +334,6 @@ export default function ThemeDetailScreen({
 
   const finalApplyTheme = async (withName: boolean, color: string = 'white') => {
     if (!selectedShape) return;
-
-    setIsApplyingIcons(true);
     try {
       const appsToApply = SUPPORTED_APPS.filter(app => selectedApps.has(app.id));
 
@@ -714,7 +712,14 @@ export default function ThemeDetailScreen({
           setIsNamePickerVisible(false);
           setSelectedShape(undefined);
         }}
-        onSelect={finalApplyTheme}
+        onSelect={(withName, color) => {
+          setIsApplyingIcons(true);
+          setIsNamePickerVisible(false);
+
+          requestAnimationFrame(() => {
+            finalApplyTheme(withName, color);
+          });
+        }}
       />
 
       <Modal visible={isShapePickerVisible} transparent animationType="fade">
