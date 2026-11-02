@@ -13,6 +13,7 @@ import {
   TextInput,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useFocusEffect } from '@react-navigation/native';
 import { Colors, Spacing, Typography, Layout, TouchTarget, Radius } from '../constants/design';
 import { HomeStackParamList } from '../types/navigation';
 import { fetchHomeThemes, fetchCategories, fetchThemesByCategory } from '../services/themeService';
@@ -81,6 +82,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [categoryLoading, setCategoryLoading] = useState(false);
+  const [bannerKey, setBannerKey] = useState(0);
 
   const backgroundColor = isDarkMode ? Colors.dark.background : Colors.background;
   const textColor = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
@@ -102,6 +104,12 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   useEffect(() => {
     loadCategories();
   }, [loadCategories]);
+
+  useFocusEffect(
+    useCallback(() => {
+      setBannerKey(k => k + 1);
+    }, [])
+  );
 
   const loadCategoryThemes = useCallback(async (categoryId: string) => {
     if (themesByCategory[categoryId]) {
@@ -206,7 +214,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           </View>
         </View>
 
-        {!isPremium && <AdBanner />}
+        {!isPremium && <AdBanner key={bannerKey} />}
 
         <View style={styles.searchContainer}>
           <View style={styles.searchBarWrapper}>
@@ -222,9 +230,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
         </View>
 
         <View style={styles.categoryContainer}>
-          {loading && categories.length === 0 ? (
-            <ActivityIndicator size="small" color={Colors.primary} />
-          ) : (
+          {loading && categories.length === 0 ? null : (
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -290,13 +296,13 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
                 tintColor={Colors.primary}
               />
             }
-            ListEmptyComponent={
-              loading ? (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="large" color={Colors.primary} />
-                </View>
-              ) : undefined
-            }
+            // ListEmptyComponent={
+            //   loading ? (
+            //     <View style={styles.loadingContainer}>
+            //       <ActivityIndicator size="large" color={Colors.primary} />
+            //     </View>
+            //   ) : undefined
+            // }
           />
         ) : (
           <FlatList

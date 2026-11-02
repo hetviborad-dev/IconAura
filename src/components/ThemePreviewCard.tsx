@@ -61,12 +61,6 @@ export default function ThemePreviewCard({ theme }: Props) {
       </View>
 
       <View style={styles.uiLayer}>
-        {theme.isPremium && (
-          <View style={styles.premiumBadge}>
-            <Icon name="lock-closed" size={14} color="white" />
-            <Text style={styles.premiumText}>Premium</Text>
-          </View>
-        )}
         <View style={styles.bottomContainer}>
           {wallpapers.length > 1 && (
             <View style={styles.pageIndicator}>

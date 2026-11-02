@@ -115,6 +115,7 @@ export default function SettingsScreen() {
                   icon={item.icon}
                   title={item.label}
                   subtitle={item.subtitle}
+                  onPress={item.onPress}
                   showBorder={itemIndex < section.items.length - 1}
                 />
               ))}
