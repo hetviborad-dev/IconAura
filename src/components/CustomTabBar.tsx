@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { View, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from '../constants/design';
 import FontText from './FontText';
 
@@ -47,14 +47,20 @@ export default function CustomTabBar({ state, descriptors, navigation }: BottomT
       <View style={[styles.tabBar, { backgroundColor: tabBarBg }]}>
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
-          const label = options.tabBarLabel ?? options.title ?? route.name;
+          const rawLabel = options.tabBarLabel ?? options.title;
+          const label = typeof rawLabel === 'function' ? route.name : (rawLabel ?? route.name);
           const isFocused = state.index === index;
 
           
-          const iconName = route.name === 'Home' ? 'home' :
-                           route.name === 'Themes' ? 'color-palette' :
-                           route.name === 'Wallpapers' ? 'image' :
-                           route.name === 'Settings' ? 'settings' : 'help-circle';
+          const iconName = route.name === 'Home'
+            ? (isFocused ? 'home-variant' : 'home-variant-outline')
+            : route.name === 'Themes'
+            ? (isFocused ? 'palette-swatch' : 'palette-swatch-outline')
+            : route.name === 'Wallpapers'
+            ? 'wallpaper'
+            : route.name === 'Settings'
+            ? (isFocused ? 'cog' : 'cog-outline')
+            : (isFocused ? 'help-circle' : 'help-circle-outline');
 
           return (
             <TouchableOpacity
