@@ -718,7 +718,7 @@ export default function ThemeDetailScreen({
       />
 
       <Modal visible={isShapePickerVisible} transparent animationType="fade">
-        <View style={[styles.modalOverlay, styles.justifyCenter]}>
+        <View style={[styles.modalOverlay, styles.justifyCenter, styles.alignCenter]}>
           <View style={styles.modalContentShapePicker}>
             <FontText color={textColor} size={Typography.sizes.h3} name="bold" style={styles.textAlignCenter}>
               Which style do you want to set?
@@ -747,7 +747,7 @@ export default function ThemeDetailScreen({
                     <FontText color={secondaryTextColor} size={Typography.sizes.caption} name="regular" style={styles.lh14}>Watermarked (due to Google specs)</FontText>
                   </View>
                   <View style={styles.infoRow}>
-                    <Ionicons name="checkmark-circle" size={14} color="#FFC107" />
+                    <Ionicons name="checkmark-circle" size={14} color={Colors.success} />
                     <FontText color={secondaryTextColor} size={Typography.sizes.caption} name="regular" style={styles.lh14}>Can be added to the Dock & Folder</FontText>
                   </View>
                 </View>
@@ -765,7 +765,7 @@ export default function ThemeDetailScreen({
                 </View>
                 <View style={styles.infoContainer}>
                   <View style={styles.infoRow}>
-                    <Ionicons name="checkmark-circle" size={14} color="#FFC107" />
+                    <Ionicons name="checkmark-circle" size={14} color={Colors.success} />
                     <FontText color={secondaryTextColor} size={Typography.sizes.caption} name="regular" style={styles.lh14}>No Watermark</FontText>
                   </View>
                   <View style={styles.infoRow}>
@@ -1090,6 +1090,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
+    minHeight: 28,
   },
   roundShapePreview: {
     width: 60,
@@ -1178,6 +1179,7 @@ const styles = StyleSheet.create({
   opacity6: { opacity: 0.6 },
 
   justifyCenter: { justifyContent: 'center' },
+  alignCenter: { alignItems: 'center' },
   modalContentShapePicker: {
     backgroundColor: Colors.surface,
     alignItems: 'center',
