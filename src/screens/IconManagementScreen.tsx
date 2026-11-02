@@ -4,6 +4,7 @@ import {
   Text,
   StyleSheet,
   ScrollView,
+  FlatList,
   TouchableOpacity,
   Switch,
   ActivityIndicator,
@@ -24,10 +25,22 @@ import { useAppDetection } from '../context/AppDetectionContext';
 
 const { HomeShortcut } = NativeModules;
 
-const AppIcon = ({ appId, appName, fallbackColor }: { appId: string; appName?: string; fallbackColor?: string }) => {
-  const [icon, setIcon] = useState<string | null>(null);
+const iconCache = new Map<string, string | null>();
+
+const AppIcon = ({ appId, appName, fallbackColor, installed = true }: { appId: string; appName?: string; fallbackColor?: string; installed?: boolean }) => {
+  const [icon, setIcon] = useState<string | null>(iconCache.has(appId) ? iconCache.get(appId) ?? null : null);
 
   useEffect(() => {
+    if (!installed) {
+      iconCache.set(appId, null);
+      return;
+    }
+    if (iconCache.has(appId)) {
+      setIcon(iconCache.get(appId) ?? null);
+      return;
+    }
+
+    let cancelled = false;
     async function load() {
       try {
         const app = getAllApps().find((candidate: any) => candidate.id === appId);
@@ -39,20 +52,30 @@ const AppIcon = ({ appId, appName, fallbackColor }: { appId: string; appName?: s
           try {
             const result = await HomeShortcut.getCurrentAppIcon({ packageName: String(packageName) });
             if (result?.base64) {
-              setIcon(result.base64);
+              if (!cancelled) {
+                iconCache.set(appId, result.base64);
+                setIcon(result.base64);
+              }
               return;
             }
           } catch (e) {
-            
+
           }
         }
-        throw new Error('No icon');
+        if (!cancelled) {
+          iconCache.set(appId, null);
+          setIcon(null);
+        }
       } catch (e) {
-        
+        if (!cancelled) {
+          iconCache.set(appId, null);
+          setIcon(null);
+        }
       }
     }
     load();
-  }, [appId]);
+    return () => { cancelled = true; };
+  }, [appId, installed]);
 
   if (!icon) {
     const letter = (appName || appId || '?').charAt(0).toUpperCase();
@@ -188,17 +211,29 @@ export default function IconManagementScreen({ navigation }: IconManagementScree
         />
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={[styles.subtitle, { color: secondaryTextColor }]}>
-          Select which icons should be visible in the theme editor.
-        </Text>
-
-        {filteredApps.map((app) => {
+      <FlatList
+        data={filteredApps}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={styles.content}
+        initialNumToRender={15}
+        maxToRenderPerBatch={20}
+        windowSize={8}
+        ListHeaderComponent={
+          <Text style={[styles.subtitle, { color: secondaryTextColor }]}>
+            Select which icons should be visible in the theme editor.
+          </Text>
+        }
+        renderItem={({ item: app }) => {
           const detectedPkg = appStatus[app.id]?.packageName || app.packageName;
           return (
-            <View key={app.id} style={[styles.iconRow, { backgroundColor: Colors.surface }]}>
+            <View style={[styles.iconRow, { backgroundColor: Colors.surface }]}>
               <View style={styles.leftSection}>
-                <AppIcon appId={app.id} appName={app.name} fallbackColor={app.icon?.fallbackColor} />
+                <AppIcon
+                  appId={app.id}
+                  appName={app.name}
+                  fallbackColor={app.icon?.fallbackColor}
+                  installed={appStatus[app.id]?.installed}
+                />
                 <Text style={[styles.appName, { color: textColor }]}>{app.name}</Text>
               </View>
               <Switch
@@ -208,8 +243,8 @@ export default function IconManagementScreen({ navigation }: IconManagementScree
               />
             </View>
           );
-        })}
-      </ScrollView>
+        }}
+      />
     </SafeAreaView>
   );
 }

@@ -25,7 +25,8 @@ const PatternedIcon = memo(function PatternedIcon({
   patternImage,
   size,
 }: PatternedIconProps) {
-  const Icon = APP_ICON_COMPONENTS[appId];
+  const rawIcon = APP_ICON_COMPONENTS[appId];
+  const Icon = typeof rawIcon === 'function' ? rawIcon : (rawIcon as any)?.default;
 
   if (typeof Icon !== 'function') {
     console.error(
