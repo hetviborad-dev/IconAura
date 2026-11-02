@@ -4,9 +4,10 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
   Modal,
   ActivityIndicator,
+  Image,
+  Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Spacing, Typography, Radius } from '../constants/design';
@@ -31,11 +32,13 @@ export default function WallpaperSelectionModal({
   onApply,
   onApplyTheme,
   showApplyTheme,
+  isDarkMode,
   isPremiumTheme = false,
   isUserPremium = false,
 }: WallpaperSelectionModalProps) {
   const insets = useSafeAreaInsets();
   const [isLoading, setIsLoading] = useState(false);
+  const [selected, setSelected] = useState<'home' | 'lock' | 'both'>('both');
   const isLocked = isPremiumTheme && !isUserPremium;
 
   const handleApply = async (target: 'home' | 'lock' | 'both') => {
@@ -47,84 +50,101 @@ export default function WallpaperSelectionModal({
     }
   };
 
+  const font = Platform.select({ ios: 'DM Sans', android: 'sans-serif', default: 'System' });
+
   return (
-    <Modal visible={visible} transparent animationType="fade">
-      <View style={styles.fullScreenContainer}>
-        <Image source={{ uri: wallpaperUrl }} style={styles.fullScreenImage} resizeMode="cover" />
-
-        <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-          <Ionicons name="close" size={28} color="white" />
-        </TouchableOpacity>
-
-        {isLocked && (
-          <View style={styles.premiumBadge}>
-            <Ionicons name="lock-closed" size={16} color="white" />
-            <Text style={styles.premiumText}>Premium Wallpaper</Text>
-          </View>
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+      <View style={styles.root}>
+        {wallpaperUrl ? (
+          <Image
+            source={{ uri: wallpaperUrl }}
+            style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%' }}
+            resizeMode="cover"
+            onError={(e) => console.log('WallpaperSelectionModal image error:', e.nativeEvent, wallpaperUrl)}
+          />
+        ) : (
+          <View style={[StyleSheet.absoluteFillObject, { backgroundColor: Colors.background }]} />
         )}
 
-        <View style={[styles.bottomControls, { paddingBottom: insets.bottom + Spacing.xl }]}>
-          <Text style={[styles.optionLabel, { color: 'white' }]}>Apply to:</Text>
-
-          <View style={styles.buttonGroup}>
-            <TouchableOpacity
-              style={[styles.actionButton, isLocked && styles.lockedButton]}
-              onPress={() => handleApply('home')}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <ActivityIndicator size="small" color="white" />
-              ) : (
-                <>
-                  {isLocked && <Ionicons name="lock-closed" size={12} color={Colors.primary} style={styles.lockIcon} />}
-                  <Ionicons name="home-outline" size={24} color="white" />
-                  <Text style={[styles.actionText, { color: 'white' }]}>Home</Text>
-                </>
-              )}
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.actionButton, isLocked && styles.lockedButton]}
-              onPress={() => handleApply('lock')}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <ActivityIndicator size="small" color="white" />
-              ) : (
-                <>
-                  {isLocked && <Ionicons name="lock-closed" size={12} color={Colors.primary} style={styles.lockIcon} />}
-                  <Ionicons name="lock-closed-outline" size={24} color="white" />
-                  <Text style={[styles.actionText, { color: 'white' }]}>Lock</Text>
-                </>
-              )}
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.actionButton, isLocked && styles.lockedButton]}
-              onPress={() => handleApply('both')}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <ActivityIndicator size="small" color="white" />
-              ) : (
-                <>
-                  {isLocked && <Ionicons name="lock-closed" size={12} color={Colors.primary} style={styles.lockIcon} />}
-                  <Ionicons name="layers-outline" size={24} color="white" />
-                  <Text style={[styles.actionText, { color: 'white' }]}>Both</Text>
-                </>
-              )}
-            </TouchableOpacity>
+        <View style={[styles.topBar, { top: insets.top + 20 }]}>
+          <View style={styles.premiumPill}>
+            <Ionicons name="star" size={16} color={Colors.primary} />
+            <Text style={[styles.premiumText, { fontFamily: font }]}>PREMIUM</Text>
           </View>
+          <TouchableOpacity style={styles.closeButton} onPress={onClose} hitSlop={8}>
+            <Ionicons name="close" size={18} color="#FFFFFF" />
+          </TouchableOpacity>
+        </View>
 
-          {showApplyTheme && (
+        <View style={[styles.sheetWrap, { bottom: insets.bottom + 12 }]}>
+          <View style={styles.sheet}>
+            <View style={styles.handle} />
+
+            <View style={styles.headerRow}>
+              <Text style={[styles.title, { fontFamily: font }]}>Set wallpaper</Text>
+              <Text style={[styles.subtitle, { fontFamily: font }]}>Choose where</Text>
+            </View>
+
+            <View style={styles.segmentContainer}>
+              {(['home', 'lock', 'both'] as const).map((key) => {
+                const isActive = selected === key;
+                const icon =
+                  key === 'home' ? 'home-outline' : key === 'lock' ? 'phone-portrait-outline' : 'layers-outline';
+                const label = key === 'home' ? 'Home' : key === 'lock' ? 'Lock' : 'Both';
+                return (
+                  <TouchableOpacity
+                    key={key}
+                    style={[styles.segment, isActive && styles.segmentSelected]}
+                    onPress={() => setSelected(key)}
+                    activeOpacity={0.8}
+                  >
+                    <Ionicons name={icon} size={22} color={isActive ? '#FFFFFF' : '#FFF5EE'} />
+                    <Text
+                      style={[
+                        styles.segmentLabel,
+                        { fontFamily: font, color: isActive ? '#FFFFFF' : '#FFF5EE', fontWeight: isActive ? '700' : '500' },
+                      ]}
+                    >
+                      {label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+
             <TouchableOpacity
-              style={styles.themeButton}
-              onPress={onApplyTheme}
+              style={styles.primaryButton}
+              onPress={() => handleApply(isLocked ? 'both' : selected)}
+              disabled={isLoading}
+              activeOpacity={0.85}
             >
-              <Ionicons name="color-palette-outline" size={20} color="white" />
-              <Text style={styles.themeButtonText}>Apply Matching Theme</Text>
+              {isLoading ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <>
+                  <Ionicons
+                    name={isLocked ? 'star' : 'checkmark'}
+                    size={20}
+                    color="#FFFFFF"
+                  />
+                  <Text style={[styles.primaryText, { fontFamily: font }]}>
+                    {isLocked ? 'Unlock with Premium' : 'Apply wallpaper'}
+                  </Text>
+                </>
+              )}
             </TouchableOpacity>
-          )}
+
+            {showApplyTheme && (
+              <TouchableOpacity style={styles.secondaryButton} onPress={onApplyTheme} activeOpacity={0.8}>
+                <View style={styles.swatches}>
+                  <View style={[styles.swatch, { backgroundColor: '#B58A5A' }]} />
+                  <View style={[styles.swatch, { backgroundColor: '#F2B8AA' }]} />
+                  <View style={[styles.swatch, { backgroundColor: '#2A1710' }]} />
+                </View>
+                <Text style={[styles.secondaryText, { fontFamily: font }]}>Apply matching theme</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         </View>
       </View>
     </Modal>
@@ -132,110 +152,140 @@ export default function WallpaperSelectionModal({
 }
 
 const styles = StyleSheet.create({
-  fullScreenContainer: {
+  root: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: Colors.background,
   },
-  fullScreenImage: {
-    ...StyleSheet.absoluteFillObject,
-    width: '100%',
-    height: '100%',
-  },
-  closeButton: {
+  topBar: {
     position: 'absolute',
-    top: 50,
-    right: 20,
-    zIndex: 10,
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    borderRadius: 20,
-    padding: 8,
-  },
-  premiumBadge: {
-    position: 'absolute',
-    top: 50,
     left: 20,
-    zIndex: 10,
+    right: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    zIndex: 20,
+  },
+  premiumPill: {
+    height: 36,
+    borderRadius: 18,
+    paddingHorizontal: 12,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
+    backgroundColor: 'rgba(20,20,22,0.6)',
     borderWidth: 1,
-    borderColor: Colors.primary,
+    borderColor: 'rgba(255,0,122,0.45)',
   },
   premiumText: {
-    color: 'white',
     fontSize: 12,
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
+    fontWeight: '700',
+    letterSpacing: 0.96,
+    color: Colors.textPrimary,
   },
-  lockIcon: {
-    position: 'absolute',
-    top: -5,
-    right: -5,
-    zIndex: 1,
-  },
-  bottomControls: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: Spacing.lg,
-    paddingBottom: Spacing.xxxl + 20, 
-    backgroundColor: 'rgba(0,0,0,0.6)',
-    borderTopLeftRadius: Radius.xl,
-    borderTopRightRadius: Radius.xl,
-    alignItems: 'center',
-  },
-  optionLabel: {
-    fontSize: Typography.sizes.bodySmall,
-    marginBottom: Spacing.md,
-    textAlign: 'center',
-    fontWeight: Typography.weights.medium,
-  },
-  buttonGroup: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: Spacing.xl,
-    width: '100%',
-  },
-  actionButton: {
-    flex: 1,
-    marginHorizontal: Spacing.xs,
-    paddingVertical: Spacing.md,
+  closeButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: Radius.md,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
-    position: 'relative',
+    backgroundColor: 'rgba(20,20,22,0.6)',
   },
-  lockedButton: {
-    backgroundColor: 'rgba(0,0,0,0.4)',
-    borderColor: 'rgba(255, 0, 122, 0.3)',
-    opacity: 0.8,
+  sheetWrap: {
+    position: 'absolute',
+    left: 12,
+    right: 12,
+    borderRadius: 28,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(28,28,30,0.9)',
   },
-  actionText: {
-    fontSize: Typography.sizes.caption,
-    fontWeight: Typography.weights.medium,
+  sheet: {
+    padding: 12,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+    gap: 16,
+  },
+  handle: {
+    width: 36,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: 'rgba(255,245,238,0.35)',
+    alignSelf: 'center',
     marginTop: 4,
   },
-  themeButton: {
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#FFF5EE',
+  },
+  subtitle: {
+    fontSize: 13,
+    color: '#E6CFC4',
+  },
+  segmentContainer: {
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255,245,238,0.1)',
+    borderRadius: 18,
+    padding: 4,
+    gap: 4,
+  },
+  segment: {
+    flex: 1,
+    height: 64,
+    borderRadius: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  segmentSelected: {
+    backgroundColor: Colors.primary,
+  },
+  segmentLabel: {
+    fontSize: 13,
+  },
+  primaryButton: {
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: Colors.primary,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: Spacing.md,
-    borderRadius: Radius.md,
-    backgroundColor: Colors.primary,
     gap: 8,
-    width: '100%',
   },
-  themeButtonText: {
-    color: 'white',
-    fontSize: Typography.sizes.bodySmall,
-    fontWeight: Typography.weights.bold,
+  primaryText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  secondaryButton: {
+    height: 52,
+    borderRadius: 26,
+    borderWidth: 1,
+    borderColor: 'rgba(255,245,238,0.35)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  swatches: {
+    flexDirection: 'row',
+    marginLeft: -4,
+  },
+  swatch: {
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    marginLeft: -4,
+    borderWidth: 1.5,
+    borderColor: '#262020',
+  },
+  secondaryText: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#FFF5EE',
   },
 });
