@@ -17,7 +17,9 @@ import { useEffect } from 'react';
 import Purchases from 'react-native-purchases';
 import { SubscriptionConfig } from './src/constants/subscriptions';
 import NoInternetModal from './src/components/NoInternetModal';
+import ForceUpdateModal from './src/components/ForceUpdateModal';
 import { useNetworkStatus } from './src/hooks/useNetworkStatus';
+import { useForceUpdate } from './src/hooks/useForceUpdate';
 
 Purchases.configure({ apiKey: SubscriptionConfig.apiKey });
 
@@ -34,6 +36,7 @@ if ((Text as any).defaultProps == null) {
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
   const { isConnected, isChecking, retry } = useNetworkStatus();
+  const forceUpdate = useForceUpdate();
 
   useEffect(() => {
     MobileAds()
@@ -52,6 +55,12 @@ function App() {
           visible={!isConnected}
           onRetry={retry}
           isRetrying={isChecking}
+        />
+        <ForceUpdateModal
+          visible={forceUpdate.required}
+          storeUrl={forceUpdate.storeUrl}
+          message={forceUpdate.message}
+          latestVersion={forceUpdate.latestVersion}
         />
       </AppDetectionProvider>
     </SafeAreaProvider>
