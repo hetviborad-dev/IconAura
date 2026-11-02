@@ -36,7 +36,7 @@ export default function ThemeHomeScreenPreview({ navigation, route }: Props) {
       <ThemePreviewCard theme={theme} />
       <TouchableOpacity
         style={styles.closeButton}
-        onPress={() => navigation.navigate('HomeStack')}
+        onPress={() => navigation.goBack()}
       >
         <Icon name="close" size={28} color="white" />
       </TouchableOpacity>

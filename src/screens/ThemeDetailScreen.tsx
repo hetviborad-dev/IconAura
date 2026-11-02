@@ -649,6 +649,7 @@ export default function ThemeDetailScreen({
                 <TouchableOpacity
                   key={index}
                   style={styles.wallpaperThumbnail}
+                  activeOpacity={1}
                   onPress={() => setSelectedWallpaperUrl(url)}
                 >
                   <Image

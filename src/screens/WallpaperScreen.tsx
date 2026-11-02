@@ -141,7 +141,7 @@ export default function WallpaperScreen() {
     <TouchableOpacity
       style={styles.wallpaperContainer}
       onPress={() => setSelectedWallpaper(item)}
-      activeOpacity={0.8}
+      activeOpacity={1}
     >
       <Image source={{ uri: item.preview || getCloudinaryImageUrl(item.url, 360, 640) }} style={styles.wallpaperImage} />
       {item.theme.isPremium && !isPremium && (
