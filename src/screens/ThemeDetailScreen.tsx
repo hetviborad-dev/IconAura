@@ -82,7 +82,7 @@ const PickerAppIcon = memo(
             setIcon(result.base64);
             setCurrentIcons(prev => ({ ...prev, [appId]: result.base64 }));
           }
-        } catch (e) {
+        } catch {
           
         }
       }
@@ -139,7 +139,7 @@ export default function ThemeDetailScreen({
   const { theme } = route.params;
   const { isPremium } = useSubscription();
   const [enabledIcons, setEnabledIcons] = useState<Set<AppId>>(new Set());
-  const { appStatus, loading, error, refresh } = useAppDetection();
+  const { appStatus, loading } = useAppDetection();
   const [isSaved, setIsSaved] = useState(false);
   const installedApps = useMemo(
     () => SUPPORTED_APPS.filter(app => appStatus[app.id]?.installed),
@@ -318,11 +318,8 @@ export default function ThemeDetailScreen({
     };
   }, [theme.id]);
 
-  const backgroundColor = Colors.background;
   const textColor = Colors.textPrimary;
   const secondaryTextColor = Colors.textSecondary;
-  const cardBackground = Colors.surface;
-  const borderColor = Colors.border;
 
   const handleCreateShortcut = async (
     appId: string,
@@ -733,7 +730,6 @@ export default function ThemeDetailScreen({
                   <AppSelectionRow
                     key={app.id}
                     appId={app.id}
-                    appName={app.name}
                     theme={theme}
                     isSelected={selectedApps.has(app.id)}
                     onToggle={() => toggleSelection(app.id)}
@@ -775,7 +771,6 @@ export default function ThemeDetailScreen({
         <WallpaperSelectionModal
           visible={!!selectedWallpaperUrl}
           wallpaperUrl={selectedWallpaperUrl}
-          isDarkMode={isDarkMode}
           isPremiumTheme={theme.isPremium}
           isUserPremium={isPremium}
           onClose={() => setSelectedWallpaperUrl(null)}

@@ -20,7 +20,6 @@ interface WallpaperSelectionModalProps {
   onApply: (target: 'home' | 'lock' | 'both') => Promise<void>;
   onApplyTheme?: () => void;
   showApplyTheme?: boolean;
-  isDarkMode: boolean;
   isPremiumTheme?: boolean;
   isUserPremium?: boolean;
 }
@@ -32,7 +31,6 @@ export default function WallpaperSelectionModal({
   onApply,
   onApplyTheme,
   showApplyTheme,
-  isDarkMode,
   isPremiumTheme = false,
   isUserPremium = false,
 }: WallpaperSelectionModalProps) {

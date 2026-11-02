@@ -23,7 +23,6 @@ export default function SettingsRow({
   showChevron = true,
   showBorder = true,
 }: SettingsRowProps) {
-  const textColor = Colors.textPrimary;
   const secondaryTextColor = Colors.textSecondary;
   const borderColor = Colors.border;
   const iconColor = Colors.primary;

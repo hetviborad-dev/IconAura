@@ -26,7 +26,6 @@ const ThemeCard = memo(({
   const isPremium = isPremiumProp ?? contextPremium;
   const borderColor = Colors.border;
   const cardColor = Colors.surface;
-  const secondaryTextColor = Colors.textSecondary;
 
   return (
     <TouchableOpacity

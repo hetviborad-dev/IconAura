@@ -22,7 +22,6 @@ export default function SettingsScreen() {
   const { isPremium } = useSubscription();
   const backgroundColor = Colors.background;
   const textColor = Colors.textPrimary;
-  const secondaryTextColor = Colors.textSecondary;
   const cardBackground = Colors.surface;
   const borderColor = Colors.border;
 
@@ -94,7 +93,7 @@ export default function SettingsScreen() {
         <FontText color={textColor} size={Typography.sizes.h1} name="bold" style={{ marginBottom: Spacing.xl }}>Settings</FontText>
 
         {}
-        {settingsSections.map((section, sectionIndex) => (
+        {settingsSections.map((section) => (
           <View key={section.title} style={styles.section}>
             <SectionHeader title={section.title} />
 

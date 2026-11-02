@@ -14,8 +14,6 @@ export default function SectionHeader({
   title,
   subtitle,
 }: SectionHeaderProps) {
-  const textColor = Colors.textPrimary;
-  const secondaryTextColor = Colors.textSecondary;
 
   return (
     <View style={styles.container}>

@@ -38,7 +38,7 @@ function LoadingSkeleton() {
           <Skeleton borderRadius={Radius.sm} />
         </View>
       )}
-      keyExtractor={(item, index) => `skeleton-${index}`}
+      keyExtractor={(_, index) => `skeleton-${index}`}
       numColumns={2}
       contentContainerStyle={styles.grid}
       showsVerticalScrollIndicator={false}
@@ -198,7 +198,6 @@ export default function WallpaperScreen() {
           isUserPremium={isPremium}
           onClose={() => setSelectedWallpaper(null)}
           onApply={handleApplyWallpaper}
-          isDarkMode={false}
           showApplyTheme={true}
           onApplyTheme={() => {
             setSelectedWallpaper(null);

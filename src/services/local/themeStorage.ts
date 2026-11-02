@@ -52,7 +52,7 @@ export async function isThemeSaved(themeId: string): Promise<boolean> {
   try {
     const savedThemes = await getSavedThemes();
     return savedThemes.some(t => t.id === themeId);
-  } catch (e) {
+  } catch {
     return false;
   }
 }

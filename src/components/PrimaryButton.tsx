@@ -4,7 +4,6 @@ import React from 'react';
 import {
   TouchableOpacity,
   StyleSheet,
-  useColorScheme,
   ViewStyle,
   ActivityIndicator,
 } from 'react-native';
@@ -35,7 +34,6 @@ export default function PrimaryButton({
   loading = false,
   icon,
 }: PrimaryButtonProps) {
-  const isDarkMode = useColorScheme() === 'dark';
   const buttonBackground = Colors.primary;
 
   return (

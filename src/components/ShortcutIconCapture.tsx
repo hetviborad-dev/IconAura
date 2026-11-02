@@ -19,8 +19,6 @@ export default function ShortcutIconCapture({
   onCaptureReady,
 }: ShortcutIconCaptureProps) {
   const viewRef = React.useRef<ViewShotRef>(null);
-  const [ready, setReady] = React.useState(false);
-
   React.useEffect(() => {
     if (!appId) return;
 
@@ -39,9 +37,6 @@ export default function ShortcutIconCapture({
   return (
     <ViewShot
       ref={viewRef}
-      onLayout={() => {
-        if (viewRef.current) setReady(true);
-      }}
       style={styles.capture}
     >
       <IconCanvas appId={appId} theme={theme} size={1024} isCapture={true} shape={shape} />

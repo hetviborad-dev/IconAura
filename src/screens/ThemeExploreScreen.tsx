@@ -6,7 +6,6 @@ import {
   Dimensions,
   ActivityIndicator,
   TouchableOpacity,
-  useColorScheme,
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -54,7 +53,6 @@ function LoadingSkeleton() {
 
 export default function ThemeExploreScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const isDarkMode = useColorScheme() === 'dark';
   const { isPremium } = useSubscription();
   const [themes, setThemes] = useState<ThemeDefinition[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,9 +61,7 @@ export default function ThemeExploreScreen() {
   const [hasMore, setHasMore] = useState(true);
   const [currentThemeIndex, setCurrentThemeIndex] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
   const [savedThemeIds, setSavedThemeIds] = useState<Set<string>>(new Set());
-  const captureIcons = useRef<Partial<Record<string, () => Promise<string>>>>({});
   const lastAdIndex = useRef<number>(-1);
   const { showAd } = useInterstitialAd();
 
@@ -87,13 +83,6 @@ export default function ThemeExploreScreen() {
     }
 
     initialize();
-  }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-    }, 1000);
-    return () => clearInterval(timer);
   }, []);
 
   const handleLoadMore = async () => {
@@ -266,7 +255,6 @@ export default function ThemeExploreScreen() {
 
       <WallpaperSelectionModal
         visible={modalVisible}
-        isDarkMode={isDarkMode}
         wallpaperUrl={(currentTheme?.wallpapers && currentTheme.wallpapers.length > 0)
           ? (typeof currentTheme.wallpapers[0] === 'string' ? currentTheme.wallpapers[0] : currentTheme.wallpapers[0].url)
           : ''}

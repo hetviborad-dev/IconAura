@@ -31,14 +31,12 @@ const CategoryButton = memo(({
   name,
   isSelected,
   onPress,
-  isDarkMode,
   secondaryTextColor
 }: {
   id: string;
   name: string;
   isSelected: boolean;
   onPress: (id: string) => void;
-  isDarkMode: boolean;
   secondaryTextColor: string;
 }) => {
   return (
@@ -80,14 +78,13 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
   const backgroundColor = isDarkMode ? Colors.dark.background : Colors.background;
   const textColor = isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary;
   const secondaryTextColor = isDarkMode ? Colors.dark.textSecondary : Colors.textSecondary;
-  const surfaceColor = isDarkMode ? Colors.dark.surface : Colors.backgroundSecondary;
 
   const loadCategories = useCallback(async () => {
     try {
       setLoading(true);
       const cats = await fetchCategories();
       setCategories(cats.map(cat => ({ id: cat.id, name: cat.name })));
-    } catch (e) {
+    } catch {
       setCategories([]);
     } finally {
       setLoading(false);
@@ -115,7 +112,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       const data = await fetchThemesByCategory(categoryId);
       setThemesByCategory(prev => ({ ...prev, [categoryId]: data }));
       setSelectedThemes(data);
-    } catch (e) {
+    } catch {
       setSelectedThemes([]);
     } finally {
       setCategoryLoading(false);
@@ -135,7 +132,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       try {
         const { themesMap } = await fetchHomeThemes();
         setAllThemesCache(Object.values(themesMap).flat());
-      } catch (e) {
+      } catch {
         setAllThemesCache([]);
       }
     })();
@@ -240,7 +237,6 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
                   name={categoryName}
                   isSelected={selectedCategoryId === item}
                   onPress={handleCategoryPress}
-                  isDarkMode={isDarkMode}
                   secondaryTextColor={secondaryTextColor}
                 />
               );

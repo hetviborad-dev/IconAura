@@ -57,7 +57,7 @@ const AppIcon = ({ appId, appName, fallbackColor, installed = true }: { appId: s
               }
               return;
             }
-          } catch (e) {
+          } catch {
 
           }
         }
@@ -65,7 +65,7 @@ const AppIcon = ({ appId, appName, fallbackColor, installed = true }: { appId: s
           iconCache.set(appId, null);
           setIcon(null);
         }
-      } catch (e) {
+      } catch {
         if (!cancelled) {
           iconCache.set(appId, null);
           setIcon(null);
@@ -223,7 +223,6 @@ export default function IconManagementScreen({ navigation }: IconManagementScree
           </FontText>
         }
         renderItem={({ item: app }) => {
-          const detectedPkg = appStatus[app.id]?.packageName || app.packageName;
           return (
             <View style={[styles.iconRow, { backgroundColor: Colors.surface }]}>
               <View style={styles.leftSection}>
@@ -237,7 +236,7 @@ export default function IconManagementScreen({ navigation }: IconManagementScree
               </View>
               <Switch
                 value={enabledIcons.has(app.id)}
-                onValueChange={(val) => handleToggle(app.id)}
+                onValueChange={() => handleToggle(app.id)}
                 trackColor={{ false: '#767577', true: Colors.primary }}
               />
             </View>

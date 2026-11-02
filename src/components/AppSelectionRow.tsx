@@ -6,7 +6,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 interface AppSelectionRowProps {
   appId: string;
-  appName: string;
   theme: any;
   isSelected: boolean;
   onToggle: () => void;
@@ -18,7 +17,6 @@ interface AppSelectionRowProps {
 
 const AppSelectionRow = memo(({
   appId,
-  appName,
   theme,
   isSelected,
   onToggle,
