@@ -414,7 +414,78 @@ val successCallback = PendingIntent.getBroadcast(
       ?: throw IllegalStateException("Could not decode captured SVG icon for $appName")
 
     Log.i(TAG, "Captured SVG icon created: ${bitmap.width}x${bitmap.height}px for $appName")
-    return IconCompat.createWithBitmap(bitmap)
+
+    // Baseline behavior (preserved for Samsung and any non-Google launcher): create a
+    // legacy bitmap icon so the launcher displays the captured PNG exactly as before.
+    // Samsung's launcher path is intentionally untouched to avoid regressions.
+    //
+    // Google Pixel Launcher applies an adaptive-icon safe-zone scale to legacy bitmap
+    // icons, which shrinks the artwork and adds visible padding. For the Google
+    // launcher we publish the bitmap as an adaptive bitmap instead, so it is treated
+    // as a full 108dp adaptive icon and masked/clipped without the extra safe-zone
+    // downscale.
+    return if (shouldUseAdaptiveBitmapIcon()) {
+      // Pixel treats a whole 100% edge-to-edge adaptive bitmap as too tight.
+      // Add a modest adaptive safe-zone margin around the *same* captured artwork
+      // before publishing it as an adaptive bitmap. This keeps the visual size
+      // between the original Samsung legacy rendering and an edge-to-edge crop.
+      val adaptiveBitmap = createPaddedAdaptiveBitmap(bitmap, 0.15f)
+      Log.i(TAG, "Using padded createWithAdaptiveBitmap for Google/Pixel launcher compatibility")
+      IconCompat.createWithAdaptiveBitmap(adaptiveBitmap)
+    } else {
+      Log.i(TAG, "Using createWithBitmap legacy path (Samsung/default behavior preserved)")
+      IconCompat.createWithBitmap(bitmap)
+    }
+  }
+
+  /**
+   * Best-effort detection of the user's default home/launcher application.
+   *
+   * We key off the launcher package name rather than the device manufacturer, but
+   * we only switch behavior for launchers known to apply adaptive-icon safe-zone
+   * scaling to legacy shortcut bitmaps (Google Pixel Launcher / AOSP launcher3).
+   * Every other launcher keeps the original legacy bitmap path.
+   */
+  private fun shouldUseAdaptiveBitmapIcon(): Boolean {
+    return try {
+      val homeIntent = Intent(Intent.ACTION_MAIN).apply {
+        addCategory(Intent.CATEGORY_HOME)
+      }
+      val resolveInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        packageManager.resolveActivity(homeIntent, PackageManager.MATCH_DEFAULT_ONLY or PackageManager.MATCH_ALL)
+      } else {
+        @Suppress("DEPRECATION")
+        packageManager.resolveActivity(homeIntent, PackageManager.MATCH_DEFAULT_ONLY)
+      }
+      val launcherPackage = resolveInfo?.activityInfo?.packageName
+      Log.i(TAG, "Default launcher package: $launcherPackage")
+
+      launcherPackage in setOf(
+        "com.google.android.apps.nexuslauncher",       // Pixel Launcher
+        "com.google.android.googlequicksearchbox",     // Google app launcher surface
+        "com.android.launcher3",                      // AOSP Launcher3 (Pixel emulators/other Google builds)
+        "com.android.launcher",                        // Legacy AOSP launcher
+      )
+    } catch (e: Exception) {
+      Log.w(TAG, "Could not resolve default launcher, falling back to legacy bitmap icon", e)
+      false
+    }
+  }
+
+  private fun createPaddedAdaptiveBitmap(original: android.graphics.Bitmap, paddingFraction: Float): android.graphics.Bitmap {
+    val size = maxOf(original.width, original.height)
+    val out = android.graphics.Bitmap.createBitmap(size, size, android.graphics.Bitmap.Config.ARGB_8888)
+    val canvas = android.graphics.Canvas(out)
+    val contentSize = (size * (1f - (2f * paddingFraction))).toInt().coerceAtLeast(1)
+    val scaled = if (original.width == contentSize && original.height == contentSize) {
+      original
+    } else {
+      android.graphics.Bitmap.createScaledBitmap(original, contentSize, contentSize, true)
+    }
+    val offset = (size - contentSize) / 2f
+    canvas.drawBitmap(scaled, offset, offset, android.graphics.Paint().apply { isAntiAlias = true })
+    if (scaled !== original) scaled.recycle()
+    return out
   }
 
   

@@ -17,6 +17,8 @@ export default function AdBanner() {
         requestOptions={{
           requestNonPersonalizedAdsOnly: true,
         }}
+        onAdLoaded={() => console.log('Banner loaded', currentAdIds.banner)}
+        onAdFailedToLoad={(err) => console.error('Banner failed', err)}
       />
     </View>
   );

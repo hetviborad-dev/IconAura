@@ -12,6 +12,8 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import 'react-native-gesture-handler';
 import RootNavigator from './src/navigation/RootNavigator';
 import { AppDetectionProvider } from './src/context/AppDetectionContext';
+import MobileAds from 'react-native-google-mobile-ads';
+import { useEffect } from 'react';
 import Purchases from 'react-native-purchases';
 import { SubscriptionConfig } from './src/constants/subscriptions';
 
@@ -29,6 +31,14 @@ if ((Text as any).defaultProps == null) {
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
+
+  useEffect(() => {
+    MobileAds()
+      .initialize()
+      .then(() => console.log('AdMob initialized'))
+      .catch((e) => console.error('AdMob init failed', e));
+    MobileAds().setRequestConfiguration({});
+  }, []);
 
   return (
     <SafeAreaProvider>
