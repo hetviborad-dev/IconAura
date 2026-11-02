@@ -1,7 +1,7 @@
 
 
 import React from 'react';
-import { findNodeHandle, View } from 'react-native';
+import { findNodeHandle } from 'react-native';
 import ViewShot, { captureRef, type ViewShotRef } from 'react-native-view-shot';
 import type { AppId } from '../types/data';
 import type { ThemeDefinition } from '../types/data';

@@ -3,7 +3,6 @@
 import React from 'react';
 import {
   TouchableOpacity,
-  Text,
   StyleSheet,
   useColorScheme,
   ViewStyle,
@@ -11,6 +10,7 @@ import {
 } from 'react-native';
 import { Colors, Spacing, Typography, Radius, TouchTarget } from '../constants/design';
 import Icon from 'react-native-vector-icons/Ionicons';
+import FontText from './FontText';
 
 interface PrimaryButtonProps {
   title: string;
@@ -65,7 +65,7 @@ export default function PrimaryButton({
           />
         )
       )}
-      <Text style={styles.buttonText}>{title}</Text>
+      <FontText color="#FFFFFF" size={Typography.sizes.body} name="semibold">{title}</FontText>
     </TouchableOpacity>
   );
 }
@@ -86,11 +86,6 @@ const styles = StyleSheet.create({
   },
   disabled: {
     opacity: 0.5,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: Typography.sizes.body,
-    fontWeight: Typography.weights.semibold,
   },
   icon: {
     

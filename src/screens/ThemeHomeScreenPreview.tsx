@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import {
   View,
   StyleSheet,
-  Text,
   TouchableOpacity,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -48,24 +47,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
-  },
-  clockContainer: {
-    position: 'absolute',
-    top: 50,
-    left: 20,
-    zIndex: 100,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 22,
-  },
-  clockText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
   closeButton: {
     position: 'absolute',

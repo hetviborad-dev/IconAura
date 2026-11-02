@@ -5,12 +5,9 @@ import {
   Image,
   ScrollView,
   Dimensions,
-  Text,
 } from 'react-native';
 import { ThemeDefinition, AppId } from '../types/data';
-import { Layout, Colors } from '../constants/design';
 import IconCanvas from './IconCanvas';
-import Icon from 'react-native-vector-icons/Ionicons';
 
 const { width, height } = Dimensions.get('window');
 
@@ -115,27 +112,6 @@ const styles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
     zIndex: 15,
-  },
-  premiumBadge: {
-    position: 'absolute',
-    top: 80,
-    right: 20,
-    backgroundColor: 'rgba(0,0,0,0.8)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-    gap: 6,
-    borderWidth: 2,
-    borderColor: '#FFD700',
-    zIndex: 999,
-  },
-  premiumText: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
   },
   pageIndicator: {
     flexDirection: 'row',

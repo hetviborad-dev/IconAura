@@ -1,16 +1,15 @@
 import React, { memo } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
-  useColorScheme,
 } from 'react-native';
 import { Colors, Radius, Spacing, Typography } from '../constants/design';
 import type { ThemeDefinition } from '../types/data';
 import IconCanvas from './IconCanvas';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSubscription } from '../context/SubscriptionContext';
+import FontText from './FontText';
 
 interface ThemeCardProps {
   theme: ThemeDefinition;
@@ -40,7 +39,7 @@ const ThemeCard = memo(({
       {theme.isPremium && !isPremium && (
         <View style={styles.premiumBadge}>
           <Icon name="lock-closed" size={10} color="white" />
-          <Text style={styles.premiumText}>Premium</Text>
+          <FontText color="#FFFFFF" size={8} name="bold" style={{ textTransform: 'uppercase' }}>Premium</FontText>
         </View>
       )}
       <View
@@ -60,9 +59,9 @@ const ThemeCard = memo(({
             </View>
           ))}
       </View>
-      <Text style={[styles.name, { color: Colors.textPrimary }]} numberOfLines={1}>
+      <FontText color={Colors.textPrimary} size={Typography.sizes.caption} name="semibold" style={{ marginTop: Spacing.sm, left: 4 }} numberOfLines={1}>
         {theme.name}
-      </Text>
+      </FontText>
     </TouchableOpacity>
   );
 });
@@ -93,12 +92,6 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255, 0, 122, 0.5)',
     zIndex: 10,
   },
-  premiumText: {
-    color: 'white',
-    fontSize: 8,
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-  },
   preview: {
     width: 110,
     height: 110,
@@ -117,15 +110,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
-  },
-  name: {
-    marginTop: Spacing.sm,
-    fontSize: Typography.sizes.caption,
-    fontWeight: Typography.weights.semibold,
-    left: 4,
-  },
-  description: {
-    marginTop: Spacing.xs,
-    fontSize: Typography.sizes.caption,
   },
 });

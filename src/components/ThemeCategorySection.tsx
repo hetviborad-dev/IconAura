@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, Text, View, ActivityIndicator } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import { Colors, Spacing, Typography, Radius } from '../constants/design';
 import type { ThemeDefinition } from '../types/data';
 import ThemeCard from './ThemeCard';
 import { fetchThemesByCategory } from '../services/themeService';
 import Skeleton from './Skeleton';
+import FontText from './FontText';
 
 interface ThemeCategorySectionProps {
   categoryId: string;
@@ -45,7 +46,7 @@ export default function ThemeCategorySection({
   if (loading) {
     return (
       <View style={styles.section}>
-        <Text style={[styles.title, { color: darkMode ? Colors.dark.textPrimary : Colors.textPrimary }]}>{title}</Text>
+        <FontText color={darkMode ? Colors.dark.textPrimary : Colors.textPrimary} size={Typography.sizes.h3} name="bold">{title}</FontText>
         <View style={{ flexDirection: 'row', gap: Spacing.md, marginTop: Spacing.md }}>
           {[...Array(4)].map((_, i) => (
             <View key={i} style={{ alignItems: 'center' }}>
@@ -64,7 +65,7 @@ export default function ThemeCategorySection({
   return (
     <View style={styles.section}>
       <View style={styles.heading}>
-        <Text style={[styles.title, { color: textColor }]}>{title}</Text>
+        <FontText color={textColor} size={Typography.sizes.h3} name="bold">{title}</FontText>
       </View>
       <FlatList
         horizontal
@@ -96,6 +97,5 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: Spacing.md,
   },
-  title: { fontSize: Typography.sizes.h3, fontWeight: Typography.weights.bold },
   row: { paddingRight: Spacing.lg },
 });

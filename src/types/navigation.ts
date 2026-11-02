@@ -1,6 +1,6 @@
 
 
-import { Theme, ThemeDefinition } from './data';
+import { ThemeDefinition } from './data';
 
 export type RootStackParamList = {
   HomeStack: undefined;

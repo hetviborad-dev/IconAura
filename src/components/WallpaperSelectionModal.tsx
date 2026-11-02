@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   Modal,
@@ -10,8 +9,9 @@ import {
   Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Colors, Spacing, Typography, Radius } from '../constants/design';
+import { Colors } from '../constants/design';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import FontText from './FontText';
 
 interface WallpaperSelectionModalProps {
   visible: boolean;
@@ -68,7 +68,7 @@ export default function WallpaperSelectionModal({
         <View style={[styles.topBar, { top: insets.top + 20 }]}>
           <View style={styles.premiumPill}>
             <Ionicons name="star" size={16} color={Colors.primary} />
-            <Text style={[styles.premiumText, { fontFamily: font }]}>PREMIUM</Text>
+            <FontText style={[styles.premiumText, { fontFamily: font }]}>PREMIUM</FontText>
           </View>
           <TouchableOpacity style={styles.closeButton} onPress={onClose} hitSlop={8}>
             <Ionicons name="close" size={18} color="#FFFFFF" />
@@ -80,8 +80,8 @@ export default function WallpaperSelectionModal({
             <View style={styles.handle} />
 
             <View style={styles.headerRow}>
-              <Text style={[styles.title, { fontFamily: font }]}>Set wallpaper</Text>
-              <Text style={[styles.subtitle, { fontFamily: font }]}>Choose where</Text>
+              <FontText style={[styles.title, { fontFamily: font }]}>Set wallpaper</FontText>
+              <FontText style={[styles.subtitle, { fontFamily: font }]}>Choose where</FontText>
             </View>
 
             <View style={styles.segmentContainer}>
@@ -98,14 +98,14 @@ export default function WallpaperSelectionModal({
                     activeOpacity={0.8}
                   >
                     <Ionicons name={icon} size={22} color={isActive ? '#FFFFFF' : '#FFF5EE'} />
-                    <Text
+                    <FontText
                       style={[
                         styles.segmentLabel,
                         { fontFamily: font, color: isActive ? '#FFFFFF' : '#FFF5EE', fontWeight: isActive ? '700' : '500' },
                       ]}
                     >
                       {label}
-                    </Text>
+                    </FontText>
                   </TouchableOpacity>
                 );
               })}
@@ -126,9 +126,9 @@ export default function WallpaperSelectionModal({
                     size={20}
                     color="#FFFFFF"
                   />
-                  <Text style={[styles.primaryText, { fontFamily: font }]}>
+                  <FontText style={[styles.primaryText, { fontFamily: font }]}>
                     {isLocked ? 'Unlock with Premium' : 'Apply wallpaper'}
-                  </Text>
+                  </FontText>
                 </>
               )}
             </TouchableOpacity>
@@ -140,7 +140,7 @@ export default function WallpaperSelectionModal({
                   <View style={[styles.swatch, { backgroundColor: '#F2B8AA' }]} />
                   <View style={[styles.swatch, { backgroundColor: '#2A1710' }]} />
                 </View>
-                <Text style={[styles.secondaryText, { fontFamily: font }]}>Apply matching theme</Text>
+                <FontText style={[styles.secondaryText, { fontFamily: font }]}>Apply matching theme</FontText>
               </TouchableOpacity>
             )}
           </View>

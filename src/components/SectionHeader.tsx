@@ -1,12 +1,9 @@
 
 
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-} from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import { Colors, Spacing, Typography } from '../constants/design';
+import FontText from './FontText';
 
 interface SectionHeaderProps {
   title: string;
@@ -22,13 +19,13 @@ export default function SectionHeader({
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.title, { color: textColor }]}>
+      <FontText color={Colors.textPrimary} size={Typography.sizes.h3} name="semibold" style={{ marginBottom: Spacing.xs }}>
         {title}
-      </Text>
+      </FontText>
       {subtitle && (
-        <Text style={[styles.subtitle, { color: secondaryTextColor }]}>
+        <FontText color={Colors.textSecondary} size={Typography.sizes.bodySmall} name="regular">
           {subtitle}
-        </Text>
+        </FontText>
       )}
     </View>
   );
@@ -37,14 +34,5 @@ export default function SectionHeader({
 const styles = StyleSheet.create({
   container: {
     marginBottom: Spacing.md,
-  },
-  title: {
-    fontSize: Typography.sizes.h3,
-    fontWeight: Typography.weights.semibold,
-    marginBottom: Spacing.xs,
-  },
-  subtitle: {
-    fontSize: Typography.sizes.bodySmall,
-    fontWeight: Typography.weights.regular,
   },
 });

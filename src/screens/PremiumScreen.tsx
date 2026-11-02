@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
@@ -15,7 +14,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import RevenueCatUI from 'react-native-purchases-ui';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useSubscription } from '../context/SubscriptionContext';
-import { Colors, Spacing, Typography, Radius } from '../constants/design';
+import FontText from '../components/FontText';
 
 const FEATURE_GRAPHIC = require('../assets/images/aura_feature_graphic.png');
 
@@ -90,7 +89,7 @@ export default function PremiumScreen({ navigation }: any) {
         <LinearGradient colors={['#0B0B0F', '#12101A', '#0B0B0F']} style={styles.container}>
           <SafeAreaView style={styles.loadingContainer}>
             <ActivityIndicator size="large" color="#FFD700" />
-            <Text style={styles.loadingText}>Preparing premium plans…</Text>
+            <FontText color="#A7A7B2" size={14} name="semibold" style={styles.loadingText}>Preparing premium plans…</FontText>
           </SafeAreaView>
         </LinearGradient>
       );
@@ -130,7 +129,7 @@ export default function PremiumScreen({ navigation }: any) {
             <TouchableOpacity style={styles.iconButton} onPress={() => navigation.goBack()}>
               <Icon name="close" size={22} color="#FFFFFF" />
             </TouchableOpacity>
-            <Text style={styles.topBarTitle}>Premium</Text>
+            <FontText color="#FFFFFF" size={18} name="bold" style={styles.topBarTitle}>Premium</FontText>
             <View style={styles.iconButtonPlaceholder} />
           </View>
 
@@ -138,56 +137,56 @@ export default function PremiumScreen({ navigation }: any) {
 
           <View style={styles.activeRow}>
             <View style={styles.activeDot} />
-            <Text style={styles.activeText}>PREMIUM ACTIVE</Text>
+            <FontText color="#FFD700" size={11} name="bold" style={styles.activeText}>PREMIUM ACTIVE</FontText>
           </View>
 
-          <Text style={styles.heroTitle}>Aura Premium</Text>
-          <Text style={styles.heroSubtitle}>Welcome back. Your premium benefits are active.</Text>
+          <FontText color="#FFFFFF" size={28} name="bold" style={styles.heroTitle}>Aura Premium</FontText>
+          <FontText color="#A7A7B2" size={14} name="regular" style={styles.heroSubtitle}>Welcome back. Your premium benefits are active.</FontText>
 
           <View style={styles.card}>
             <View style={styles.rowBetween}>
-              <Text style={styles.cardLabel}>CURRENT PLAN</Text>
+              <FontText color="#8A8A96" size={11} name="bold" style={styles.cardLabel}>CURRENT PLAN</FontText>
               <View style={styles.activeTag}>
-                <Text style={styles.activeTagText}>ACTIVE</Text>
+                <FontText color="#0B0B0F" size={10} name="bold" style={styles.activeTagText}>ACTIVE</FontText>
               </View>
             </View>
-            <Text style={styles.planValue}>{planName}</Text>
+            <FontText color="#FFFFFF" size={26} name="bold" style={styles.planValue}>{planName}</FontText>
             {activePlanType !== 'lifetime' && expirationDate ? (
               <View style={styles.detailsRow}>
                 <View style={styles.detailItem}>
-                  <Text style={styles.detailLabel}>Expires on</Text>
-                  <Text style={styles.detailValue}>{formatDate(expirationDate)}</Text>
+                  <FontText color="#8A8A96" size={11} name="regular" style={styles.detailLabel}>Expires on</FontText>
+                  <FontText color="#FFFFFF" size={14} name="bold" style={styles.detailValue}>{formatDate(expirationDate)}</FontText>
                 </View>
                 <View style={styles.detailItem}>
-                  <Text style={styles.detailLabel}>Remaining</Text>
-                  <Text style={styles.detailValue}>{daysLeft} {daysLeft === 1 ? 'day' : 'days'}</Text>
+                  <FontText color="#8A8A96" size={11} name="regular" style={styles.detailLabel}>Remaining</FontText>
+                  <FontText color="#FFFFFF" size={14} name="bold" style={styles.detailValue}>{daysLeft} {daysLeft === 1 ? 'day' : 'days'}</FontText>
                 </View>
               </View>
             ) : (
               <View style={styles.lifetimeRow}>
                 <Icon name="infinite" size={18} color="#FFD700" />
-                <Text style={styles.lifetimeText}>Lifetime access. No renewals, no expiry.</Text>
+                <FontText color="#E8D7A6" size={13} name="semibold" style={styles.lifetimeText}>Lifetime access. No renewals, no expiry.</FontText>
               </View>
             )}
           </View>
 
           <View style={styles.benefitsCard}>
-            <Text style={styles.sectionTitle}>What you unlocked</Text>
+            <FontText color="#FFFFFF" size={16} name="bold" style={styles.sectionTitle}>What you unlocked</FontText>
             {BENEFITS.map((item) => (
               <View key={item.text} style={styles.benefitRow}>
                 <View style={styles.benefitIconWrap}>
                   <Icon name={item.icon} size={16} color="#FFD700" />
                 </View>
-                <Text style={styles.benefitText}>{item.text}</Text>
+                <FontText color="#D2D2DC" size={14} name="medium" style={styles.benefitText}>{item.text}</FontText>
               </View>
             ))}
           </View>
 
           <TouchableOpacity style={styles.outlineButton} onPress={handleManageSubscription}>
-            <Text style={styles.outlineButtonText}>Manage subscription</Text>
+            <FontText color="#D8D8E2" size={14} name="semibold" style={styles.outlineButtonText}>Manage subscription</FontText>
           </TouchableOpacity>
           <TouchableOpacity style={styles.restoreButton} onPress={handleRestore}>
-            <Text style={styles.restoreText}>Restore purchases</Text>
+            <FontText color="#A7A7B2" size={13} name="semibold" style={styles.restoreText}>Restore purchases</FontText>
           </TouchableOpacity>
         </ScrollView>
       </SafeAreaView>

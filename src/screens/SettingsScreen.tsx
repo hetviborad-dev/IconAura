@@ -4,8 +4,6 @@ import React from 'react';
 import {
   View,
   ScrollView,
-  useColorScheme,
-  Text,
   StyleSheet,
   Linking,
 } from 'react-native';
@@ -13,11 +11,11 @@ import { useNavigation } from '@react-navigation/native';
 import { Colors, Spacing, Typography, Radius, Layout } from '../constants/design';
 import SectionHeader from '../components/SectionHeader';
 import SettingsRow from '../components/SettingsRow';
-import { APP_NAME, APP_VERSION } from '../data/config';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { RootStackParamList } from '../types/navigation';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useSubscription } from '../context/SubscriptionContext';
+import FontText from '../components/FontText';
 
 export default function SettingsScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -93,7 +91,7 @@ export default function SettingsScreen() {
         showsVerticalScrollIndicator={false}
       >
         {}
-        <Text style={[styles.title, { color: textColor }]}>Settings</Text>
+        <FontText color={textColor} size={Typography.sizes.h1} name="bold" style={{ marginBottom: Spacing.xl }}>Settings</FontText>
 
         {}
         {settingsSections.map((section, sectionIndex) => (
@@ -136,11 +134,6 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.lg,
     paddingBottom: Spacing.xl,
   },
-  title: {
-    fontSize: Typography.sizes.h1,
-    fontWeight: Typography.weights.bold,
-    marginBottom: Spacing.xl,
-  },
   section: {
     marginBottom: Spacing.xl,
   },
@@ -148,15 +141,5 @@ const styles = StyleSheet.create({
     borderRadius: Radius.md,
     borderWidth: 1,
     overflow: 'hidden',
-  },
-  infoSection: {
-    marginTop: Spacing.xl,
-    marginBottom: Spacing.lg,
-  },
-  infoText: {
-    fontSize: Typography.sizes.bodySmall,
-    fontWeight: Typography.weights.regular,
-    lineHeight: Typography.sizes.bodySmall * 1.6,
-    textAlign: 'center',
   },
 });

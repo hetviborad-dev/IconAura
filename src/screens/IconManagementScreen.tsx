@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   ScrollView,
   FlatList,
   TouchableOpacity,
   Switch,
-  ActivityIndicator,
   TextInput,
   Image,
 } from 'react-native';
@@ -22,6 +20,7 @@ import { getAllApps } from '../data/apps';
 import { getEnabledIcons, toggleIconEnabled } from '../services/local/iconStorage';
 import type { AppId } from '../types/data';
 import { useAppDetection } from '../context/AppDetectionContext';
+import FontText from '../components/FontText';
 
 const { HomeShortcut } = NativeModules;
 
@@ -86,7 +85,7 @@ const AppIcon = ({ appId, appName, fallbackColor, installed = true }: { appId: s
           { backgroundColor: fallbackColor || Colors.primary, alignItems: 'center', justifyContent: 'center' },
         ]}
       >
-        <Text style={{ color: '#FFFFFF', fontWeight: '700', fontSize: 12 }}>{letter}</Text>
+        <FontText color="#FFFFFF" size={12} name="bold">{letter}</FontText>
       </View>
     );
   }
@@ -171,7 +170,7 @@ export default function IconManagementScreen({ navigation }: IconManagementScree
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <Ionicons name="chevron-back" size={28} color={textColor} />
           </TouchableOpacity>
-          <Text style={[styles.title, { color: textColor }]}>Manage Icons</Text>
+          <FontText color={textColor} size={Typography.sizes.h2} name="bold">Manage Icons</FontText>
           <View style={{ width: 28 }} />
         </View>
 
@@ -196,7 +195,7 @@ export default function IconManagementScreen({ navigation }: IconManagementScree
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Ionicons name="chevron-back" size={28} color={textColor} />
         </TouchableOpacity>
-        <Text style={[styles.title, { color: textColor }]}>Manage Icons</Text>
+        <FontText color={textColor} size={Typography.sizes.h2} name="bold">Manage Icons</FontText>
         <View style={{ width: 28 }} />
       </View>
 
@@ -219,9 +218,9 @@ export default function IconManagementScreen({ navigation }: IconManagementScree
         maxToRenderPerBatch={20}
         windowSize={8}
         ListHeaderComponent={
-          <Text style={[styles.subtitle, { color: secondaryTextColor }]}>
+          <FontText color={secondaryTextColor} size={Typography.sizes.body} style={{ marginBottom: Spacing.xl, lineHeight: 20 }}>
             Select which icons should be visible in the theme editor.
-          </Text>
+          </FontText>
         }
         renderItem={({ item: app }) => {
           const detectedPkg = appStatus[app.id]?.packageName || app.packageName;
@@ -234,7 +233,7 @@ export default function IconManagementScreen({ navigation }: IconManagementScree
                   fallbackColor={app.icon?.fallbackColor}
                   installed={appStatus[app.id]?.installed}
                 />
-                <Text style={[styles.appName, { color: textColor }]}>{app.name}</Text>
+                <FontText color={textColor} size={Typography.sizes.body} name="medium">{app.name}</FontText>
               </View>
               <Switch
                 value={enabledIcons.has(app.id)}
@@ -259,7 +258,6 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
   },
   backButton: { width: 28, height: 28, justifyContent: 'center', alignItems: 'center' },
-  title: { fontSize: Typography.sizes.h2, fontWeight: Typography.weights.bold },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -273,7 +271,6 @@ const styles = StyleSheet.create({
   searchIcon: { marginRight: Spacing.sm },
   searchInput: { flex: 1, fontSize: Typography.sizes.body },
   content: { padding: Layout.screenPadding },
-  subtitle: { fontSize: Typography.sizes.body, marginBottom: Spacing.xl, lineHeight: 20 },
   iconRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -284,7 +281,4 @@ const styles = StyleSheet.create({
   },
   leftSection: { flexDirection: 'row', alignItems: 'center' },
   appIcon: { width: 24, height: 24, borderRadius: 4, marginRight: Spacing.sm },
-  appIconPlaceholder: { width: 24, height: 24, borderRadius: 4, justifyContent: 'center', alignItems: 'center', marginRight: Spacing.sm },
-  appName: { fontSize: Typography.sizes.body, fontWeight: Typography.weights.medium },
-  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 });

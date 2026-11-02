@@ -6,13 +6,12 @@ import {
   Dimensions,
   ActivityIndicator,
   TouchableOpacity,
-  Text,
   useColorScheme,
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Colors, Spacing, Typography, Radius, Layout } from '../constants/design';
+import { Colors } from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
 import { ThemeDefinition } from '../types/data';
 import { useSubscription } from '../context/SubscriptionContext';
@@ -24,6 +23,7 @@ import { saveTheme, unsaveTheme, getSavedThemes } from '../services/local/themeS
 import { useInterstitialAd } from '../hooks/useInterstitialAd';
 import Icon from 'react-native-vector-icons/Ionicons';
 import Skeleton from '../components/Skeleton';
+import FontText from '../components/FontText';
 
 const { height } = Dimensions.get('window');
 
@@ -260,7 +260,7 @@ export default function ThemeExploreScreen() {
       {(currentTheme?.isPremium && !isPremium) && (
         <View style={styles.premiumIndicator}>
           <Icon name="lock-closed" size={16} color={Colors.primary} />
-          <Text style={styles.premiumText}>Premium</Text>
+          <FontText color={Colors.primary} size={14} name="bold" style={{ textTransform: 'uppercase' }}>Premium</FontText>
         </View>
       )}
 
@@ -283,12 +283,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
-  },
-  center: {
-    flex: 1,
-    backgroundColor: 'black',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   closeButton: {
     position: 'absolute',
@@ -331,12 +325,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  lockIcon: {
-    position: 'absolute',
-    top: -4,
-    right: -4,
-    zIndex: 1,
-  },
   premiumIndicator: {
     position: 'absolute',
     top: 50,
@@ -350,12 +338,6 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 22,
   },
-  premiumText: {
-    color: Colors.primary,
-    fontSize: 14,
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-  },
   clockContainer: {
     position: 'absolute',
     top: 50,
@@ -368,11 +350,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
     borderRadius: 22,
-  },
-  clockText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
   footerLoader: {
     height: height,

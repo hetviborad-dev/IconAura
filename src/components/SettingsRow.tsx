@@ -1,14 +1,10 @@
 
 
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-} from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { Colors, Spacing, Typography, Radius } from '../constants/design';
+import { Colors, Spacing, Typography } from '../constants/design';
+import FontText from './FontText';
 
 interface SettingsRowProps {
   icon: string;
@@ -55,13 +51,13 @@ export default function SettingsRow({
 
       {}
       <View style={styles.textContainer}>
-        <Text style={[styles.title, { color: textColor }]}>
+        <FontText color={Colors.textPrimary} size={Typography.sizes.body} name="medium" style={{ marginBottom: Spacing.xs }}>
           {title}
-        </Text>
+        </FontText>
         {subtitle && (
-          <Text style={[styles.subtitle, { color: secondaryTextColor }]}>
+          <FontText color={Colors.textSecondary} size={Typography.sizes.bodySmall} name="regular">
             {subtitle}
-          </Text>
+          </FontText>
         )}
       </View>
 
@@ -92,14 +88,5 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
-  },
-  title: {
-    fontSize: Typography.sizes.body,
-    fontWeight: Typography.weights.medium,
-    marginBottom: Spacing.xs,
-  },
-  subtitle: {
-    fontSize: Typography.sizes.bodySmall,
-    fontWeight: Typography.weights.regular,
   },
 });

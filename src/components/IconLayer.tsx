@@ -1,5 +1,4 @@
 import React from 'react';
-import { Image, StyleSheet } from 'react-native';
 import type { AppId } from '../types/data';
 import type { ThemeLayer } from '../types/data';
 import { APP_ICON_COMPONENTS } from '../data/app-icons';

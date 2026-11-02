@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   ScrollView,
   useColorScheme,
@@ -30,7 +29,6 @@ import {
   Layout,
 } from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
-import { Theme } from '../types/index';
 import { useSubscription } from '../context/SubscriptionContext';
 import type { AppId, ThemeDefinition } from '../types/data';
 import { getAllApps } from '../data/apps';
@@ -52,6 +50,7 @@ import PrimaryButton from '../components/PrimaryButton';
 import ShapeNameSelectionModal from '../components/ShapeNameSelectionModal';
 import WallpaperSelectionModal from '../components/WallpaperSelectionModal';
 import { NativeModules } from 'react-native';
+import FontText from '../components/FontText';
 
 const { HomeShortcut } = NativeModules;
 
@@ -572,9 +571,9 @@ export default function ThemeDetailScreen({
             >
               <Ionicons name="chevron-back" size={28} color={textColor} />
             </TouchableOpacity>
-            <Text style={[styles.headerTitle, { color: textColor }]}>
+            <FontText color={textColor} size={Typography.sizes.h2} name="bold" style={{ textAlign: 'center' }}>
               {theme.name}
-            </Text>
+            </FontText>
             <View style={styles.headerActions}>
               <TouchableOpacity
                 style={styles.headerAction}
@@ -614,13 +613,13 @@ export default function ThemeDetailScreen({
         {theme.wallpapers && theme.wallpapers.length > 0 && (
           <View style={styles.wallpapersSection}>
             <View style={[styles.sectionHeader, { paddingHorizontal: 0, flexDirection: 'row', alignItems: 'center', gap: 8 }]}>
-              <Text style={[styles.sectionTitle, { color: textColor }]}>
+              <FontText color={textColor} size={Typography.sizes.h3} name="semibold">
                 Matching Wallpapers
-              </Text>
+              </FontText>
               {theme.isPremium && !isPremium && (
                 <View style={styles.wallpaperSectionBadge}>
                   <Ionicons name="lock-closed" size={12} color="white" />
-                  <Text style={styles.wallpaperSectionBadgeText}>Premium</Text>
+                  <FontText color="#FFFFFF" size={10} name="bold" style={{ textTransform: 'uppercase' }}>Premium</FontText>
                 </View>
               )}
             </View>
@@ -646,7 +645,7 @@ export default function ThemeDetailScreen({
                   {theme.isPremium && !isPremium && (
                     <View style={styles.wallpaperLockBadge}>
                       <Ionicons name="lock-closed" size={12} color="white" />
-                      <Text style={styles.wallpaperLockText}>Premium</Text>
+                      <FontText color="#FFFFFF" size={8} name="bold" style={{ textTransform: 'uppercase' }}>Premium</FontText>
                     </View>
                   )}
                 </TouchableOpacity>
@@ -656,15 +655,15 @@ export default function ThemeDetailScreen({
           </View>
         )}
         <View style={styles.sectionHeader}>
-          <Text style={[styles.sectionTitle, { color: textColor }]}>
+          <FontText color={textColor} size={Typography.sizes.h3} name="semibold">
             Set Icons
-          </Text>
+          </FontText>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Text
+            <FontText
               style={[styles.selectionCount, { color: secondaryTextColor }]}
             >
               {selectedApps.size} selected
-            </Text>
+            </FontText>
             <TouchableOpacity
               onPress={() => navigation.navigate('IconManagement')}
               style={styles.manageIconsButton}
@@ -674,7 +673,7 @@ export default function ThemeDetailScreen({
                 size={16}
                 color={Colors.primary}
               />
-              <Text style={styles.manageIconsText}>Manage Icons</Text>
+              <FontText color={Colors.primary} size={Typography.sizes.caption} name="medium" style={{ marginLeft: 4 }}>Manage Icons</FontText>
             </TouchableOpacity>
           </View>
         </View>
@@ -768,7 +767,7 @@ export default function ThemeDetailScreen({
 
       {toastMessage && (
         <View style={styles.toast}>
-          <Text style={styles.toastText}>{toastMessage}</Text>
+          <FontText color="#FFF" size={Typography.sizes.body} style={{ textAlign: 'center' }}>{toastMessage}</FontText>
         </View>
       )}
 
@@ -815,19 +814,19 @@ export default function ThemeDetailScreen({
       <Modal visible={isShapePickerVisible} transparent animationType="fade">
         <View style={[styles.modalOverlay, { justifyContent: 'center' }]}>
           <View style={[styles.modalContent, { backgroundColor: Colors.surface, alignItems: 'center', justifyContent: 'center', height: 'auto', maxHeight: '75%', width: '92%', padding: 24, borderRadius: 24 }]}>
-            <Text style={[styles.modalHeaderTitle, { color: textColor, textAlign: 'center' }]}>
+            <FontText color={textColor} size={Typography.sizes.h3} name="bold" style={{ textAlign: 'center' }}>
               Which style do you want to set?
-            </Text>
-            <Text style={[styles.modalSubtitle, { color: secondaryTextColor, textAlign: 'center', marginBottom: 24 }]}>
+            </FontText>
+            <FontText color={secondaryTextColor} size={Typography.sizes.bodySmall} name="regular" style={{ textAlign: 'center', marginBottom: 24 }}>
               You can add both at once.
-            </Text>
+            </FontText>
 
             <View style={styles.shapeOptionsRow}>
               <TouchableOpacity
                 style={styles.shapeOption}
                 onPress={() => handleShapeSelection('round')}
               >
-                <Text style={[styles.shapeOptionTitle, { color: textColor }]}>Round</Text>
+                <FontText color={textColor} size={Typography.sizes.body} name="semibold">Round</FontText>
                 <View style={styles.shapePreviewContainer}>
                   <View style={styles.roundShapePreview}>
                     <WhatsAppIcon width={'65%'} height="65%" />
@@ -839,11 +838,11 @@ export default function ThemeDetailScreen({
                 <View style={styles.infoContainer}>
                   <View style={styles.infoRow}>
                     <Ionicons name="alert-circle" size={14} color="#FFC107" />
-                    <Text style={[styles.infoText, { color: secondaryTextColor }]}>Watermarked (due to Google specs)</Text>
+                    <FontText color={secondaryTextColor} size={Typography.sizes.caption} name="regular" style={{ lineHeight: 14 }}>Watermarked (due to Google specs)</FontText>
                   </View>
                   <View style={styles.infoRow}>
                     <Ionicons name="checkmark-circle" size={14} color="#FFC107" />
-                    <Text style={[styles.infoText, { color: secondaryTextColor }]}>Can be added to the Dock & Folder</Text>
+                    <FontText color={secondaryTextColor} size={Typography.sizes.caption} name="regular" style={{ lineHeight: 14 }}>Can be added to the Dock & Folder</FontText>
                   </View>
                 </View>
               </TouchableOpacity>
@@ -852,7 +851,7 @@ export default function ThemeDetailScreen({
                 style={styles.shapeOption}
                 onPress={() => handleShapeSelection('square')}
               >
-                <Text style={[styles.shapeOptionTitle, { color: textColor }]}>Square</Text>
+                <FontText color={textColor} size={Typography.sizes.body} name="semibold">Square</FontText>
                 <View style={styles.shapePreviewContainer}>
                   <View style={styles.squareShapePreview}>
                     <WhatsAppIcon width={'65%'} height="65%" />
@@ -861,11 +860,11 @@ export default function ThemeDetailScreen({
                 <View style={styles.infoContainer}>
                   <View style={styles.infoRow}>
                     <Ionicons name="checkmark-circle" size={14} color="#FFC107" />
-                    <Text style={[styles.infoText, { color: secondaryTextColor }]}>No Watermark</Text>
+                    <FontText color={secondaryTextColor} size={Typography.sizes.caption} name="regular" style={{ lineHeight: 14 }}>No Watermark</FontText>
                   </View>
                   <View style={styles.infoRow}>
                     <Ionicons name="alert-circle" size={14} color="#FFC107" />
-                    <Text style={[styles.infoText, { color: secondaryTextColor }]}>Cannot be added to Dock & Folder</Text>
+                    <FontText color={secondaryTextColor} size={Typography.sizes.caption} name="regular" style={{ lineHeight: 14 }}>Cannot be added to Dock & Folder</FontText>
                   </View>
                 </View>
               </TouchableOpacity>
@@ -875,7 +874,7 @@ export default function ThemeDetailScreen({
               style={styles.closeShapePicker}
               onPress={() => setIsShapePickerVisible(false)}
             >
-              <Text style={[styles.closeShapeText, { color: secondaryTextColor }]}>Cancel</Text>
+              <FontText color={secondaryTextColor} size={Typography.sizes.caption} style={{ marginTop: 10 }}>Cancel</FontText>
             </TouchableOpacity>
           </View>
         </View>
@@ -919,11 +918,9 @@ export default function ThemeDetailScreen({
               {allInstalledApps.length === 0 ? (
                 <View style={styles.loadingState}>
                   <ActivityIndicator size="large" color={Colors.primary} />
-                  <Text
-                    style={[styles.loadingText, { color: secondaryTextColor }]}
-                  >
+                  <FontText color={secondaryTextColor} size={Typography.sizes.body} style={{ marginTop: Spacing.md }}>
                     Fetching apps from device...
-                  </Text>
+                  </FontText>
                 </View>
               ) : (
                 <FlatList
@@ -979,20 +976,13 @@ export default function ThemeDetailScreen({
                             setCurrentIcons={setCurrentIcons}
                             isDarkMode={isDarkMode}
                           />
-                          <Text
-                            style={[styles.appOptionText, { color: textColor }]}
-                          >
+                          <FontText color={textColor} size={Typography.sizes.body} name="medium" style={{ flex: 1 }}>
                             {item.appName}
-                          </Text>
-                          <Text
-                            style={[
-                              styles.appOptionDefault,
-                              { color: secondaryTextColor },
-                            ]}
-                          >
+                          </FontText>
+                          <FontText color={secondaryTextColor} size={Typography.sizes.caption} style={{ opacity: 0.6 }}>
                             {' '}
                             (Default)
-                          </Text>
+                          </FontText>
                         </View>
                       </TouchableOpacity>
                     );
@@ -1036,11 +1026,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  headerTitle: {
-    fontSize: Typography.sizes.h2,
-    fontWeight: Typography.weights.bold,
-    textAlign: 'center',
-  },
   themePreviewImage: {
     flex: 1,
     height: 60,
@@ -1052,14 +1037,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: Spacing.sm,
   },
-  previewButton: {
-    width: 60,
-    height: 60,
-    borderRadius: Radius.md,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-  },
   previewButtonSmall: {
     width: 36,
     height: 36,
@@ -1068,12 +1045,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
   },
-  description: {
-    fontSize: Typography.sizes.body,
-    fontWeight: Typography.weights.regular,
-    marginBottom: Spacing.lg,
-    lineHeight: Typography.sizes.body * Typography.lineHeights.normal,
-  },
   appsSection: { marginTop: Spacing.xl },
   sectionHeader: {
     paddingHorizontal: Layout.screenPadding,
@@ -1081,10 +1052,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: Spacing.md,
-  },
-  sectionTitle: {
-    fontSize: Typography.sizes.h3,
-    fontWeight: Typography.weights.semibold,
   },
   selectionCount: {
     fontSize: Typography.sizes.caption,
@@ -1098,18 +1065,6 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: Radius.sm,
   },
-  manageIconsText: {
-    fontSize: Typography.sizes.caption,
-    fontWeight: Typography.weights.medium,
-    color: Colors.primary,
-    marginLeft: 4,
-  },
-  loadingContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: Spacing.xl,
-  },
-  loadingText: { fontSize: Typography.sizes.body, marginTop: Spacing.md },
   footer: { padding: Spacing.lg, paddingBottom: Spacing.xxl },
   wallpapersSection: {
     marginBottom: Spacing.xl,
@@ -1144,12 +1099,6 @@ const styles = StyleSheet.create({
     borderColor: Colors.primary,
     zIndex: 10,
   },
-  wallpaperLockText: {
-    color: 'white',
-    fontSize: 8,
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-  },
   wallpaperSectionBadge: {
     backgroundColor: Colors.primary,
     flexDirection: 'row',
@@ -1160,16 +1109,6 @@ const styles = StyleSheet.create({
     gap: 2,
     borderWidth: 1,
     borderColor: Colors.primary,
-  },
-  wallpaperSectionBadgeText: {
-    color: 'white',
-    fontSize: 10,
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-  },
-  noWallpapersText: {
-    fontSize: Typography.sizes.bodySmall,
-    fontStyle: 'italic',
   },
   toast: {
     position: 'absolute',
@@ -1187,11 +1126,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-  },
-  toastText: {
-    color: '#FFF',
-    fontSize: Typography.sizes.body,
-    textAlign: 'center',
   },
   modalOverlay: {
     flex: 1,
@@ -1214,10 +1148,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 20,
   },
-  modalHeaderTitle: {
-    fontSize: Typography.sizes.h3,
-    fontWeight: Typography.weights.bold,
-  },
   shapeOptionsRow: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -1228,10 +1158,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
     width: 140,
-  },
-  shapeOptionTitle: {
-    fontSize: Typography.sizes.body,
-    fontWeight: Typography.weights.semibold,
   },
   shapePreviewContainer: {
     width: 80,
@@ -1259,11 +1185,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-  infoText: {
-    fontSize: Typography.sizes.caption,
-    fontWeight: Typography.weights.regular,
-    lineHeight: 14,
-  },
   roundShapePreview: {
     width: 60,
     height: 60,
@@ -1284,17 +1205,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  modalSubtitle: {
-    fontSize: Typography.sizes.bodySmall,
-    fontWeight: Typography.weights.regular,
-    marginBottom: 24,
-  },
   closeShapePicker: {
     marginTop: 10,
     padding: 10,
-  },
-  closeShapeText: {
-    fontSize: Typography.sizes.caption,
   },
   searchContainer: {
     flexDirection: 'row',
@@ -1316,11 +1229,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingVertical: 40,
-  },
-  loadingText: {
-    fontSize: Typography.sizes.body,
-    marginTop: 12,
-    textAlign: 'center',
   },
   appOption: {
     paddingVertical: 12,
@@ -1346,14 +1254,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
-  },
-  appOptionText: {
-    fontSize: Typography.sizes.body,
-    fontWeight: '500',
-    flex: 1,
-  },
-  appOptionDefault: {
-    fontSize: Typography.sizes.caption,
-    opacity: 0.6,
   },
 });

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   FlatList,
   TouchableOpacity,
@@ -14,10 +13,10 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 import { ThemeDefinition } from '../types/data';
 import { getSavedThemes, unsaveTheme } from '../services/local/themeStorage';
-import { ThemeCard } from '../components';
 import { Colors, Spacing, Typography, Radius } from '../constants/design';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import IconCanvas from '../components/IconCanvas';
+import FontText from '../components/FontText';
 
 export default function SavedThemesScreen({ navigation }: { navigation: NativeStackNavigationProp<RootStackParamList> }) {
   const [savedThemes, setSavedThemes] = useState<ThemeDefinition[]>([]);
@@ -56,7 +55,7 @@ export default function SavedThemesScreen({ navigation }: { navigation: NativeSt
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <Ionicons name="chevron-back" size={24} color={Colors.textPrimary} />
           </TouchableOpacity>
-          <Text style={styles.title}>Saved Themes</Text>
+          <FontText color={Colors.textPrimary} size={Typography.sizes.h2} name="bold" style={{ marginBottom: Spacing.md }}>Saved Themes</FontText>
           <View style={{ width: 24 }} />
         </View>
         <View style={styles.center}>
@@ -73,12 +72,12 @@ export default function SavedThemesScreen({ navigation }: { navigation: NativeSt
           <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <Ionicons name="chevron-back" size={24} color={Colors.textPrimary} />
           </TouchableOpacity>
-          <Text style={styles.title}>Saved Themes</Text>
+          <FontText color={Colors.textPrimary} size={Typography.sizes.h2} name="bold" style={{ marginBottom: Spacing.md }}>Saved Themes</FontText>
           <View style={{ width: 24 }} />
         </View>
         <View style={styles.center}>
           <Ionicons name="heart-outline" size={64} color="#888" />
-          <Text style={styles.emptyText}>No saved themes yet</Text>
+          <FontText color={Colors.textSecondary} size={Typography.sizes.body} style={{ marginTop: 12 }}>No saved themes yet</FontText>
         </View>
       </SafeAreaView>
     );
@@ -90,7 +89,7 @@ export default function SavedThemesScreen({ navigation }: { navigation: NativeSt
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Ionicons name="chevron-back" size={24} color={Colors.textPrimary} />
         </TouchableOpacity>
-        <Text style={styles.title}>Saved Themes</Text>
+        <FontText color={Colors.textPrimary} size={Typography.sizes.h2} name="bold" style={{ marginBottom: Spacing.md }}>Saved Themes</FontText>
         <View style={{ width: 24 }} />
       </View>
 
@@ -120,9 +119,9 @@ export default function SavedThemesScreen({ navigation }: { navigation: NativeSt
                 </View>
               ))}
             </View>
-            <Text style={styles.themeName} numberOfLines={1}>
+            <FontText color={Colors.textPrimary} size={Typography.sizes.caption} name="semibold" style={{ marginTop: Spacing.xs, textAlign: 'center' }} numberOfLines={1}>
               {item.name}
-            </Text>
+            </FontText>
             <TouchableOpacity
               onPress={() => handleUnsave(item.id)}
               style={styles.unsaveButton}
@@ -147,11 +146,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.background,
   },
-  emptyText: {
-    marginTop: 12,
-    fontSize: Typography.sizes.body,
-    color: Colors.textSecondary,
-  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -161,11 +155,6 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 4,
-  },
-  title: {
-    fontSize: Typography.sizes.h2,
-    fontWeight: Typography.weights.bold,
-    color: Colors.textPrimary,
   },
   listContent: {
     padding: Spacing.md,
@@ -201,13 +190,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     overflow: 'hidden',
   },
-  themeName: {
-    marginTop: Spacing.xs,
-    fontSize: Typography.sizes.caption,
-    fontWeight: Typography.weights.semibold,
-    color: Colors.textPrimary,
-    textAlign: 'center',
-  },
   unsaveButton: {
     position: 'absolute',
     top: 6,
@@ -216,17 +198,5 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 4,
     zIndex: 20,
-  },
-  themeInfo: {
-    flexDirection: 'column',
-  },
-  themeName: {
-    fontSize: Typography.sizes.body,
-    fontWeight: Typography.weights.semibold,
-    color: Colors.textPrimary,
-  },
-  themeCategory: {
-    fontSize: Typography.sizes.caption,
-    color: Colors.textSecondary,
   },
 });

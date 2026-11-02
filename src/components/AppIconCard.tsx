@@ -3,7 +3,6 @@
 import React from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
@@ -12,6 +11,7 @@ import {
 import { Colors, Spacing, Typography, Radius, TouchTarget } from '../constants/design';
 import IconCanvas from './IconCanvas';
 import type { AppId, ThemeDefinition } from '../types/data';
+import FontText from './FontText';
 
 interface AppIconCardProps {
   appName: string;
@@ -63,23 +63,22 @@ export default function AppIconCard({
 
       {}
       <View style={styles.infoContainer}>
-        <Text
-          style={[styles.appName, { color: textColor }]}
+        <FontText
+          color={textColor}
+          size={Typography.sizes.body}
+          name="semibold"
           numberOfLines={1}
         >
           {appName}
-        </Text>
-        <Text
-          style={[
-            styles.status,
-            {
-              color: statusColor || secondaryTextColor,
-            },
-          ]}
+        </FontText>
+        <FontText
+          color={statusColor || secondaryTextColor}
+          size={Typography.sizes.bodySmall}
+          name="regular"
           numberOfLines={2}
         >
           {status}
-        </Text>
+        </FontText>
       </View>
 
       {}
@@ -98,7 +97,7 @@ export default function AppIconCard({
           {loading ? (
             <ActivityIndicator size="small" color="#FFFFFF" />
           ) : (
-            <Text style={styles.buttonText}>Apply</Text>
+            <FontText color="#FFFFFF" size={Typography.sizes.bodySmall} name="semibold">Apply</FontText>
           )}
         </TouchableOpacity>
       )}
@@ -130,16 +129,6 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     gap: Spacing.xs,
   },
-  appName: {
-    fontSize: Typography.sizes.body,
-    fontWeight: Typography.weights.semibold,
-    lineHeight: Typography.sizes.body * Typography.lineHeights.tight,
-  },
-  status: {
-    fontSize: Typography.sizes.bodySmall,
-    fontWeight: Typography.weights.regular,
-    lineHeight: Typography.sizes.bodySmall * Typography.lineHeights.normal,
-  },
   applyButton: {
     paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.md,
@@ -148,10 +137,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     minHeight: TouchTarget.min,
     minWidth: 80,
-  },
-  buttonText: {
-    color: '#FFFFFF',
-    fontSize: Typography.sizes.bodySmall,
-    fontWeight: Typography.weights.semibold,
   },
 });

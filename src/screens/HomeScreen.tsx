@@ -2,29 +2,25 @@ import React, { useState, useEffect, useCallback, useMemo, memo } from 'react';
 import {
   View,
   FlatList,
-  SectionList,
-  ScrollView,
   useColorScheme,
-  Text,
   StyleSheet,
-  ActivityIndicator,
   RefreshControl,
   TouchableOpacity,
   TextInput,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
-import { Colors, Spacing, Typography, Layout, TouchTarget, Radius } from '../constants/design';
+import { Colors, Spacing, Typography, Layout, Radius } from '../constants/design';
 import { HomeStackParamList } from '../types/navigation';
 import { fetchHomeThemes, fetchCategories, fetchThemesByCategory } from '../services/themeService';
 import ThemeCategorySection from '../components/ThemeCategorySection';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { ThemeDefinition } from '../types/data';
 import { ThemeCard } from '../components';
-import Skeleton from '../components/Skeleton';
 import AdBanner from '../components/AdBanner';
 import { useSubscription } from '../context/SubscriptionContext';
 import Icon from 'react-native-vector-icons/Ionicons';
+import FontText from '../components/FontText';
 
 interface HomeScreenProps {
   navigation: NativeStackNavigationProp<HomeStackParamList, 'Home'>;
@@ -57,16 +53,13 @@ const CategoryButton = memo(({
       disabled={isSelected}
       onPress={() => onPress(id)}
     >
-      <Text style={[
-        styles.categoryText,
-        {
-          color: isSelected
-            ? '#FFFFFF'
-            : secondaryTextColor
-        }
-      ]}>
+      <FontText
+        color={isSelected ? '#FFFFFF' : secondaryTextColor}
+        size={Typography.sizes.bodySmall}
+        name="semibold"
+      >
         {name}
-      </Text>
+      </FontText>
     </TouchableOpacity>
   );
 });
@@ -198,8 +191,8 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       <SafeAreaView style={[styles.container, { backgroundColor }]}>
         <View style={styles.header}>
           <View>
-            <Text style={[styles.headerMain, { color: textColor }]}>ICON PACK</Text>
-            <Text style={[styles.headerSub, { color: secondaryTextColor }]}>Aura</Text>
+            <FontText color={textColor} size={Typography.sizes.h3} name="bold">ICON PACK</FontText>
+            <FontText color={secondaryTextColor} size={Typography.sizes.bodySmall} name="medium">Aura</FontText>
           </View>
           <View style={styles.headerActions}>
             {!subscriptionLoading && !isPremium && (
@@ -208,7 +201,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
                 onPress={() => (navigation as any).navigate('Premium')}
               >
                 <Icon name="star" size={18} color={Colors.primary} />
-                <Text style={styles.premiumButtonText}>Premium</Text>
+                <FontText color={Colors.primary} size={Typography.sizes.caption} name="bold">Premium</FontText>
               </TouchableOpacity>
             )}
           </View>
@@ -272,7 +265,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
             removeClippedSubviews={true}
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
-                <Text style={{ color: secondaryTextColor }}>No themes found</Text>
+                <FontText color={secondaryTextColor}>No themes found</FontText>
               </View>
             }
           />
@@ -365,27 +358,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.primary,
   },
-  premiumButtonText: {
-    fontSize: Typography.sizes.caption,
-    fontWeight: Typography.weights.bold,
-    color: Colors.primary,
-  },
-  filterButton: {
-    width: TouchTarget.min,
-    height: TouchTarget.min,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerMain: {
-    fontSize: Typography.sizes.h3,
-    fontWeight: Typography.weights.bold,
-    letterSpacing: 1,
-  },
-  headerSub: {
-    fontSize: Typography.sizes.bodySmall,
-    fontWeight: Typography.weights.medium,
-    marginTop: -4,
-  },
   searchContainer: {
     paddingHorizontal: Layout.screenPadding,
     marginBottom: Spacing.md,
@@ -420,10 +392,6 @@ const styles = StyleSheet.create({
     borderRadius: Radius.lg,
     borderWidth: 1,
   },
-  categoryText: {
-    fontSize: Typography.sizes.bodySmall,
-    fontWeight: Typography.weights.semibold,
-  },
   columnWrapper: {
     justifyContent: 'flex-start',
   },
@@ -442,22 +410,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 100,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 50,
-  },
-  skeletonContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    paddingTop: Spacing.md,
-  },
-  skeletonRow: {
-    width: '30%',
-    marginBottom: Spacing.md,
-    alignItems: 'center',
   },
 });

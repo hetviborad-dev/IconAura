@@ -1,9 +1,10 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, useColorScheme, Animated } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Animated } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { Colors, Spacing, Typography, Radius } from '../constants/design';
+import { Colors } from '../constants/design';
+import FontText from './FontText';
 
 export default function CustomTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
@@ -67,12 +68,9 @@ export default function CustomTabBar({ state, descriptors, navigation }: BottomT
                 size={24}
                 color={isFocused ? activeColor : inactiveColor}
               />
-              <Text style={[
-                styles.label,
-                { color: isFocused ? activeColor : inactiveColor }
-              ]}>
+              <FontText color={isFocused ? activeColor : inactiveColor} size={12} name="semibold" style={{ marginTop: 4 }}>
                 {label}
-              </Text>
+              </FontText>
             </TouchableOpacity>
           );
         })}
@@ -109,10 +107,5 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  label: {
-    fontSize: 12,
-    fontWeight: '600',
-    marginTop: 4,
   },
 });

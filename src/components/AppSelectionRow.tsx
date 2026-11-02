@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, useColorScheme, ActivityIndicator } from 'react-native';
-import { Colors, Spacing, Radius, Typography } from '../constants/design';
+import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { Colors, Spacing } from '../constants/design';
 import IconCanvas from './IconCanvas';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 

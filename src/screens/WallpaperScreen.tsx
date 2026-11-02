@@ -8,7 +8,6 @@ import {
   RefreshControl,
   ActivityIndicator,
   StyleSheet,
-  Text,
   Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -50,6 +49,7 @@ function LoadingSkeleton() {
 }
 
 import { getCloudinaryImageUrl } from '../utils/helpers';
+import FontText from '../components/FontText';
 
 function flattenThemes(themes: ThemeDefinition[]): WallpaperItem[] {
   const items: WallpaperItem[] = [];
@@ -147,7 +147,7 @@ export default function WallpaperScreen() {
       {item.theme.isPremium && !isPremium && (
         <View style={styles.premiumBadge}>
           <Icon name="lock-closed" size={12} color="white" />
-          <Text style={styles.premiumText}>Premium</Text>
+          <FontText color="#FFFFFF" size={8} name="bold" style={{ textTransform: 'uppercase' }}>Premium</FontText>
         </View>
       )}
     </TouchableOpacity>
@@ -156,7 +156,7 @@ export default function WallpaperScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
       <View style={styles.header}>
-        <Text style={[styles.title, { color: textColor }]}>Wallpapers</Text>
+        <FontText color={textColor} size={Typography.sizes.h1} name="bold">Wallpapers</FontText>
       </View>
       {loading ? (
         <LoadingSkeleton />
@@ -216,10 +216,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: Layout.screenPadding,
     paddingVertical: Spacing.xl,
   },
-  title: {
-    fontSize: Typography.sizes.h1,
-    fontWeight: Typography.weights.bold,
-  },
   grid: {
     paddingHorizontal: Layout.screenPadding,
     paddingBottom: Spacing.xxxl,
@@ -252,11 +248,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.primary,
     zIndex: 10,
-  },
-  premiumText: {
-    color: 'white',
-    fontSize: 8,
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
   },
 });

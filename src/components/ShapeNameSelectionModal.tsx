@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   Modal,
@@ -12,9 +11,9 @@ import {
   Typography,
   Radius,
 } from '../constants/design';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import WhatsAppIcon from '../assets/icons/simple-icons--whatsapp.svg';
+import FontText from './FontText';
 
 interface ShapeNameSelectionModalProps {
   visible: boolean;
@@ -61,12 +60,12 @@ const ShapeNameSelectionModal: React.FC<ShapeNameSelectionModalProps> = ({
     <Modal visible={visible} transparent animationType="fade">
       <View style={styles.modalOverlay}>
         <View style={[styles.modalContent, { backgroundColor: Colors.surface }]}>
-          <Text style={[styles.modalHeaderTitle, { color: textColor }]}>
+          <FontText color={textColor} size={Typography.sizes.h3} name="bold" style={{ textAlign: 'center', marginBottom: Spacing.xs }}>
             Icon Label Preference
-          </Text>
-          <Text style={[styles.modalSubtitle, { color: secondaryTextColor }]}>
+          </FontText>
+          <FontText color={secondaryTextColor} size={Typography.sizes.bodySmall} name="regular" style={{ textAlign: 'center', marginBottom: Spacing.xl }}>
             Would you like to keep the app names under the icons?
-          </Text>
+          </FontText>
 
           <View style={styles.optionsContainer}>
             <TouchableOpacity
@@ -78,15 +77,15 @@ const ShapeNameSelectionModal: React.FC<ShapeNameSelectionModalProps> = ({
                   <View style={styles.iconPreview}>
                     <WhatsAppIcon width={'60%'} height="60%" />
                   </View>
-                  <Text style={[styles.previewLabel, { color: textColor }]}>WhatsApp</Text>
+                  <FontText color={textColor} size={8} name="medium" style={{ textAlign: 'center' }}>WhatsApp</FontText>
                 </View>
                 <View style={styles.optionTextContainer}>
-                  <Text style={[styles.optionTitle, { color: textColor }]}>
+                  <FontText color={textColor} size={Typography.sizes.body} name="semibold">
                     With Name
-                  </Text>
-                  <Text style={[styles.optionDescription, { color: secondaryTextColor }]}>
+                  </FontText>
+                  <FontText color={secondaryTextColor} size={Typography.sizes.caption} style={{ marginTop: 2 }}>
                     Display the app name below the icon
-                  </Text>
+                  </FontText>
                 </View>
               </View>
             </TouchableOpacity>
@@ -102,12 +101,12 @@ const ShapeNameSelectionModal: React.FC<ShapeNameSelectionModalProps> = ({
                   </View>
                 </View>
                 <View style={styles.optionTextContainer}>
-                  <Text style={[styles.optionTitle, { color: textColor }]}>
+                  <FontText color={textColor} size={Typography.sizes.body} name="semibold">
                     Without Name
-                  </Text>
-                  <Text style={[styles.optionDescription, { color: secondaryTextColor }]}>
+                  </FontText>
+                  <FontText color={secondaryTextColor} size={Typography.sizes.caption} style={{ marginTop: 2 }}>
                     Hide the app name for a cleaner look
-                  </Text>
+                  </FontText>
                 </View>
               </View>
             </TouchableOpacity>
@@ -115,21 +114,21 @@ const ShapeNameSelectionModal: React.FC<ShapeNameSelectionModalProps> = ({
 
           {withName && (
             <View style={styles.colorSection}>
-              <Text style={[styles.colorTitle, { color: textColor }]}>App Name Color</Text>
+              <FontText color={textColor} size={Typography.sizes.bodySmall} name="semibold" style={{ marginBottom: Spacing.sm }}>App Name Color</FontText>
               <View style={styles.colorOptions}>
                 <TouchableOpacity
                   style={[styles.colorOption, color === 'white' && styles.colorOptionSelected]}
                   onPress={() => setColor('white')}
                 >
                   <View style={[styles.colorSwatch, { backgroundColor: '#FFFFFF' }]} />
-                  <Text style={[styles.colorOptionText, { color: textColor }]}>White</Text>
+                  <FontText color={textColor} size={Typography.sizes.caption} name="medium">White</FontText>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.colorOption, color === 'black' && styles.colorOptionSelected]}
                   onPress={() => setColor('black')}
                 >
                   <View style={[styles.colorSwatch, { backgroundColor: '#000000' }]} />
-                  <Text style={[styles.colorOptionText, { color: textColor }]}>Black</Text>
+                  <FontText color={textColor} size={Typography.sizes.caption} name="medium">Black</FontText>
                 </TouchableOpacity>
               </View>
             </View>
@@ -142,16 +141,16 @@ const ShapeNameSelectionModal: React.FC<ShapeNameSelectionModalProps> = ({
               onSelect(withName, withName ? color : '');
             }}
           >
-            <Text style={styles.doneButtonText}>Done</Text>
+            <FontText color="#FFFFFF" size={Typography.sizes.body} name="bold">Done</FontText>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.closeButton}
             onPress={onClose}
           >
-            <Text style={[styles.closeButtonText, { color: secondaryTextColor }]}>
+            <FontText color={secondaryTextColor} size={Typography.sizes.bodySmall} name="medium">
               Cancel
-            </Text>
+            </FontText>
           </TouchableOpacity>
         </View>
       </View>
@@ -176,19 +175,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-  },
-  modalHeaderTitle: {
-    fontSize: Typography.sizes.h3,
-    fontWeight: Typography.weights.bold,
-    marginBottom: Spacing.xs,
-    textAlign: 'center',
-  },
-  modalSubtitle: {
-    fontSize: Typography.sizes.bodySmall,
-    fontWeight: Typography.weights.regular,
-    textAlign: 'center',
-    marginBottom: Spacing.xl,
-    lineHeight: Typography.sizes.bodySmall * 1.4,
   },
   optionsContainer: {
     width: '100%',
@@ -222,41 +208,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 2,
   },
-  previewLabel: {
-    fontSize: 8,
-    fontWeight: '500',
-    textAlign: 'center',
-  },
   optionTextContainer: {
     flex: 1,
-  },
-  optionTitle: {
-    fontSize: Typography.sizes.body,
-    fontWeight: Typography.weights.semibold,
-  },
-  optionDescription: {
-    fontSize: Typography.sizes.caption,
-    marginTop: 2,
   },
   closeButton: {
     marginTop: Spacing.sm,
     padding: Spacing.md,
   },
-  closeButtonText: {
-    fontSize: Typography.sizes.bodySmall,
-    fontWeight: Typography.weights.medium,
-  },
   optionButtonSelected: { borderColor: Colors.primary, backgroundColor: 'rgba(255,0,122,0.1)' },
   colorSection: { width: '100%', marginBottom: Spacing.lg, alignItems: 'center' },
-  colorTitle: { fontSize: Typography.sizes.bodySmall, fontWeight: Typography.weights.semibold, marginBottom: Spacing.sm },
   colorOptions: { flexDirection: 'row', gap: Spacing.md },
   colorOption: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, padding: Spacing.sm, borderRadius: Radius.md, borderWidth: 1, borderColor: Colors.border },
   colorOptionSelected: { borderColor: Colors.primary, backgroundColor: 'rgba(255,0,122,0.1)' },
   colorSwatch: { width: 18, height: 18, borderRadius: 9, borderWidth: 1, borderColor: Colors.border },
-  colorOptionText: { fontSize: Typography.sizes.caption, fontWeight: Typography.weights.medium },
   doneButton: { width: '100%', backgroundColor: Colors.primary, paddingVertical: Spacing.md, borderRadius: Radius.md, alignItems: 'center', marginBottom: Spacing.sm },
-  doneButtonText: { color: '#FFFFFF', fontSize: Typography.sizes.body, fontWeight: Typography.weights.bold },
-
 });
 
 export default ShapeNameSelectionModal;
