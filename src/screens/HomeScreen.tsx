@@ -202,7 +202,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           <FlatList
             horizontal
             showsHorizontalScrollIndicator={false}
-            data={['all', ...categories.map(c => c.id)]}
+            data={categories.length > 0 ? ['all', ...categories.map(c => c.id)] : []}
             keyExtractor={(item) => item}
             contentContainerStyle={styles.categoryScroll}
             renderItem={({ item }) => {

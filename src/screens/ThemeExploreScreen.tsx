@@ -176,10 +176,14 @@ export default function ThemeExploreScreen() {
 
   const handleNavigateToDetail = () => {
     const theme = themes[currentThemeIndex];
-    if (theme) {
+    if (!theme) return;
+    if (theme.isPremium && !isPremium) {
       setModalVisible(false);
-      navigation.navigate('ThemeDetail', { theme });
+      navigation.navigate('Premium');
+      return;
     }
+    setModalVisible(false);
+    navigation.navigate('ThemeDetail', { theme });
   };
 
   if (loading) {
@@ -226,6 +230,10 @@ export default function ThemeExploreScreen() {
       <TouchableOpacity
         style={styles.applyIconButton}
         onPress={() => {
+          if (currentTheme?.isPremium && !isPremium) {
+            navigation.navigate('Premium');
+            return;
+          }
           if (currentTheme?.wallpapers && currentTheme.wallpapers.length > 0) {
             setModalVisible(true);
           } else {
