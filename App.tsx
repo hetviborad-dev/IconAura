@@ -16,6 +16,8 @@ import MobileAds from 'react-native-google-mobile-ads';
 import { useEffect } from 'react';
 import Purchases from 'react-native-purchases';
 import { SubscriptionConfig } from './src/constants/subscriptions';
+import NoInternetModal from './src/components/NoInternetModal';
+import { useNetworkStatus } from './src/hooks/useNetworkStatus';
 
 Purchases.configure({ apiKey: SubscriptionConfig.apiKey });
 
@@ -31,6 +33,7 @@ if ((Text as any).defaultProps == null) {
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
+  const { isConnected, isChecking, retry } = useNetworkStatus();
 
   useEffect(() => {
     MobileAds()
@@ -45,6 +48,11 @@ function App() {
       <AppDetectionProvider>
         <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
         <RootNavigator />
+        <NoInternetModal
+          visible={!isConnected}
+          onRetry={retry}
+          isRetrying={isChecking}
+        />
       </AppDetectionProvider>
     </SafeAreaProvider>
   );

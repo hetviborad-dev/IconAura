@@ -204,7 +204,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           </View>
         </View>
 
-        {!subscriptionLoading && !isPremium && <AdBanner key={bannerKey} />}
+        {/* {!subscriptionLoading && !isPremium && <AdBanner key={bannerKey} />} */}
 
         <View style={styles.searchContainer}>
           <View style={styles.searchBarWrapper}>
