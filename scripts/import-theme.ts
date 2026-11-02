@@ -170,7 +170,7 @@ async function importSingleTheme(options: any) {
       const { data: newCat, error: catError } = await supabase
         .from('categories')
         .insert({
-          name: category,
+          name: category.charAt(0).toUpperCase() + category.slice(1),
           slug: catSlug
         })
         .select()

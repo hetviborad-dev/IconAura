@@ -2,6 +2,11 @@ import { supabase } from '../lib/supabase';
 import type { ThemeDefinition, ThemeId } from '../types/data';
 import 'react-native-url-polyfill/auto';
 
+function capitalizeFirst(value: string): string {
+  if (!value) return value;
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
 export async function fetchCategories(): Promise<{ id: string; name: string }[]> {
   if (!supabase) {
     console.error('Supabase client is not initialized');
@@ -22,7 +27,7 @@ export async function fetchCategories(): Promise<{ id: string; name: string }[]>
     .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
     .map(cat => ({
       id: cat.slug,
-      name: cat.name,
+      name: capitalizeFirst(cat.name),
     }));
 }
 
@@ -65,7 +70,9 @@ export async function fetchHomeThemes(filters?: {
   }
 
   
-  const sortedCategories = (categories || []).sort((a, b) => (a.order_index || 0) - (b.order_index || 0));
+  const sortedCategories = (categories || [])
+    .sort((a, b) => (a.order_index || 0) - (b.order_index || 0))
+    .map(cat => ({ ...cat, name: capitalizeFirst(cat.name) }));
 
   
   let query = supabase

@@ -234,7 +234,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
               return (
                 <CategoryButton
                   id={item}
-                  name={categoryName}
+                  name={categoryName ? categoryName.charAt(0).toUpperCase() + categoryName.slice(1) : categoryName}
                   isSelected={selectedCategoryId === item}
                   onPress={handleCategoryPress}
                   secondaryTextColor={secondaryTextColor}

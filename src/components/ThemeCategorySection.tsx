@@ -46,7 +46,7 @@ export default function ThemeCategorySection({
   if (loading) {
     return (
       <View style={styles.section}>
-        <FontText color={darkMode ? Colors.dark.textPrimary : Colors.textPrimary} size={Typography.sizes.h3} name="bold">{title}</FontText>
+        <FontText color={darkMode ? Colors.dark.textPrimary : Colors.textPrimary} size={Typography.sizes.h3} name="bold">{title ? title.charAt(0).toUpperCase() + title.slice(1) : title}</FontText>
         <View style={{ flexDirection: 'row', gap: Spacing.md, marginTop: Spacing.md }}>
           {[...Array(4)].map((_, i) => (
             <View key={i} style={{ alignItems: 'center' }}>
@@ -65,7 +65,7 @@ export default function ThemeCategorySection({
   return (
     <View style={styles.section}>
       <View style={styles.heading}>
-        <FontText color={textColor} size={Typography.sizes.h3} name="bold">{title}</FontText>
+        <FontText color={textColor} size={Typography.sizes.h3} name="bold">{title ? title.charAt(0).toUpperCase() + title.slice(1) : title}</FontText>
       </View>
       <FlatList
         horizontal
