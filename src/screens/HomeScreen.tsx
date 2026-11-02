@@ -73,7 +73,7 @@ const CategoryButton = memo(({
 
 export default function HomeScreen({ navigation }: HomeScreenProps) {
   const isDarkMode = useColorScheme() === 'dark';
-  const { isPremium } = useSubscription();
+  const { isPremium, loading: subscriptionLoading } = useSubscription();
   const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState('all');
   const [selectedThemes, setSelectedThemes] = useState<ThemeDefinition[]>([]);
@@ -202,7 +202,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
             <Text style={[styles.headerSub, { color: secondaryTextColor }]}>Aura</Text>
           </View>
           <View style={styles.headerActions}>
-            {!isPremium && (
+            {!subscriptionLoading && !isPremium && (
               <TouchableOpacity
                 style={styles.premiumButton}
                 onPress={() => (navigation as any).navigate('Premium')}
@@ -214,7 +214,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           </View>
         </View>
 
-        {!isPremium && <AdBanner key={bannerKey} />}
+        {!subscriptionLoading && !isPremium && <AdBanner key={bannerKey} />}
 
         <View style={styles.searchContainer}>
           <View style={styles.searchBarWrapper}>
