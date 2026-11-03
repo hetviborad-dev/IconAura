@@ -13,8 +13,10 @@ import {
   FlatList,
   TextInput,
   Image,
+  StatusBar,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BlurView } from '@react-native-community/blur';
 import WhatsAppIcon from '../assets/icons/simple-icons--whatsapp.svg';
 import LogoIcon from '../assets/appsIcons/logo.svg';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -65,6 +67,7 @@ export default function ThemeDetailScreen({
   route,
 }: ThemeDetailScreenProps) {
   const isDarkMode = useColorScheme() === 'dark';
+  const insets = useSafeAreaInsets();
   const { theme } = route.params;
   const { isPremium } = useSubscription();
   const [enabledIcons, setEnabledIcons] = useState<Set<AppId>>(new Set());
@@ -497,6 +500,13 @@ export default function ThemeDetailScreen({
   };
 
   const containerDynamic = { backgroundColor: isDarkMode ? '#121212' : Colors.background };
+  const backdropUrl =
+    theme.previewUrl ||
+    (theme.wallpapers && theme.wallpapers.length > 0
+      ? typeof theme.wallpapers[0] === 'string'
+        ? theme.wallpapers[0]
+        : theme.wallpapers[0].url
+      : undefined);
   const previewButtonDynamic = {
     backgroundColor: isDarkMode ? '#333' : Colors.backgroundSecondary,
     borderColor: isDarkMode ? '#444' : Colors.border,
@@ -505,8 +515,18 @@ export default function ThemeDetailScreen({
   return (
     <SafeAreaView
       style={[styles.container, containerDynamic]}
+      edges={['bottom', 'left', 'right']}
     >
+      {/* @ts-ignore */}
+      {/* <StatusBar translucent backgroundColor="transparent" barStyle={isDarkMode ? 'light-content' : 'dark-content'} /> */}
       <>
+        {backdropUrl ? (
+          <Image
+            source={{ uri: backdropUrl }}
+            style={[styles.headerBackdrop, { height: insets.top + 72 }]}
+            resizeMode="cover"
+          />
+        ) : null}
         <View style={styles.hiddenCaptures} pointerEvents="none">
           <ShortcutIconCapture
             appId={capturingAppId}
@@ -516,8 +536,16 @@ export default function ThemeDetailScreen({
           />
         </View>
 
-        <View style={styles.fixedHeader}>
-          <View style={styles.header}>
+        <View style={[styles.fixedHeader, { }]}>
+          <View style={[styles.header, { overflow: 'hidden',paddingTop: insets.top + Spacing.sm  }]}>
+            <BlurView
+              style={[StyleSheet.absoluteFill,]}
+              pointerEvents="none"
+              blurType={isDarkMode ? 'dark' : 'light'}
+              blurAmount={14}
+              blurRadius={12}
+              overlayColor={isDarkMode ? 'rgba(0,0,0,0.32)' : 'rgba(255,255,255,0.22)'}
+            />
             <TouchableOpacity
               onPress={() => navigation.goBack()}
               style={styles.backButton}
@@ -944,13 +972,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: Layout.screenPadding,
     paddingBottom: Spacing.xl,
   },
-  fixedHeader: { paddingTop: Spacing.lg },
+  fixedHeader: { },
+  headerBackdrop: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 0,
+  },
   header: {
     paddingHorizontal: Layout.screenPadding,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: Spacing.lg,
+    // marginBottom: Spacing.lg,
   },
   headerActions: {
     flexDirection: 'row',
