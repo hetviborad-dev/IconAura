@@ -55,7 +55,7 @@ const CategoryButton = memo(({
       <FontText
         color={isSelected ? '#FFFFFF' : secondaryTextColor}
         size={Typography.sizes.bodySmall}
-        name="semibold"
+        name="bold"
       >
         {name}
       </FontText>
@@ -389,8 +389,8 @@ const styles = StyleSheet.create({
     gap: Spacing.sm,
   },
   categoryButton: {
-    paddingHorizontal: Spacing.md,
-    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.sm,
     borderRadius: Radius.lg,
     borderWidth: 1,
   },

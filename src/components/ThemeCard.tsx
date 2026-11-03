@@ -24,10 +24,10 @@ const ThemeCard = memo(({
 }: ThemeCardProps) => {
   const { isPremium: contextPremium } = useSubscription();
   const isPremium = isPremiumProp ?? contextPremium;
-  const borderColor = Colors.border;
-  const cardColor = Colors.surface;
+  const borderColor = '#2C2438';
+  const cardColor = '#1A1522';
   const cardDynamic = { backgroundColor: cardColor, borderColor };
-  const previewDynamic = { backgroundColor: theme.background.type === 'color' ? theme.background.value : 'transparent', borderColor };
+  const previewDynamic = { backgroundColor: 'transparent', borderColor };
 
   return (
     <TouchableOpacity
@@ -39,8 +39,8 @@ const ThemeCard = memo(({
     >
       {theme.isPremium && !isPremium && (
         <View style={styles.premiumBadge}>
-          <Icon name="lock-closed" size={10} color="white" />
-          <FontText color="#FFFFFF" size={8} name="bold" style={styles.uppercaseText}>Premium</FontText>
+          <Icon name="lock-closed" size={8} color="white" />
+          <FontText pureColor="#FFFFFF" size={9} name="bold" style={styles.uppercaseText}>PRO</FontText>
         </View>
       )}
       <View
@@ -57,7 +57,7 @@ const ThemeCard = memo(({
             </View>
           ))}
       </View>
-      <FontText color={Colors.textPrimary} size={Typography.sizes.caption} name="semibold" style={styles.nameText} numberOfLines={1}>
+      <FontText color={'rgb(245, 241, 250)'} size={13} name="bold" style={styles.nameText} numberOfLines={1}>
         {theme.name}
       </FontText>
     </TouchableOpacity>
@@ -95,7 +95,6 @@ const styles = StyleSheet.create({
     height: 110,
     padding: Spacing.sm,
     borderRadius: Radius.md,
-    borderWidth: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
@@ -105,8 +104,8 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   nameText: {
-    marginTop: Spacing.sm,
-    left: 4,
+    marginTop: Spacing.xs,
+    marginLeft: 8,
   },
   iconTile: {
     width: 45,
