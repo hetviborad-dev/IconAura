@@ -170,9 +170,10 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       title={item.name}
       darkMode={isDarkMode}
       onThemePress={handleThemePress}
+      onSeeAll={() => handleCategoryPress(item.id)}
       isPremium={isPremium}
     />
-  ), [isDarkMode, handleThemePress, isPremium]);
+  ), [isDarkMode, handleThemePress, handleCategoryPress, isPremium]);
 
   const renderThemeItem = useCallback(({ item }: { item: ThemeDefinition }) => (
     <View style={styles.themeGridItem}>

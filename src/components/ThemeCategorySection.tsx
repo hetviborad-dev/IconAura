@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, View, TouchableOpacity } from 'react-native';
 import { Colors, Spacing, Typography, Radius } from '../constants/design';
 import type { ThemeDefinition } from '../types/data';
 import ThemeCard from './ThemeCard';
@@ -11,6 +11,7 @@ interface ThemeCategorySectionProps {
   categoryId: string;
   title: string;
   onThemePress: (theme: ThemeDefinition) => void;
+  onSeeAll?: () => void;
   darkMode: boolean;
   isPremium?: boolean;
 }
@@ -19,6 +20,7 @@ export default function ThemeCategorySection({
   categoryId,
   title,
   onThemePress,
+  onSeeAll,
   darkMode,
   isPremium,
 }: ThemeCategorySectionProps) {
@@ -66,6 +68,14 @@ export default function ThemeCategorySection({
     <View style={styles.section}>
       <View style={styles.heading}>
         <FontText color={textColor} size={Typography.sizes.h3} name="bold">{title ? title.charAt(0).toUpperCase() + title.slice(1) : title}</FontText>
+        {onSeeAll && (
+          <TouchableOpacity onPress={onSeeAll}>
+            <FontText size={Typography.sizes.caption} name="regular">
+              <FontText color="rgb(255, 127, 186)" size={Typography.sizes.caption} name="regular">See All</FontText>
+              <FontText color="rgb(185, 176, 201)" size={Typography.sizes.caption} name="regular"> · {themes.length}</FontText>
+            </FontText>
+          </TouchableOpacity>
+        )}
       </View>
       <FlatList
         horizontal
