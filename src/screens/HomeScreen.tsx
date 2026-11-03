@@ -21,6 +21,7 @@ import AdBanner from '../components/AdBanner';
 import { useSubscription } from '../context/SubscriptionContext';
 import Icon from 'react-native-vector-icons/Ionicons';
 import FontText from '../components/FontText';
+import { fonts } from '../assets';
 
 interface HomeScreenProps {
   navigation: NativeStackNavigationProp<HomeStackParamList, 'Home'>;
@@ -188,8 +189,11 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
       <SafeAreaView style={[styles.container, { backgroundColor }]}>
         <View style={styles.header}>
           <View>
-            <FontText color={textColor} size={Typography.sizes.h3} name="bold">ICON PACK</FontText>
-            <FontText color={secondaryTextColor} size={Typography.sizes.bodySmall} name="medium">Aura</FontText>
+            <FontText color="#B9B0C9" size={Typography.sizes.caption} name="semibold">Make your phone yours</FontText>
+            <FontText color={textColor} size={Typography.sizes.h2} name="bold">
+              <FontText color="#FFFFFF" size={Typography.sizes.h2} name="bold">Icon</FontText>
+              <FontText color="#FF007A" size={Typography.sizes.h2} name="bold">Aura</FontText>
+            </FontText>
           </View>
           <View style={styles.headerActions}>
             {!subscriptionLoading && !isPremium && (
@@ -208,10 +212,11 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
 
         <View style={styles.searchContainer}>
           <View style={styles.searchBarWrapper}>
+            <Icon name="search" size={20} color="#B9B0C9" style={{ marginLeft: Spacing.md }} />
             <TextInput
               style={styles.searchBar}
-              placeholder="Search themes..."
-              placeholderTextColor={secondaryTextColor}
+              placeholder="Search Themes"
+              placeholderTextColor="#B9B0C9"
               value={searchQuery}
               onChangeText={setSearchQuery}
               clearButtonMode="while-editing"
@@ -362,16 +367,17 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 48,
     paddingHorizontal: Spacing.md,
-    fontSize: Typography.sizes.body,
+    fontSize: Typography.sizes.bodySmall,
+    fontFamily: fonts['regular'],
     color: Colors.textPrimary,
   },
   searchBarWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.surface,
+    backgroundColor: '#1A1522',
     borderRadius: Radius.lg,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: '#2C2438',
     paddingRight: Spacing.sm,
   },
   categoryContainer: {
