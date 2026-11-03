@@ -22,15 +22,16 @@ export default function SettingsScreen() {
   const { isPremium } = useSubscription();
   const backgroundColor = Colors.background;
   const textColor = Colors.textPrimary;
-  const cardBackground = Colors.surface;
-  const borderColor = Colors.border;
+  const cardBackground = '#16161F';
+  const borderColor = '#262633';
 
   const settingsSections = [
     {
-      title: 'Account',
+      title: '',
       items: [
         {
           icon: 'star',
+          premium: true,
           label: isPremium ? 'Premium Active' : 'Upgrade to Premium',
           subtitle: isPremium ? 'You have full access' : 'Unlock all themes and features',
           onPress: () => navigation.navigate('Premium'),
@@ -38,7 +39,7 @@ export default function SettingsScreen() {
       ],
     },
     {
-      title: 'App Configuration',
+      title: 'Customize',
       items: [
 
         {
@@ -90,12 +91,13 @@ export default function SettingsScreen() {
         showsVerticalScrollIndicator={false}
       >
         {}
-        <FontText color={textColor} size={Typography.sizes.h1} name="bold" style={{ marginBottom: Spacing.xl }}>Settings</FontText>
+        <FontText color={textColor} size={32} name="bold" style={{ marginBottom: 4 }}>Settings</FontText>
+        <FontText color="#A8A8B8" size={14} name="semibold" style={{ marginBottom: Spacing.xl }}>Manage your icons, themes and account</FontText>
 
         {}
         {settingsSections.map((section) => (
           <View key={section.title} style={styles.section}>
-            <SectionHeader title={section.title} />
+            {section.title ? <SectionHeader title={section.title} color={section.title === 'Customize' ? '#A8A8B8' : Colors.textPrimary} size={Typography.sizes.h3} name={section.title === 'Customize' ? 'semibold' : 'semibold'} /> : null}
 
             <View
               style={[
@@ -113,6 +115,16 @@ export default function SettingsScreen() {
                   title={item.label}
                   subtitle={item.subtitle}
                   onPress={item.onPress}
+                  backgroundColor={item.premium ? Colors.primary : undefined}
+                  titleColor={item.premium ? '#000000' : undefined}
+                  titleSize={item.premium ? 18 : undefined}
+                  titleWeight={item.premium ? 'bold' : undefined}
+                  subtitleColor={item.premium ? '#000000' : undefined}
+                  subtitleWeight={item.premium ? 'semibold' : undefined}
+                  secondaryTextColor={item.premium ? '#000000' : undefined}
+                  subtitleSize={item.premium ? 12 : undefined}
+                  iconBackgroundColor={item?.premium ? '#000000' : undefined}
+                  iconColor={item.premium ? Colors.primary : undefined}
                   showBorder={itemIndex < section.items.length - 1}
                 />
               ))}

@@ -13,6 +13,16 @@ interface SettingsRowProps {
   onPress?: () => void;
   showChevron?: boolean;
   showBorder?: boolean;
+  backgroundColor?: string;
+  titleColor?: string;
+  titleSize?: number;
+  titleWeight?: 'regular' | 'medium' | 'semibold' | 'bold';
+  subtitleColor?: string;
+  subtitleSize?: number;
+  subtitleWeight?: 'regular' | 'medium' | 'semibold' | 'bold';
+  iconBackgroundColor?: string;
+  iconColor?: string;
+  secondaryTextColor?: string;
 }
 
 export default function SettingsRow({
@@ -22,22 +32,30 @@ export default function SettingsRow({
   onPress,
   showChevron = true,
   showBorder = true,
+  backgroundColor,
+  titleColor = Colors.textPrimary,
+  titleSize = Typography.sizes.body,
+  titleWeight = 'medium',
+  subtitleColor = Colors.textSecondary,
+  subtitleSize = Typography.sizes.bodySmall,
+  subtitleWeight = 'regular',
+  iconBackgroundColor,
+  iconColor = Colors.primary,
+  secondaryTextColor = Colors.textSecondary,
 }: SettingsRowProps) {
-  const secondaryTextColor = Colors.textSecondary;
   const borderColor = Colors.border;
-  const iconColor = Colors.primary;
   const borderDynamic = showBorder
     ? { borderBottomColor: borderColor, borderBottomWidth: 1 }
     : undefined;
 
   return (
     <TouchableOpacity
-      style={[styles.row, borderDynamic]}
+      style={[styles.row, borderDynamic, backgroundColor ? { backgroundColor } : undefined]}
       onPress={onPress}
       activeOpacity={0.7}
     >
       {}
-      <View style={styles.iconContainer}>
+      <View style={[styles.iconContainer, iconBackgroundColor ? { backgroundColor: iconBackgroundColor, borderRadius: 8, width: 40, height: 40 } : undefined]}>
         <Ionicons
           name={icon}
           size={24}
@@ -47,11 +65,11 @@ export default function SettingsRow({
 
       {}
       <View style={styles.textContainer}>
-        <FontText color={Colors.textPrimary} size={Typography.sizes.body} name="medium" style={{ marginBottom: Spacing.xs }}>
+        <FontText color={titleColor} size={titleSize} name={titleWeight} style={{ marginBottom: Spacing.xs }}>
           {title}
         </FontText>
         {subtitle && (
-          <FontText color={Colors.textSecondary} size={Typography.sizes.bodySmall} name="regular">
+          <FontText color={subtitleColor} size={subtitleSize} name={subtitleWeight}>
             {subtitle}
           </FontText>
         )}
