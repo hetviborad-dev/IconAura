@@ -16,11 +16,11 @@ import {
   StatusBar,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import { BlurView } from '@react-native-community/blur';
+import { BlurView } from '@sbaiahmed1/react-native-blur';
 import WhatsAppIcon from '../assets/icons/simple-icons--whatsapp.svg';
 import LogoIcon from '../assets/appsIcons/logo.svg';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useIsFocused } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import {
@@ -68,6 +68,7 @@ export default function ThemeDetailScreen({
 }: ThemeDetailScreenProps) {
   const isDarkMode = useColorScheme() === 'dark';
   const insets = useSafeAreaInsets();
+  const isFocused = useIsFocused();
   const { theme } = route.params;
   const { isPremium } = useSubscription();
   const [enabledIcons, setEnabledIcons] = useState<Set<AppId>>(new Set());
@@ -520,13 +521,6 @@ export default function ThemeDetailScreen({
       {/* @ts-ignore */}
       {/* <StatusBar translucent backgroundColor="transparent" barStyle={isDarkMode ? 'light-content' : 'dark-content'} /> */}
       <>
-        {backdropUrl ? (
-          <Image
-            source={{ uri: backdropUrl }}
-            style={[styles.headerBackdrop, { height: insets.top + 72 }]}
-            resizeMode="cover"
-          />
-        ) : null}
         <View style={styles.hiddenCaptures} pointerEvents="none">
           <ShortcutIconCapture
             appId={capturingAppId}
@@ -536,14 +530,21 @@ export default function ThemeDetailScreen({
           />
         </View>
 
-        <View style={[styles.fixedHeader, { }]}>
-          <View style={[styles.header, { overflow: 'hidden',paddingTop: insets.top + Spacing.sm  }]}>
+        <View style={[styles.fixedHeader, { position: 'relative', overflow: 'hidden', minHeight: insets.top + 110 }]}>
+          {theme.previewUrl && (
+            <Image
+              source={{ uri: theme.previewUrl }}
+              style={[StyleSheet.absoluteFill]}
+              resizeMode="cover"
+            />
+          )}
+          <View style={[styles.header, { overflow: 'hidden', paddingTop: insets.top + Spacing.sm, paddingBottom: Spacing.sm, backgroundColor: 'transparent' }]}>
             <BlurView
-              style={[StyleSheet.absoluteFill,]}
+              style={StyleSheet.absoluteFill}
               pointerEvents="none"
               blurType={isDarkMode ? 'dark' : 'light'}
-              blurAmount={14}
-              blurRadius={12}
+              blurAmount={30}
+              blurRounds={12}
               overlayColor={isDarkMode ? 'rgba(0,0,0,0.32)' : 'rgba(255,255,255,0.22)'}
             />
             <TouchableOpacity
@@ -566,22 +567,7 @@ export default function ThemeDetailScreen({
                   color={isSaved ? '#FF4B4B' : textColor}
                 />
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.previewButtonSmall, previewButtonDynamic]}
-                onPress={() => navigation.navigate('ThemeHomeScreenPreview', { theme })}
-              >
-                <Ionicons name="eye-outline" size={24} color={textColor} />
-              </TouchableOpacity>
             </View>
-          </View>
-          <View style={styles.previewRow}>
-            {theme.previewUrl && (
-              <Image
-                source={{ uri: theme.previewUrl }}
-                style={styles.themePreviewImage}
-                resizeMode="cover"
-              />
-            )}
           </View>
         </View>
 
@@ -591,11 +577,12 @@ export default function ThemeDetailScreen({
               <FontText color={textColor} size={Typography.sizes.h3} name="semibold">
                 Matching Wallpapers
               </FontText>
-              {theme.isPremium && !isPremium && (
-                <View style={styles.wallpaperSectionBadge}>
-                  <FontText color="#FFFFFF" size={12} name="bold" style={styles.uppercaseText}>PRO</FontText>
-                </View>
-              )}
+              <TouchableOpacity
+                style={styles.wallpaperSectionBadge}
+                onPress={() => navigation.navigate('ThemeHomeScreenPreview', { theme })}
+              >
+                <Ionicons name="eye-outline" size={14} color="#FFFFFF" />
+              </TouchableOpacity>
             </View>
             <ScrollView
               horizontal
@@ -618,8 +605,8 @@ export default function ThemeDetailScreen({
                   />
                   {theme.isPremium && !isPremium && (
                     <View style={styles.wallpaperLockBadge}>
-                      <Ionicons name="lock-closed" size={12} color="white" />
-                      <FontText color="#FFFFFF" size={8} name="bold" style={styles.uppercaseText}>Premium</FontText>
+                      <Ionicons name="lock-closed" size={8} color="white" />
+                      <FontText color="#FFFFFF" size={10} name="bold" style={styles.uppercaseText}>PRO</FontText>
                     </View>
                   )}
                 </TouchableOpacity>
@@ -985,6 +972,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    overflow: 'hidden',
     // marginBottom: Spacing.lg,
   },
   headerActions: {
@@ -1003,7 +991,7 @@ const styles = StyleSheet.create({
   },
   themePreviewImage: {
     flex: 1,
-    height: 60,
+    height: 110,
     marginBottom: Spacing.md,
     backgroundColor: '#333',
   },
@@ -1059,6 +1047,7 @@ const styles = StyleSheet.create({
   wallpapersSection: {
     marginBottom: Spacing.xl,
     paddingHorizontal: Layout.screenPadding,
+    marginTop: Spacing.xl,
   },
   wallpapersList: { paddingRight: Layout.screenPadding },
   wallpaperThumbnail: {
