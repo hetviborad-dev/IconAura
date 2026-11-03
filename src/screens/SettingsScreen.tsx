@@ -63,6 +63,7 @@ export default function SettingsScreen() {
           icon: 'help-circle-outline',
           label: 'Customer Support',
           subtitle: 'Get help and support',
+          onPress: () => Linking.openURL('mailto:support.iconaura@gmail.com?subject=IconAura%20Support').catch(() => {}),
         },
         {
           icon: 'shield-checkmark-outline',
