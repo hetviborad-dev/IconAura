@@ -15,6 +15,7 @@ import { HomeStackParamList } from '../types/navigation';
 import { fetchHomeThemes, fetchCategories, fetchThemesByCategory } from '../services/themeService';
 import ThemeCategorySection from '../components/ThemeCategorySection';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import LinearGradient from 'react-native-linear-gradient';
 import type { ThemeDefinition } from '../types/data';
 import { ThemeCard } from '../components';
 import AdBanner from '../components/AdBanner';
@@ -200,10 +201,17 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
             {!subscriptionLoading && !isPremium && (
               <TouchableOpacity
                 style={styles.premiumButton}
+                activeOpacity={0.85}
                 onPress={() => (navigation as any).navigate('Premium')}
               >
-                <Icon name="star" size={18} color={Colors.primary} />
-                <FontText color={Colors.primary} size={Typography.sizes.caption} name="bold">Premium</FontText>
+                <LinearGradient
+                  colors={['#FF007A', '#FF5AA7']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.premiumButtonGradient}
+                >
+                  <FontText color="#FFFFFF" size={Typography.sizes.caption} name="bold">PRO</FontText>
+                </LinearGradient>
               </TouchableOpacity>
             )}
           </View>
@@ -350,15 +358,19 @@ const styles = StyleSheet.create({
     gap: Spacing.md,
   },
   premiumButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 0, 122, 0.1)',
-    paddingHorizontal: Spacing.sm,
+    borderRadius: Radius.full,
+    overflow: 'hidden',
+    elevation: 4,
+    shadowColor: Colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 8,
+  },
+  premiumButtonGradient: {
+    paddingHorizontal: Spacing.lg,
     paddingVertical: Spacing.xs,
-    borderRadius: Radius.sm,
-    gap: 4,
-    borderWidth: 1,
-    borderColor: Colors.primary,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   searchContainer: {
     paddingHorizontal: Layout.screenPadding,
