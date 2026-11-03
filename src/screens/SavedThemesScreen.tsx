@@ -58,7 +58,7 @@ export default function SavedThemesScreen({ navigation }: { navigation: NativeSt
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backButton, { overflow: 'hidden' }]}>
             <Ionicons name="chevron-back" size={24} color={Colors.textPrimary} />
           </TouchableOpacity>
           <FontText color={Colors.textPrimary} size={Typography.sizes.h2} name="bold" style={styles.headingText}>Saved Themes</FontText>
@@ -75,7 +75,7 @@ export default function SavedThemesScreen({ navigation }: { navigation: NativeSt
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backButton, { overflow: 'hidden' }]}>
             <Ionicons name="chevron-back" size={24} color={Colors.textPrimary} />
           </TouchableOpacity>
           <FontText color={Colors.textPrimary} size={Typography.sizes.h2} name="bold" style={styles.headingText}>Saved Themes</FontText>
@@ -92,10 +92,10 @@ export default function SavedThemesScreen({ navigation }: { navigation: NativeSt
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity onPress={() => navigation.goBack()} style={[styles.backButton, { overflow: 'hidden' }]}>
           <Ionicons name="chevron-back" size={24} color={Colors.textPrimary} />
         </TouchableOpacity>
-        <FontText color={Colors.textPrimary} size={Typography.sizes.h2} name="bold" style={{ marginBottom: Spacing.md }}>Saved Themes</FontText>
+        <FontText color={Colors.textPrimary} size={Typography.sizes.h2} name="bold">Saved Themes</FontText>
         <View style={styles.spacer24} />
       </View>
 
@@ -152,12 +152,22 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     padding: Spacing.lg,
     marginBottom: Spacing.md,
   },
   backButton: {
-    padding: 4,
+    position: 'absolute',
+    left: Spacing.lg,
+    width: 38,
+    height: 38,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#1A1612',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#2C2620',
+    overflow: 'hidden',
   },
   listContent: {
     padding: Spacing.md,

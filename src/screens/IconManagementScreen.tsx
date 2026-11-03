@@ -8,16 +8,25 @@ import {
   Switch,
   TextInput,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import { NativeModules } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
-import { Colors, Spacing, Typography, Radius, Layout } from '../constants/design';
+import {
+  Colors,
+  Spacing,
+  Typography,
+  Radius,
+  Layout,
+} from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
 import { getAllApps } from '../data/apps';
-import { getEnabledIcons, toggleIconEnabled } from '../services/local/iconStorage';
+import {
+  getEnabledIcons,
+  toggleIconEnabled,
+} from '../services/local/iconStorage';
 import type { AppId } from '../types/data';
 import { useAppDetection } from '../context/AppDetectionContext';
 import FontText from '../components/FontText';
@@ -26,8 +35,20 @@ const { HomeShortcut } = NativeModules;
 
 const iconCache = new Map<string, string | null>();
 
-const AppIcon = ({ appId, appName, fallbackColor, installed = true }: { appId: string; appName?: string; fallbackColor?: string; installed?: boolean }) => {
-  const [icon, setIcon] = useState<string | null>(iconCache.has(appId) ? iconCache.get(appId) ?? null : null);
+const AppIcon = ({
+  appId,
+  appName,
+  fallbackColor,
+  installed = true,
+}: {
+  appId: string;
+  appName?: string;
+  fallbackColor?: string;
+  installed?: boolean;
+}) => {
+  const [icon, setIcon] = useState<string | null>(
+    iconCache.has(appId) ? iconCache.get(appId) ?? null : null,
+  );
 
   useEffect(() => {
     if (!installed) {
@@ -42,14 +63,18 @@ const AppIcon = ({ appId, appName, fallbackColor, installed = true }: { appId: s
     let cancelled = false;
     async function load() {
       try {
-        const app = getAllApps().find((candidate: any) => candidate.id === appId);
+        const app = getAllApps().find(
+          (candidate: any) => candidate.id === appId,
+        );
         const packages = app
           ? [app.packageName, ...Object.values(app.packageAlternatives || {})]
           : [appId];
 
         for (const packageName of packages) {
           try {
-            const result = await HomeShortcut.getCurrentAppIcon({ packageName: String(packageName) });
+            const result = await HomeShortcut.getCurrentAppIcon({
+              packageName: String(packageName),
+            });
             if (result?.base64) {
               if (!cancelled) {
                 iconCache.set(appId, result.base64);
@@ -57,9 +82,7 @@ const AppIcon = ({ appId, appName, fallbackColor, installed = true }: { appId: s
               }
               return;
             }
-          } catch {
-
-          }
+          } catch {}
         }
         if (!cancelled) {
           iconCache.set(appId, null);
@@ -73,7 +96,9 @@ const AppIcon = ({ appId, appName, fallbackColor, installed = true }: { appId: s
       }
     }
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [appId, installed]);
 
   if (!icon) {
@@ -86,7 +111,9 @@ const AppIcon = ({ appId, appName, fallbackColor, installed = true }: { appId: s
           { backgroundColor: fallbackColor || Colors.primary },
         ]}
       >
-        <FontText color="#FFFFFF" size={12} name="bold">{letter}</FontText>
+        <FontText color="#FFFFFF" size={12} name="bold">
+          {letter}
+        </FontText>
       </View>
     );
   }
@@ -99,24 +126,6 @@ const AppIcon = ({ appId, appName, fallbackColor, installed = true }: { appId: s
   );
 };
 
-const IconRowSkeleton = () => {
-  return (
-    <SkeletonPlaceholder
-      borderRadius={Radius.md}
-      highlightColor={Colors.surface}
-      backgroundColor={Colors.background}
-    >
-      <View style={styles.iconRow}>
-        <View style={styles.leftSection}>
-          <View style={[styles.appIcon, styles.mrSm]} />
-          <View style={styles.skeletonText} />
-        </View>
-        <View style={styles.skeletonBadge} />
-      </View>
-    </SkeletonPlaceholder>
-  );
-};
-
 interface IconManagementScreenProps {
   navigation: NativeStackNavigationProp<RootStackParamList, 'IconManagement'>;
 }
@@ -125,7 +134,9 @@ interface IconManagementScreenProps {
   navigation: NativeStackNavigationProp<RootStackParamList, 'IconManagement'>;
 }
 
-export default function IconManagementScreen({ navigation }: IconManagementScreenProps) {
+export default function IconManagementScreen({
+  navigation,
+}: IconManagementScreenProps) {
   const { appStatus } = useAppDetection();
   const [enabledIcons, setEnabledIcons] = useState<Set<AppId>>(new Set());
   const [loading, setLoading] = useState(true);
@@ -152,7 +163,8 @@ export default function IconManagementScreen({ navigation }: IconManagementScree
     const newValue = !enabledIcons.has(appId);
     setEnabledIcons(prev => {
       const next = new Set(prev);
-      if (newValue) next.add(appId); else next.delete(appId);
+      if (newValue) next.add(appId);
+      else next.delete(appId);
       return next;
     });
     await toggleIconEnabled(appId, newValue);
@@ -160,7 +172,7 @@ export default function IconManagementScreen({ navigation }: IconManagementScree
 
   const filteredApps = useMemo(() => {
     return getAllApps().filter(app =>
-      app.name.toLowerCase().includes(searchQuery.toLowerCase())
+      app.name.toLowerCase().includes(searchQuery.toLowerCase()),
     );
   }, [searchQuery]);
 
@@ -168,24 +180,31 @@ export default function IconManagementScreen({ navigation }: IconManagementScree
     return (
       <SafeAreaView style={[styles.container, { backgroundColor }]}>
         <View style={styles.header}>
-          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+          >
             <Ionicons name="chevron-back" size={28} color={textColor} />
           </TouchableOpacity>
-          <FontText color={textColor} size={Typography.sizes.h2} name="bold">Manage Icons</FontText>
+          <FontText color={textColor} size={Typography.sizes.h2} name="bold">
+            Manage Icons
+          </FontText>
           <View style={styles.spacer28} />
         </View>
 
         <View style={styles.searchContainer}>
-          <Ionicons name="search" size={20} color={secondaryTextColor} style={styles.searchIcon} />
+          <Ionicons
+            name="search"
+            size={20}
+            color={secondaryTextColor}
+            style={{ marginLeft: Spacing.sm }}
+          />
           <View style={[styles.searchInput, styles.searchInputPlaceholder]} />
         </View>
 
-        <ScrollView contentContainerStyle={styles.content}>
-          <View style={styles.loadingTitle} />
-          {[...Array(10)].map((_, i) => (
-            <IconRowSkeleton key={i} />
-          ))}
-        </ScrollView>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color={Colors.primary} />
+        </View>
       </SafeAreaView>
     );
   }
@@ -193,15 +212,25 @@ export default function IconManagementScreen({ navigation }: IconManagementScree
   return (
     <SafeAreaView style={[styles.container, { backgroundColor }]}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <Ionicons name="chevron-back" size={28} color={textColor} />
         </TouchableOpacity>
-        <FontText color={textColor} size={Typography.sizes.h2} name="bold">Manage Icons</FontText>
+        <FontText color={textColor} size={Typography.sizes.h2} name="bold">
+          Manage Icons
+        </FontText>
         <View style={styles.spacer28} />
       </View>
 
       <View style={styles.searchContainer}>
-        <Ionicons name="search" size={20} color={secondaryTextColor} style={styles.searchIcon} />
+        <Ionicons
+          name="search"
+          size={20}
+          color={secondaryTextColor}
+          style={styles.searchIcon}
+        />
         <TextInput
           style={[styles.searchInput, { color: textColor }]}
           placeholder="Search apps..."
@@ -213,14 +242,18 @@ export default function IconManagementScreen({ navigation }: IconManagementScree
 
       <FlatList
         data={filteredApps}
-        keyExtractor={(item) => item.id}
+        keyExtractor={item => item.id}
         contentContainerStyle={styles.content}
         initialNumToRender={15}
         maxToRenderPerBatch={20}
         windowSize={8}
         ListHeaderComponent={
-          <FontText color={secondaryTextColor} size={Typography.sizes.body} style={styles.listHeader}>
-            Select which icons should be visible in the theme editor.
+          <FontText
+            color={secondaryTextColor}
+            size={Typography.sizes.body}
+            style={styles.listHeader}
+          >
+            {`We have ${filteredApps.length} varieties of app icons. Select which icons should be visible in the theme editor.`}
           </FontText>
         }
         renderItem={({ item: app }) => {
@@ -233,7 +266,13 @@ export default function IconManagementScreen({ navigation }: IconManagementScree
                   fallbackColor={app.icon?.fallbackColor}
                   installed={appStatus[app.id]?.installed}
                 />
-                <FontText color={textColor} size={Typography.sizes.body} name="medium">{app.name}</FontText>
+                <FontText
+                  color={textColor}
+                  size={Typography.sizes.body}
+                  name="medium"
+                >
+                  {app.name}
+                </FontText>
               </View>
               <Switch
                 value={enabledIcons.has(app.id)}
@@ -253,23 +292,44 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     paddingHorizontal: Layout.screenPadding,
     paddingVertical: Spacing.md,
   },
-  backButton: { width: 28, height: 28, justifyContent: 'center', alignItems: 'center' },
+  backButton: {
+    position: 'absolute',
+    left: Layout.screenPadding,
+    width: 36,
+    height: 36,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#1A1612',
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#2C2620',
+    overflow: 'hidden',
+  },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(150, 150, 150, 0.1)',
+    backgroundColor: '#1A1522',
     marginHorizontal: Layout.screenPadding,
     marginVertical: Spacing.md,
     paddingHorizontal: Spacing.md,
     paddingVertical: 8,
-    borderRadius: Radius.md,
+    borderRadius: Radius.lg,
+    borderWidth: 1,
+    borderColor: '#2C2438',
   },
   searchIcon: { marginRight: Spacing.sm },
-  searchInput: { flex: 1, fontSize: Typography.sizes.body },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    paddingHorizontal: Spacing.sm,
+    fontSize: Typography.sizes.bodySmall,
+    fontFamily: 'System',
+    color: Colors.textPrimary,
+  },
   content: { padding: Layout.screenPadding },
   iconRow: {
     flexDirection: 'row',
@@ -287,6 +347,12 @@ const styles = StyleSheet.create({
   skeletonBadge: { width: 40, height: 20, borderRadius: 10 },
   spacer28: { width: 28 },
   searchInputPlaceholder: { backgroundColor: Colors.surface, borderRadius: 4 },
-  loadingTitle: { height: 20, width: '60%', backgroundColor: Colors.surface, marginBottom: Spacing.xl, borderRadius: 4 },
+  loadingTitle: {
+    height: 20,
+    width: '60%',
+    backgroundColor: Colors.surface,
+    marginBottom: Spacing.xl,
+    borderRadius: 4,
+  },
   listHeader: { marginBottom: Spacing.xl, lineHeight: 20 },
 });

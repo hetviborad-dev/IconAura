@@ -149,8 +149,8 @@ export default function WallpaperScreen() {
       <Image source={{ uri: item.preview || getCloudinaryImageUrl(item.url, 360, 640) }} style={styles.wallpaperImage} />
       {item.theme.isPremium && !isPremium && (
         <View style={styles.premiumBadge}>
-          <Icon name="lock-closed" size={12} color="white" />
-          <FontText color="#FFFFFF" size={8} name="bold" style={styles.uppercaseText}>Premium</FontText>
+          <Icon name="lock-closed" size={9} color="white" />
+          <FontText color="#FFFFFF" size={10} name="bold" style={styles.uppercaseText}>PRO</FontText>
         </View>
       )}
     </TouchableOpacity>

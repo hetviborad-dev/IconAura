@@ -64,11 +64,13 @@ export default function WallpaperSelectionModal({
         )}
 
         <View style={[styles.topBar, { top: insets.top + 20 }]}>
-          <View style={styles.premiumPill}>
-            <Ionicons name="star" size={16} color={Colors.primary} />
-            <FontText style={[styles.premiumText, { fontFamily: font }]}>PREMIUM</FontText>
-          </View>
-          <TouchableOpacity style={styles.closeButton} onPress={onClose} hitSlop={8}>
+          {isPremiumTheme && !isUserPremium && (
+            <View style={styles.premiumPill}>
+              <Ionicons name="star" size={16} color={Colors.primary} />
+              <FontText style={[styles.premiumText, { fontFamily: font }]}>PRO</FontText>
+            </View>
+          )}
+          <TouchableOpacity style={[styles.closeButton, { marginLeft: 'auto' }]} onPress={onClose} hitSlop={8}>
             <Ionicons name="close" size={18} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
@@ -129,7 +131,7 @@ export default function WallpaperSelectionModal({
                     color="#FFFFFF"
                   />
                   <FontText style={[styles.primaryText, { fontFamily: font }]}>
-                    {isLocked ? 'Unlock with Premium' : 'Apply wallpaper'}
+                    {isLocked ? 'Unlock with PRO' : 'Apply wallpaper'}
                   </FontText>
                 </>
               )}
