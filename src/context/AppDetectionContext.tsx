@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 import type { AppId } from '../types/data';
 import type { InstalledApp, AppToCheck } from '../types/native';
 import { checkInstalledApps } from '../services/appDetection';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getAllApps } from '../data/apps';
 
 const SUPPORTED_APPS = getAllApps();
@@ -79,7 +80,11 @@ export const AppDetectionProvider: React.FC<{ children: React.ReactNode }> = ({ 
       });
 
       const detectedApps = await checkInstalledApps(appsToCheck);
-      setAppStatus(createStatus(detectedApps));
+      const status = createStatus(detectedApps);
+      setAppStatus(status);
+      try {
+        await AsyncStorage.setItem('appDetectionCache', JSON.stringify(status));
+      } catch {}
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : String(err);
       setError(errorMessage);
@@ -91,8 +96,16 @@ export const AppDetectionProvider: React.FC<{ children: React.ReactNode }> = ({ 
   }, []);
 
   useEffect(() => {
-    
-    refresh();
+    (async () => {
+      try {
+        const cached = await AsyncStorage.getItem('appDetectionCache');
+        if (cached) {
+          setAppStatus(JSON.parse(cached));
+          setLoading(false);
+        }
+      } catch {}
+      await refresh();
+    })();
   }, [refresh]);
 
   return (

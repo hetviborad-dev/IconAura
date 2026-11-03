@@ -51,6 +51,7 @@ import PrimaryButton from '../components/PrimaryButton';
 import ShapeNameSelectionModal from '../components/ShapeNameSelectionModal';
 import WallpaperSelectionModal from '../components/WallpaperSelectionModal';
 import { NativeModules } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import FontText from '../components/FontText';
 
 const { HomeShortcut } = NativeModules;
@@ -169,19 +170,45 @@ export default function ThemeDetailScreen({
   
   useEffect(() => {
     const fetchIcons = async () => {
-      const icons: Record<string, string> = {};
+      const installedPackageNames = new Set(
+        installedApps.map((app: any) => appStatus[app.id]?.packageName || app.packageName),
+      );
+
+      let cachedIcons: Record<string, string> = {};
+      try {
+        const stored = await AsyncStorage.getItem('currentAppIcons');
+        if (stored) cachedIcons = JSON.parse(stored);
+      } catch {}
+      // Prune cached icons for apps that are no longer installed.
+      Object.keys(cachedIcons).forEach((pkg) => {
+        if (!installedPackageNames.has(pkg)) delete cachedIcons[pkg];
+      });
+      if (Object.keys(cachedIcons).length) {
+        setCurrentIcons(prev => ({ ...cachedIcons, ...prev }));
+      }
+
+      const icons: Record<string, string> = { ...cachedIcons };
+      let changed = Object.keys(cachedIcons).length !== Object.keys(icons).length;
       for (const app of installedApps) {
         try {
           const pkgName = appStatus[app.id]?.packageName || app.packageName;
-          const result = await HomeShortcut.getCurrentAppIcon({
-            packageName: pkgName,
-          });
-          icons[pkgName] = result.base64;
+          if (!icons[pkgName]) {
+            const result = await HomeShortcut.getCurrentAppIcon({
+              packageName: pkgName,
+            });
+            icons[pkgName] = result.base64;
+            changed = true;
+            setCurrentIcons(prev => ({ ...prev, [pkgName]: result.base64 }));
+          }
         } catch (e) {
           console.error(`Failed to fetch icon for ${app.id}`, e);
         }
       }
-      setCurrentIcons(prev => ({ ...prev, ...icons }));
+      if (changed) {
+        try {
+          await AsyncStorage.setItem('currentAppIcons', JSON.stringify(icons));
+        } catch {}
+      }
     };
 
     fetchIcons();
