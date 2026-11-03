@@ -248,7 +248,7 @@ export default function ThemeExploreScreen() {
       {(currentTheme?.isPremium && !isPremium) && (
         <View style={styles.premiumIndicator}>
           <Icon name="lock-closed" size={16} color={Colors.primary} />
-          <FontText color={Colors.primary} size={14} name="bold" style={styles.uppercaseText}>Premium</FontText>
+          <FontText color={Colors.primary} size={14} name="bold" style={styles.uppercaseText}>PRO</FontText>
         </View>
       )}
 

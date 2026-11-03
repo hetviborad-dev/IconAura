@@ -501,6 +501,7 @@ export default function ThemeDetailScreen({
   };
 
   const containerDynamic = { backgroundColor: isDarkMode ? '#121212' : Colors.background };
+  const headerImage = (theme.background?.type === 'pattern' ? theme.background.value : undefined);
   const backdropUrl =
     theme.previewUrl ||
     (theme.wallpapers && theme.wallpapers.length > 0
@@ -530,23 +531,25 @@ export default function ThemeDetailScreen({
           />
         </View>
 
-        <View style={[styles.fixedHeader, { position: 'relative', overflow: 'hidden', minHeight: insets.top + 110 }]}>
-          {theme.previewUrl && (
+        <View style={[styles.fixedHeader, { position: 'relative', overflow: 'hidden', minHeight: insets.top + 110, backgroundColor: theme.icon.value }]}>
+          {headerImage && (
             <Image
-              source={{ uri: theme.previewUrl }}
+              source={{ uri: headerImage }}
               style={[StyleSheet.absoluteFill]}
               resizeMode="cover"
             />
           )}
           <View style={[styles.header, { overflow: 'hidden', paddingTop: insets.top + Spacing.sm, paddingBottom: Spacing.sm, backgroundColor: 'transparent' }]}>
-            <BlurView
-              style={StyleSheet.absoluteFill}
-              pointerEvents="none"
-              blurType={isDarkMode ? 'dark' : 'light'}
-              blurAmount={30}
-              blurRounds={12}
-              overlayColor={isDarkMode ? 'rgba(0,0,0,0.32)' : 'rgba(255,255,255,0.22)'}
-            />
+            {/* {theme.previewUrl && ( */}
+              <BlurView
+                style={StyleSheet.absoluteFill}
+                pointerEvents="none"
+                blurType={isDarkMode ? 'dark' : 'light'}
+                blurAmount={14}
+                blurRounds={8}
+                overlayColor={'transparent'}
+              />
+            {/* )} */}
             <TouchableOpacity
               onPress={() => navigation.goBack()}
               style={styles.backButton}
@@ -637,7 +640,7 @@ export default function ThemeDetailScreen({
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.appsSection}>
+          <View>
             {loading ? (
               <View style={styles.mtMd}>
                 <SkeletonPlaceholder
@@ -1014,6 +1017,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    marginTop: Spacing.md,
     marginBottom: Spacing.md,
   },
   selectionCount: {
