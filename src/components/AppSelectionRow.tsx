@@ -27,8 +27,8 @@ const AppSelectionRow = memo(({
 }: AppSelectionRowProps) => {
   const borderColor = isDarkMode ? Colors.dark.border : Colors.border;
   const checkboxOuterDynamic = {
-    borderColor: isSelected ? Colors.primary : (!disabled ? '#CCCCCC' : borderColor),
-    backgroundColor: isSelected ? Colors.primary + '15' : 'transparent',
+    borderColor: isSelected ? Colors.primary : (!disabled ? '#B9B0C9' : borderColor),
+    backgroundColor: isSelected ? Colors.primary : 'transparent',
   };
   const plusDynamic = { borderColor };
 
@@ -47,7 +47,7 @@ const AppSelectionRow = memo(({
         ]}>
           {isSelected && (
             <View style={styles.checkboxInner}>
-              <Ionicons name="checkmark" size={16} color={Colors.primary} />
+              <Ionicons name="checkmark" size={16} color={Colors.textPrimary} />
             </View>
           )}
         </View>
