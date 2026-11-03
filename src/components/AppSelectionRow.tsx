@@ -1,7 +1,9 @@
 import React, { memo } from 'react';
 import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { Colors, Spacing } from '../constants/design';
+import { Colors, Spacing, Typography } from '../constants/design';
 import IconCanvas from './IconCanvas';
+import FontText from './FontText';
+import { getAllApps } from '../data/apps';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 interface AppSelectionRowProps {
@@ -31,6 +33,7 @@ const AppSelectionRow = memo(({
     backgroundColor: isSelected ? Colors.primary : 'transparent',
   };
   const plusDynamic = { borderColor };
+  const app = getAllApps().find((a: any) => a.id === appId);
 
   return (
     <View style={[styles.container, disabled && styles.disabledContainer]}>
@@ -55,6 +58,9 @@ const AppSelectionRow = memo(({
 
       <View style={styles.themeIconContainer}>
         <IconCanvas appId={appId} theme={theme} size={48} />
+        <FontText color={isDarkMode ? Colors.dark.textPrimary : Colors.textPrimary} size={10} name="medium" style={styles.appNameText}>
+          {app?.name || appId}
+        </FontText>
       </View>
 
       <View style={styles.line} />
@@ -118,6 +124,11 @@ const styles = StyleSheet.create({
   },
   themeIconContainer: {
     marginRight: Spacing.lg,
+    alignItems: 'center',
+  },
+  appNameText: {
+    marginTop: 4,
+    textAlign: 'center',
   },
   line: {
     flex: 1,
