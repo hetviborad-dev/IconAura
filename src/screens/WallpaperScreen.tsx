@@ -12,7 +12,9 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { StatusBar } from 'react-native';
+import { BlurView } from '@sbaiahmed1/react-native-blur';
 import { Colors, Spacing, Typography, Layout, Radius } from '../constants/design';
 import { RootStackParamList } from '../types/navigation';
 import { fetchPublicThemes } from '../services/themeService';
@@ -69,6 +71,7 @@ const PAGE_SIZE = 20;
 export default function WallpaperScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { isPremium } = useSubscription();
+  const insets = useSafeAreaInsets();
   const [wallpapers, setWallpapers] = useState<WallpaperItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -154,8 +157,23 @@ export default function WallpaperScreen() {
   );
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor }]}>
-      <View style={styles.header}>
+    <SafeAreaView style={[styles.container, { backgroundColor }]} edges={['bottom', 'left', 'right']}>
+      {/* @ts-ignore */}
+      <StatusBar translucent backgroundColor="transparent" barStyle="light-content" />
+      <View style={[styles.header, { paddingTop: insets.top + Spacing.sm, overflow: 'hidden', position: 'relative', minHeight: insets.top + Spacing.xl * 3 }]}>
+        <Image
+          source={{ uri: 'https://res.cloudinary.com/q1mpw8j0/image/upload/v1793720438/copy_of_59d85fdf5cd9aea7802a4b926ed2dd2b.jpg' }}
+          style={StyleSheet.absoluteFill}
+          resizeMode="cover"
+        />
+        <BlurView
+          style={StyleSheet.absoluteFill}
+          pointerEvents="none"
+          blurType="light"
+          blurAmount={16}
+          blurRounds={16}
+          overlayColor="rgba(255,255,255,0.18)"
+        />
         <FontText color={textColor} size={Typography.sizes.h1} name="bold">Wallpapers</FontText>
       </View>
       {loading ? (
@@ -213,7 +231,15 @@ const styles = StyleSheet.create({
   container: { flex: 1 },
   header: {
     paddingHorizontal: Layout.screenPadding,
-    paddingVertical: Spacing.xl,
+    paddingVertical: Spacing.lg,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: Colors.border,
+    backgroundColor: 'transparent',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.06,
+    shadowRadius: 2,
   },
   uppercaseText: { textTransform: 'uppercase' },
   activityIndicator: { marginVertical: 16 },
