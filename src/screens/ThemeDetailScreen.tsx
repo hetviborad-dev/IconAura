@@ -13,14 +13,13 @@ import {
   FlatList,
   TextInput,
   Image,
-  StatusBar,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { BlurView } from '@sbaiahmed1/react-native-blur';
 import WhatsAppIcon from '../assets/icons/simple-icons--whatsapp.svg';
 import LogoIcon from '../assets/appsIcons/logo.svg';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useFocusEffect, useIsFocused } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import {
@@ -68,7 +67,6 @@ export default function ThemeDetailScreen({
 }: ThemeDetailScreenProps) {
   const isDarkMode = useColorScheme() === 'dark';
   const insets = useSafeAreaInsets();
-  const isFocused = useIsFocused();
   const { theme } = route.params;
   const { isPremium } = useSubscription();
   const [enabledIcons, setEnabledIcons] = useState<Set<AppId>>(new Set());
@@ -501,18 +499,7 @@ export default function ThemeDetailScreen({
   };
 
   const containerDynamic = { backgroundColor: isDarkMode ? '#121212' : Colors.background };
-  const headerImage = (theme.background?.type === 'pattern' ? theme.background.value : undefined);
-  const backdropUrl =
-    theme.previewUrl ||
-    (theme.wallpapers && theme.wallpapers.length > 0
-      ? typeof theme.wallpapers[0] === 'string'
-        ? theme.wallpapers[0]
-        : theme.wallpapers[0].url
-      : undefined);
-  const previewButtonDynamic = {
-    backgroundColor: isDarkMode ? '#333' : Colors.backgroundSecondary,
-    borderColor: isDarkMode ? '#444' : Colors.border,
-  };
+  const headerImage = theme.previewUrl || (theme.background?.type === 'pattern' ? theme.background.value : undefined);
 
   return (
     <SafeAreaView

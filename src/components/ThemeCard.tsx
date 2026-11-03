@@ -4,7 +4,7 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import { Colors, Radius, Spacing, Typography } from '../constants/design';
+import { Colors, Radius, Spacing } from '../constants/design';
 import type { ThemeDefinition } from '../types/data';
 import IconCanvas from './IconCanvas';
 import Icon from 'react-native-vector-icons/Ionicons';
