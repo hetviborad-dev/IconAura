@@ -499,7 +499,7 @@ export default function ThemeDetailScreen({
   };
 
   const containerDynamic = { backgroundColor: isDarkMode ? '#121212' : Colors.background };
-  const headerImage = theme.previewUrl || (theme.background?.type === 'pattern' ? theme.background.value : undefined);
+  const headerImage = (theme.background?.type === 'pattern' ? theme.background.value : undefined) || theme.previewUrl;
 
   return (
     <SafeAreaView
