@@ -565,8 +565,7 @@ export default function ThemeDetailScreen({
               </FontText>
               {theme.isPremium && !isPremium && (
                 <View style={styles.wallpaperSectionBadge}>
-                  <Ionicons name="lock-closed" size={12} color="white" />
-                  <FontText color="#FFFFFF" size={10} name="bold" style={styles.uppercaseText}>Premium</FontText>
+                  <FontText color="#FFFFFF" size={12} name="bold" style={styles.uppercaseText}>PRO</FontText>
                 </View>
               )}
             </View>
@@ -603,14 +602,9 @@ export default function ThemeDetailScreen({
         )}
         <View style={styles.sectionHeader}>
           <FontText color={textColor} size={Typography.sizes.h3} name="semibold">
-            Set Icons
+            Choose icons
           </FontText>
           <View style={styles.rowCenter}>
-            <FontText
-              style={[styles.selectionCount, { color: secondaryTextColor }]}
-            >
-              {selectedApps.size} selected
-            </FontText>
             <TouchableOpacity
               onPress={() => navigation.navigate('IconManagement')}
               style={styles.manageIconsButton}
@@ -687,10 +681,18 @@ export default function ThemeDetailScreen({
         </ScrollView>
 
         <View style={styles.footer}>
+          <View style={styles.selectedCountBlock}>
+            <FontText color={textColor} size={Typography.sizes.h2} name="bold" style={styles.selectedCountNumber}>
+              {selectedApps.size}
+            </FontText>
+            <FontText color={secondaryTextColor} size={Typography.sizes.caption} name="medium" style={styles.selectedCountLabel}>
+              Selected
+            </FontText>
+          </View>
           <PrimaryButton
             title="Set Icons"
             onPress={handleSetIcons}
-            fullWidth
+            style={styles.applyButton}
             loading={isApplyingIcons}
             icon={theme.isPremium && !isPremium ? { name: 'lock-closed' } : undefined}
           />
@@ -1003,7 +1005,22 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: Radius.sm,
   },
-  footer: { padding: Spacing.lg, paddingBottom: Spacing.xxl },
+  footer: {
+    padding: Spacing.lg,
+    paddingBottom: Spacing.xxl,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: Spacing.md,
+  },
+  selectedCountBlock: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: 48,
+  },
+  selectedCountNumber: { textAlign: 'center', lineHeight: 24 },
+  selectedCountLabel: { textAlign: 'center' },
+  applyButton: { flex: 1 },
   wallpapersSection: {
     marginBottom: Spacing.xl,
     paddingHorizontal: Layout.screenPadding,
@@ -1041,8 +1058,8 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.primary,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 6,
-    paddingVertical: 2,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
     borderRadius: 10,
     gap: 2,
     borderWidth: 1,
