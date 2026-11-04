@@ -20,12 +20,13 @@ import { getCloudinaryImageUrl } from '../utils/helpers';
 
 interface Props {
   theme: ThemeDefinition;
+  onWallpaperScroll?: (offsetX: number) => void;
 }
 
-export default function ThemePreviewCard({ theme }: Props) {
+export default function ThemePreviewCard({ theme, onWallpaperScroll }: Props) {
   const [wallpaperIndex, setWallpaperIndex] = useState(0);
 
-  
+
   const wallpapers = (theme.wallpapers && theme.wallpapers.length > 0)
     ? theme.wallpapers.map((w) => getCloudinaryImageUrl(typeof w === 'string' ? w : w.url, 720, 1280))
     : [DEFAULT_WALLPAPER];
@@ -34,6 +35,7 @@ export default function ThemePreviewCard({ theme }: Props) {
     const offsetX = event.nativeEvent.contentOffset.x;
     const index = Math.round(offsetX / width);
     setWallpaperIndex(index);
+    onWallpaperScroll?.(offsetX);
   };
 
   const activeDot = { backgroundColor: 'white' };

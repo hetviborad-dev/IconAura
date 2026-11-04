@@ -7,9 +7,11 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Alert,
+  Animated,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Colors } from '../constants/design';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Colors, Spacing } from '../constants/design';
 import { ThemeDefinition } from '../types/data';
 import { useSubscription } from '../context/SubscriptionContext';
 import { fetchPublicThemes } from '../services/themeService';
@@ -71,6 +73,16 @@ export default function ThemeExploreScreen() {
   const lastAdIndex = useRef<number>(-1);
   const { showAd } = useInterstitialAd();
 
+  const [showScrollHint, setShowScrollHint] = useState(false);
+  const scrollHintOpacity = useRef(new Animated.Value(0)).current;
+  const scrollHintTranslate = useRef(new Animated.Value(0)).current;
+  const hintDismissedRef = useRef(false);
+
+  const [showWallpaperHint, setShowWallpaperHint] = useState(false);
+  const wallpaperHintOpacity = useRef(new Animated.Value(0)).current;
+  const wallpaperHintTranslate = useRef(new Animated.Value(60)).current;
+  const wallpaperHintDismissedRef = useRef(false);
+
   useEffect(() => {
     async function initialize() {
       try {
@@ -91,6 +103,76 @@ export default function ThemeExploreScreen() {
     initialize();
   }, []);
 
+  useEffect(() => {
+    if (loading) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const seenVertical = await AsyncStorage.getItem('themeExploreScrollHintSeen');
+        if (cancelled) return;
+        if (!seenVertical) {
+          setShowScrollHint(true);
+          Animated.timing(scrollHintOpacity, {
+            toValue: 1,
+            duration: 350,
+            useNativeDriver: true,
+          }).start();
+
+          Animated.loop(
+            Animated.sequence([
+              Animated.timing(scrollHintTranslate, {
+                toValue: -14,
+                duration: 550,
+                easing: (t: number) => 1 - Math.pow(1 - t, 3),
+                useNativeDriver: true,
+              }),
+              Animated.timing(scrollHintTranslate, {
+                toValue: 0,
+                duration: 550,
+                easing: (t: number) => t * t * t,
+                useNativeDriver: true,
+              }),
+            ]),
+          ).start();
+
+          // Keep the hint (and its looped animation) visible until the user scrolls.
+          return;
+        }
+
+        const seenWallpaper = await AsyncStorage.getItem('themeExploreWallpaperHintSeen');
+        if (cancelled || seenWallpaper) return;
+        setShowWallpaperHint(true);
+        Animated.timing(wallpaperHintOpacity, {
+          toValue: 1,
+          duration: 350,
+          useNativeDriver: true,
+        }).start();
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(wallpaperHintTranslate, {
+              toValue: -70,
+              duration: 900,
+              easing: (t: number) => 1 - Math.pow(1 - t, 2),
+              useNativeDriver: true,
+            }),
+            Animated.timing(wallpaperHintTranslate, {
+              toValue: 60,
+              duration: 0,
+              useNativeDriver: true,
+            }),
+          ]),
+        ).start();
+        // Keep the hint visible until the user scrolls the wallpaper horizontally.
+      } catch {
+        // ignore
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loading]);
+
   const handleLoadMore = async () => {
     if (!hasMore || loadingMore) return;
 
@@ -109,8 +191,65 @@ export default function ThemeExploreScreen() {
     }
   };
 
+  const dismissScrollHint = () => {
+    if (hintDismissedRef.current) return;
+    hintDismissedRef.current = true;
+    Animated.timing(scrollHintOpacity, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setShowScrollHint(false);
+      AsyncStorage.setItem('themeExploreScrollHintSeen', 'true').catch(() => {});
+      setTimeout(() => {
+        if (wallpaperHintDismissedRef.current) return;
+        AsyncStorage.getItem('themeExploreWallpaperHintSeen').then((seen) => {
+          if (seen) return;
+          setShowWallpaperHint(true);
+          Animated.timing(wallpaperHintOpacity, {
+            toValue: 1,
+            duration: 350,
+            useNativeDriver: true,
+          }).start();
+          Animated.loop(
+            Animated.sequence([
+              Animated.timing(wallpaperHintTranslate, {
+                toValue: -70,
+                duration: 900,
+                easing: (t: number) => 1 - Math.pow(1 - t, 2),
+                useNativeDriver: true,
+              }),
+              Animated.timing(wallpaperHintTranslate, {
+                toValue: 60,
+                duration: 0,
+                useNativeDriver: true,
+              }),
+            ]),
+          ).start();
+          // Keep the hint (and its looped animation) visible until horizontal scroll.
+        });
+      }, 700);
+    });
+  };
+
+  const dismissWallpaperHint = () => {
+    if (wallpaperHintDismissedRef.current) return;
+    wallpaperHintDismissedRef.current = true;
+    Animated.timing(wallpaperHintOpacity, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start(() => {
+      setShowWallpaperHint(false);
+      AsyncStorage.setItem('themeExploreWallpaperHintSeen', 'true').catch(() => {});
+    });
+  };
+
   const handleScroll = (event: any) => {
     const offsetY = event.nativeEvent.contentOffset.y;
+    if (showScrollHint && offsetY > 20) {
+      dismissScrollHint();
+    }
     const index = Math.round(offsetY / height);
     if (index !== currentThemeIndex && index >= 0 && index < themes.length) {
       setCurrentThemeIndex(index);
@@ -194,7 +333,14 @@ export default function ThemeExploreScreen() {
         data={themes}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <ThemePreviewCard theme={item} />
+          <ThemePreviewCard
+            theme={item}
+            onWallpaperScroll={(offsetX) => {
+              if (showWallpaperHint && offsetX > 20) {
+                dismissWallpaperHint();
+              }
+            }}
+          />
         )}
         pagingEnabled
         showsVerticalScrollIndicator={false}
@@ -262,6 +408,47 @@ export default function ThemeExploreScreen() {
         showApplyTheme={true}
         onApplyTheme={handleNavigateToDetail}
       />
+
+      {showScrollHint && (
+        <Animated.View
+          pointerEvents="none"
+          style={[styles.scrollHintOverlay, { opacity: scrollHintOpacity }]}
+        >
+          <Animated.View style={{ transform: [{ translateY: scrollHintTranslate }] }}>
+            <Icon name="arrow-up-outline" size={44} color="#FFFFFF" />
+          </Animated.View>
+          <FontText color="#FFFFFF" size={16} name="semibold" style={styles.scrollHintText}>
+            Swipe up to explore themes
+          </FontText>
+          <FontText color="rgba(255,255,255,0.7)" size={12} name="regular" style={styles.scrollHintSubText}>
+            Scroll from bottom to top
+          </FontText>
+        </Animated.View>
+      )}
+
+      {showWallpaperHint && (
+        <Animated.View
+          pointerEvents="none"
+          style={[styles.wallpaperHintOverlay, { opacity: wallpaperHintOpacity }]}
+        >
+          <View style={styles.wallpaperHintCard}>
+            <Animated.View style={{ transform: [{ translateX: wallpaperHintTranslate }] }}>
+              <Icon name="images-outline" size={34} color="#FFFFFF" />
+            </Animated.View>
+            <View style={styles.wallpaperHintArrowRow}>
+              <Icon name="arrow-back-outline" size={20} color="rgba(255,255,255,0.8)" />
+              <View style={styles.wallpaperHintLine} />
+              <Icon name="arrow-forward-outline" size={20} color="rgba(255,255,255,0.8)" />
+            </View>
+          </View>
+          <FontText color="#FFFFFF" size={16} name="semibold" style={styles.scrollHintText}>
+            Swipe to browse wallpapers
+          </FontText>
+          <FontText color="rgba(255,255,255,0.7)" size={12} name="regular" style={styles.scrollHintSubText}>
+            Drag right to left
+          </FontText>
+        </Animated.View>
+      )}
     </View>
   );
 }
@@ -270,6 +457,56 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'black',
+  },
+  scrollHintOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+    zIndex: 1000,
+  },
+  wallpaperHintOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.45)',
+    zIndex: 1000,
+  },
+  wallpaperHintCard: {
+    width: 120,
+    height: 80,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  wallpaperHintArrowRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: Spacing.sm,
+    gap: Spacing.xs,
+  },
+  wallpaperHintLine: {
+    width: 40,
+    height: 2,
+    backgroundColor: 'rgba(255,255,255,0.5)',
+  },
+  scrollHintText: {
+    marginTop: Spacing.md,
+    textAlign: 'center',
+  },
+  scrollHintSubText: {
+    marginTop: Spacing.xs,
+    textAlign: 'center',
   },
   closeButton: {
     position: 'absolute',
