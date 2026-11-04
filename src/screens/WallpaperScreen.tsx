@@ -244,7 +244,6 @@ const styles = StyleSheet.create({
   uppercaseText: { textTransform: 'uppercase' },
   activityIndicator: { marginVertical: 16 },
   grid: {
-    paddingHorizontal: Layout.screenPadding,
     paddingBottom: Spacing.xxxl,
   },
   wallpaperContainer: {
