@@ -49,6 +49,32 @@ function normalizeWallpaper(input: any): { url: string; preview?: string } {
   return { url: input?.url, preview: preview || undefined };
 }
 
+async function fetchWallpapersByTheme(themeIds: string[]): Promise<Record<string, { url: string; preview?: string }[]>> {
+  const result: Record<string, { url: string; preview?: string }[]> = {};
+  if (!themeIds.length) return result;
+
+  const { data, error } = await supabase
+    .from('theme_wallpapers')
+    .select('theme_id, sort_order, wallpapers(*)')
+    .in('theme_id', themeIds);
+
+  if (error || !data) return result;
+
+  data
+    .sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0))
+    .forEach((row: any) => {
+      const wallpaper = Array.isArray(row.wallpapers) ? row.wallpapers[0] : row.wallpapers;
+      if (!wallpaper?.url) return;
+      if (!result[row.theme_id]) result[row.theme_id] = [];
+      result[row.theme_id].push({
+        url: wallpaper.url,
+        preview: wallpaper.preview_url || undefined,
+      });
+    });
+
+  return result;
+}
+
 export async function fetchHomeThemes(filters?: {
   colors?: string[];
   tags?: string[];
@@ -94,7 +120,8 @@ export async function fetchHomeThemes(filters?: {
     return { categories: sortedCategories || [], themesMap: {} };
   }
 
-  
+  const wallpapersByTheme = await fetchWallpapersByTheme((themes || []).map((row: any) => row.id));
+
   const themesMap: Record<string, ThemeDefinition[]> = {};
   themes.forEach(row => {
     
@@ -109,13 +136,13 @@ export async function fetchHomeThemes(filters?: {
         name: row.name,
         description: config.description || 'Community Theme',
         category: categorySlug,
-        featuredApps: config.featuredApps || [],
+        featuredApps: Array.from(new Set<string>(config.featuredApps || [])),
         icon: config.icon,
         background: config.background,
         isPremium: row.is_premium || false,
         previewUrl: row.preview_url,
         preview: config.preview || { featuredApps: [], subtitle: '' },
-        wallpapers: (config.wallpapers || []).map(normalizeWallpaper),
+        wallpapers: wallpapersByTheme[row.id] || (config.wallpapers || []).map(normalizeWallpaper),
       });
     }
   });
@@ -144,7 +171,8 @@ export async function fetchTheme(themeId: ThemeId): Promise<ThemeDefinition> {
     throw new Error(`Theme not found: ${themeId}`);
   }
 
-  
+  const wallpapersByTheme = await fetchWallpapersByTheme([data.id]);
+
   const config = data.config as any;
   const categoryName = data.categories?.name || config.category || 'popular';
 
@@ -153,7 +181,7 @@ export async function fetchTheme(themeId: ThemeId): Promise<ThemeDefinition> {
     name: data.name,
     description: config.description || 'Community Theme',
     category: categoryName,
-    featuredApps: config.featuredApps || [],
+    featuredApps: Array.from(new Set<string>(config.featuredApps || [])),
     icon: config.icon,
     background: config.background,
     isPremium: data.is_premium || false,
@@ -162,7 +190,7 @@ export async function fetchTheme(themeId: ThemeId): Promise<ThemeDefinition> {
       featuredApps: [],
       subtitle: '',
     },
-    wallpapers: (config.wallpapers || []).map(normalizeWallpaper),
+    wallpapers: wallpapersByTheme[data.id] || (config.wallpapers || []).map(normalizeWallpaper),
   };
 }
 
@@ -199,6 +227,8 @@ export async function fetchPublicThemes(
 
   if (error || !data) return { data: [], hasMore: false };
 
+  const wallpapersByTheme = await fetchWallpapersByTheme((data || []).map((row: any) => row.id));
+
   const themes = data.map(row => {
     const config = row.config as any;
     const categoryName = row.categories?.name || config.category || 'popular';
@@ -207,7 +237,7 @@ export async function fetchPublicThemes(
       name: row.name,
       description: config.description || 'Community Theme',
       category: categoryName,
-      featuredApps: config.featuredApps || [],
+      featuredApps: Array.from(new Set<string>(config.featuredApps || [])),
       icon: config.icon,
       background: config.background,
       isPremium: row.is_premium || false,
@@ -218,7 +248,7 @@ export async function fetchPublicThemes(
         featuredApps: [],
         subtitle: '',
       },
-      wallpapers: (config.wallpapers || []).map(normalizeWallpaper),
+      wallpapers: wallpapersByTheme[row.id] || (config.wallpapers || []).map(normalizeWallpaper),
     };
   });
 
@@ -249,6 +279,7 @@ export async function fetchThemesByCategory(category: string): Promise<ThemeDefi
     return [];
   }
 
+  const wallpapersByTheme = await fetchWallpapersByTheme((data || []).map((row: any) => row.id));
 
   return (data || []).map(row => {
     const config = row.config as any;
@@ -258,7 +289,7 @@ export async function fetchThemesByCategory(category: string): Promise<ThemeDefi
       name: row.name,
       description: config.description || 'Community Theme',
       category: categoryName,
-      featuredApps: config.featuredApps || [],
+      featuredApps: Array.from(new Set<string>(config.featuredApps || [])),
       icon: config.icon,
       background: config.background,
       isPremium: row.is_premium || false,
@@ -267,7 +298,7 @@ export async function fetchThemesByCategory(category: string): Promise<ThemeDefi
         featuredApps: [],
         subtitle: '',
       },
-      wallpapers: (config.wallpapers || []).map(normalizeWallpaper),
+      wallpapers: wallpapersByTheme[row.id] || (config.wallpapers || []).map(normalizeWallpaper),
     };
   });
 }

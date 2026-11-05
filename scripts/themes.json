@@ -11,8 +11,14 @@
         "iconValue": "pattern",
         "bgType": "pattern",
         "bgValue": "pattern",
-        "color_tags": ["red"],
-        "theme_tags": ["pattern", "bold", "modern"]
+        "color_tags": [
+          "red"
+        ],
+        "theme_tags": [
+          "pattern",
+          "bold",
+          "modern"
+        ]
       },
       {
         "slug": "evil-eyes",
@@ -23,36 +29,40 @@
         "iconValue": "#FFFFFF",
         "bgType": "pattern",
         "bgValue": "pattern",
-        "color_tags": ["white", "blue"],
-        "theme_tags": ["aesthetic", "mystery", "eye"]
+        "color_tags": [
+          "white",
+          "blue"
+        ],
+        "theme_tags": [
+          "aesthetic",
+          "mystery",
+          "eye"
+        ]
       },
       {
-  "slug": "rainy-window",
-  "name": "Rainy Window",
-  "description": "A moody nature theme featuring realistic raindrops on a glass window with a blurred deep green landscape and soft grey rainy skies",
-  "category": "popular",
-  "iconType": "color",
-  "iconValue": "#FFFFFF",
-  "bgType": "pattern",
-  "bgValue": "pattern",
-  "color_tags": [
-    "white",
-    "grey",
-    "black",
-    "dark-green",
-    "green"
-  ],
-  "theme_tags": [
-    "rain",
-    "raindrops",
-    "window",
-    "nature",
-    "moody",
-    "rainy",
-    "minimal",
-    "aesthetic"
-  ]
-}
+        "slug": "rainy-window",
+        "name": "Rainy Window",
+        "description": "A moody nature theme featuring realistic raindrops on a glass window with a blurred deep green landscape and soft grey rainy skies",
+        "category": "popular",
+        "iconType": "color",
+        "iconValue": "#FFFFFF",
+        "bgType": "pattern",
+        "bgValue": "https://res.cloudinary.com/q1mpw8j0/image/upload/v1793533156/iconaura/themes/rainy-window/bg-pattern.png",
+        "color_tags": [],
+        "theme_tags": []
+      },
+      {
+        "slug": "hetvi-borad",
+        "name": "hetvi",
+        "description": "jjih",
+        "category": "popular",
+        "iconType": "pattern",
+        "iconValue": "https://res.cloudinary.com/q1mpw8j0/image/upload/v1793533218/iconaura/themes/vintage-cloudscape/icon-pattern.png",
+        "bgType": "pattern",
+        "bgValue": "https://res.cloudinary.com/q1mpw8j0/image/upload/v1793535942/iconaura/themes/dalmatian-print/bg-pattern.png",
+        "color_tags": [],
+        "theme_tags": []
+      }
     ]
   },
   {
@@ -67,8 +77,16 @@
         "iconValue": "#FFFFFF",
         "bgType": "pattern",
         "bgValue": "pattern",
-        "color_tags": ["white", "red", "black"],
-        "theme_tags": ["floral", "nature", "bloom"]
+        "color_tags": [
+          "white",
+          "red",
+          "black"
+        ],
+        "theme_tags": [
+          "floral",
+          "nature",
+          "bloom"
+        ]
       },
       {
         "slug": "red-polka-dots",
@@ -79,8 +97,15 @@
         "iconValue": "#F5F5DC",
         "bgType": "pattern",
         "bgValue": "pattern",
-        "color_tags": ["beige", "red"],
-        "theme_tags": ["dots", "colorful", "playful"]
+        "color_tags": [
+          "beige",
+          "red"
+        ],
+        "theme_tags": [
+          "dots",
+          "colorful",
+          "playful"
+        ]
       },
       {
         "slug": "kiss-lips",
@@ -91,8 +116,14 @@
         "iconValue": "pattern",
         "bgType": "pattern",
         "bgValue": "pattern",
-        "color_tags": ["red"],
-        "theme_tags": ["lips", "pattern", "romantic"]
+        "color_tags": [
+          "red"
+        ],
+        "theme_tags": [
+          "lips",
+          "pattern",
+          "romantic"
+        ]
       }
     ]
   },
@@ -108,8 +139,15 @@
         "iconValue": "#000000",
         "bgType": "color",
         "bgValue": "#FFFFFF",
-        "color_tags": ["black", "white"],
-        "theme_tags": ["minimalist", "sleek", "dark"]
+        "color_tags": [
+          "black",
+          "white"
+        ],
+        "theme_tags": [
+          "minimalist",
+          "sleek",
+          "dark"
+        ]
       },
       {
         "slug": "midnight-navy",
@@ -120,8 +158,15 @@
         "iconValue": "#0F172A",
         "bgType": "color",
         "bgValue": "#E2E8F0",
-        "color_tags": ["navy", "blue"],
-        "theme_tags": ["minimalist", "clean", "dark"]
+        "color_tags": [
+          "navy",
+          "blue"
+        ],
+        "theme_tags": [
+          "minimalist",
+          "clean",
+          "dark"
+        ]
       },
       {
         "slug": "soft-beige",
@@ -132,8 +177,15 @@
         "iconValue": "#8B7355",
         "bgType": "color",
         "bgValue": "#F5F0E8",
-        "color_tags": ["beige", "brown"],
-        "theme_tags": ["minimalist", "elegant", "warm"]
+        "color_tags": [
+          "beige",
+          "brown"
+        ],
+        "theme_tags": [
+          "minimalist",
+          "elegant",
+          "warm"
+        ]
       },
       {
         "slug": "sage-green",
@@ -144,8 +196,15 @@
         "iconValue": "#3F5B4B",
         "bgType": "color",
         "bgValue": "#E8EFE7",
-        "color_tags": ["green", "sage"],
-        "theme_tags": ["nature", "calming", "minimalist"]
+        "color_tags": [
+          "green",
+          "sage"
+        ],
+        "theme_tags": [
+          "nature",
+          "calming",
+          "minimalist"
+        ]
       },
       {
         "slug": "soft-lavender",
@@ -156,8 +215,15 @@
         "iconValue": "#6D5A91",
         "bgType": "color",
         "bgValue": "#F0EBF8",
-        "color_tags": ["purple", "lavender"],
-        "theme_tags": ["modern", "gentle", "minimalist"]
+        "color_tags": [
+          "purple",
+          "lavender"
+        ],
+        "theme_tags": [
+          "modern",
+          "gentle",
+          "minimalist"
+        ]
       },
       {
         "slug": "dusty-rose",
@@ -168,8 +234,15 @@
         "iconValue": "#9F5F68",
         "bgType": "color",
         "bgValue": "#F8EDEF",
-        "color_tags": ["pink", "rose"],
-        "theme_tags": ["refined", "muted", "minimalist"]
+        "color_tags": [
+          "pink",
+          "rose"
+        ],
+        "theme_tags": [
+          "refined",
+          "muted",
+          "minimalist"
+        ]
       }
     ]
   },
@@ -185,8 +258,15 @@
         "iconValue": "pattern",
         "bgType": "color",
         "bgValue": "#F1E0CE",
-        "color_tags": ["beige", "brown"],
-        "theme_tags": ["animal", "stylish", "print"]
+        "color_tags": [
+          "beige",
+          "brown"
+        ],
+        "theme_tags": [
+          "animal",
+          "stylish",
+          "print"
+        ]
       },
       {
         "slug": "dog-print",
@@ -197,8 +277,15 @@
         "iconValue": "#FFFFFF",
         "bgType": "pattern",
         "bgValue": "pattern",
-        "color_tags": ["brown", "beige"],
-        "theme_tags": ["animal", "cute", "dog"]
+        "color_tags": [
+          "brown",
+          "beige"
+        ],
+        "theme_tags": [
+          "animal",
+          "cute",
+          "dog"
+        ]
       },
       {
         "slug": "dalmatian-print",
@@ -208,9 +295,9 @@
         "iconType": "color",
         "iconValue": "#FFFFFF",
         "bgType": "pattern",
-        "bgValue": "pattern",
-        "color_tags": ["black", "white"],
-        "theme_tags": ["animal", "dalmatian", "print", "pattern"]
+        "bgValue": "https://res.cloudinary.com/q1mpw8j0/image/upload/v1793535942/iconaura/themes/dalmatian-print/bg-pattern.png",
+        "color_tags": [],
+        "theme_tags": []
       }
     ]
   },
@@ -226,120 +313,92 @@
         "iconValue": "#000000",
         "bgType": "pattern",
         "bgValue": "pattern",
-        "color_tags": ["black"],
-        "theme_tags": ["newspaper", "print", "modern"]
+        "color_tags": [
+          "black"
+        ],
+        "theme_tags": [
+          "newspaper",
+          "print",
+          "modern"
+        ]
       },
-
-{
-"slug": "midnight-starry-waves",
-"name": "Midnight Starry Waves",
-"description": "A bold artistic theme featuring swirling ocean-inspired brushstroke patterns in deep navy, teal, and blue against a dramatic black background",
-"category": "modern",
-"iconType": "pattern",
-"iconValue": "pattern",
-"bgType": "color",
-"bgValue": "#000000",
-"color_tags": [
-"black",
-"navy",
-"blue",
-"teal",
-"dark-blue"
-],
-"theme_tags": [
-"abstract",
-"waves",
-"modern",
-"artistic",
-"swirl",
-"ocean",
-"dark",
-"bold"
-]
-},
-{
-  "slug": "dark-mocha",
-  "name": "Dark Mocha",
-  "description": "A rich dark theme featuring patterned icons against a deep chocolate brown background for a bold and elegant look",
-  "category": "modern",
-  "iconType": "pattern",
-  "iconValue": "pattern",
-  "bgType": "color",
-  "bgValue": "#392D21",
-  "color_tags": [
-    "brown",
-    "chocolate",
-    "dark-brown",
-    "black"
-  ],
-  "theme_tags": [
-    "pattern",
-    "mocha",
-    "dark",
-    "minimalist",
-    "elegant",
-    "warm",
-    "sophisticated"
-  ]
-},
-
-{
-"slug": "mocha-texture",
-"name": "Mocha Texture",
-"description": "A sophisticated dual-texture theme combining rich dark chocolate brown patterns on warm light caramel brown textures for a cozy and elegant aesthetic",
-"category": "modern",
-"iconType": "pattern",
-"iconValue": "pattern",
-"bgType": "pattern",
-"bgValue": "pattern",
-"color_tags": [
-"dark-brown",
-"chocolate",
-"mocha",
-"caramel",
-"tan",
-"beige"
-],
-"theme_tags": [
-"brown",
-"texture",
-"mocha",
-"minimalist",
-"neutral",
-"warm",
-"earthy",
-"elegant",
-"aesthetic"
-]
-},
-{
-  "slug": "chocolate-melt",
-  "name": "Chocolate Melt",
-  "description": "A rich chocolate-inspired theme featuring glossy melted chocolate textures with creamy caramel swirls against a deep espresso brown background",
-  "category": "modern",
-  "iconType": "color",
-  "iconValue": "#442300",
-  "bgType": "pattern",
-  "bgValue": "pattern",
-  "color_tags": [
-    "chocolate",
-    "dark-brown",
-    "caramel",
-    "mocha",
-    "tan",
-    "cream"
-  ],
-  "theme_tags": [
-    "chocolate",
-    "melted",
-    "glossy",
-    "caramel",
-    "sweet",
-    "rich",
-    "brown",
-    "aesthetic"
-  ]
-}
+      {
+        "slug": "midnight-starry-waves",
+        "name": "Midnight Starry Waves",
+        "description": "A bold artistic theme featuring swirling ocean-inspired brushstroke patterns in deep navy, teal, and blue against a dramatic black background",
+        "category": "modern",
+        "iconType": "pattern",
+        "iconValue": "https://res.cloudinary.com/q1mpw8j0/image/upload/v1793533187/iconaura/themes/midnight-starry-waves/icon-pattern.png",
+        "bgType": "color",
+        "bgValue": "#000000",
+        "color_tags": [],
+        "theme_tags": []
+      },
+      {
+        "slug": "dark-mocha",
+        "name": "Dark Mocha",
+        "description": "A rich dark theme featuring patterned icons against a deep chocolate brown background for a bold and elegant look",
+        "category": "modern",
+        "iconType": "pattern",
+        "iconValue": "pattern",
+        "bgType": "color",
+        "bgValue": "#392D21",
+        "color_tags": [
+          "brown",
+          "chocolate",
+          "dark-brown",
+          "black"
+        ],
+        "theme_tags": [
+          "pattern",
+          "mocha",
+          "dark",
+          "minimalist",
+          "elegant",
+          "warm",
+          "sophisticated"
+        ]
+      },
+      {
+        "slug": "mocha-texture",
+        "name": "Mocha Texture",
+        "description": "A sophisticated dual-texture theme combining rich dark chocolate brown patterns on warm light caramel brown textures for a cozy and elegant aesthetic",
+        "category": "modern",
+        "iconType": "pattern",
+        "iconValue": "https://res.cloudinary.com/q1mpw8j0/image/upload/v1793533190/iconaura/themes/mocha-texture/icon-pattern.png",
+        "bgType": "pattern",
+        "bgValue": "https://res.cloudinary.com/q1mpw8j0/image/upload/v1793533190/iconaura/themes/mocha-texture/bg-pattern.png",
+        "color_tags": [],
+        "theme_tags": []
+      },
+      {
+        "slug": "chocolate-melt",
+        "name": "Chocolate Melt",
+        "description": "A rich chocolate-inspired theme featuring glossy melted chocolate textures with creamy caramel swirls against a deep espresso brown background",
+        "category": "modern",
+        "iconType": "color",
+        "iconValue": "#442300",
+        "bgType": "pattern",
+        "bgValue": "pattern",
+        "color_tags": [
+          "chocolate",
+          "dark-brown",
+          "caramel",
+          "mocha",
+          "tan",
+          "cream"
+        ],
+        "theme_tags": [
+          "chocolate",
+          "melted",
+          "glossy",
+          "caramel",
+          "sweet",
+          "rich",
+          "brown",
+          "aesthetic"
+        ]
+      }
     ]
   },
   {
@@ -354,8 +413,16 @@
         "iconValue": "#FFFFFF",
         "bgType": "pattern",
         "bgValue": "pattern",
-        "color_tags": ["white", "orange", "brown"],
-        "theme_tags": ["nature", "autumn", "leaves"]
+        "color_tags": [
+          "white",
+          "orange",
+          "brown"
+        ],
+        "theme_tags": [
+          "nature",
+          "autumn",
+          "leaves"
+        ]
       },
       {
         "slug": "seashell-paradise",
@@ -366,7 +433,14 @@
         "iconValue": "pattern",
         "bgType": "pattern",
         "bgValue": "pattern",
-        "color_tags": ["beige", "brown", "pink", "yellow", "purple", "blue"],
+        "color_tags": [
+          "beige",
+          "brown",
+          "pink",
+          "yellow",
+          "purple",
+          "blue"
+        ],
         "theme_tags": [
           "seashell",
           "ocean",
@@ -386,7 +460,12 @@
         "iconValue": "#FFFFFF",
         "bgType": "pattern",
         "bgValue": "pattern",
-        "color_tags": ["yellow", "gold", "orange", "brown"],
+        "color_tags": [
+          "yellow",
+          "gold",
+          "orange",
+          "brown"
+        ],
         "theme_tags": [
           "sunflower",
           "floral",
@@ -407,7 +486,13 @@
         "iconValue": "pattern",
         "bgType": "pattern",
         "bgValue": "pattern",
-        "color_tags": ["white", "yellow", "gold", "green", "black"],
+        "color_tags": [
+          "white",
+          "yellow",
+          "gold",
+          "green",
+          "black"
+        ],
         "theme_tags": [
           "daisy",
           "floral",
@@ -428,7 +513,13 @@
         "iconValue": "#FFFFFF",
         "bgType": "pattern",
         "bgValue": "pattern",
-        "color_tags": ["green", "lime", "dark-green", "white", "blue"],
+        "color_tags": [
+          "green",
+          "lime",
+          "dark-green",
+          "white",
+          "blue"
+        ],
         "theme_tags": [
           "clover",
           "four-leaf",
@@ -477,7 +568,13 @@
         "iconValue": "#FFFFFF",
         "bgType": "pattern",
         "bgValue": "pattern",
-        "color_tags": ["green", "olive", "lime", "gold", "yellow"],
+        "color_tags": [
+          "green",
+          "olive",
+          "lime",
+          "gold",
+          "yellow"
+        ],
         "theme_tags": [
           "grass",
           "meadow",
@@ -491,92 +588,92 @@
         ]
       },
       {
-    "slug": "sage-floral-dream",
-    "name": "Sage Floral Dream",
-    "description": "A dreamy vintage floral theme featuring delicate white and yellow wildflowers, flowing botanical patterns, and soft sage green tones",
-    "category": "nature",
-    "iconType": "color",
-    "iconValue": "#E7D9FD",
-    "bgType": "pattern",
-    "bgValue": "pattern",
-    "color_tags": [
-      "sage",
-      "green",
-      "mint",
-      "cream",
-      "white",
-      "yellow",
-      "lavender"
-    ],
-    "theme_tags": [
-      "floral",
-      "wildflower",
-      "botanical",
-      "vintage",
-      "sage",
-      "dreamy",
-      "soft",
-      "aesthetic",
-      "nature"
-    ]
-  },
-  {
-    "slug": "almond-blossom",
-    "name": "Almond Blossom",
-    "description": "An artistic floral theme inspired by delicate almond blossoms on winding dark branches against a dreamy swirling teal-blue background",
-    "category": "nature",
-    "iconType": "pattern",
-    "iconValue": "pattern",
-    "bgType": "pattern",
-    "bgValue": "pattern",
-    "color_tags": [
-      "blue",
-      "teal",
-      "sage",
-      "cream",
-      "beige",
-      "brown",
-      "dark-green"
-    ],
-    "theme_tags": [
-      "floral",
-      "blossom",
-      "almond",
-      "botanical",
-      "artistic",
-      "vintage",
-      "nature",
-      "painting",
-      "aesthetic"
-    ]
-  },
-  {
-  "slug": "vintage-cloudscape",
-  "name": "Vintage Cloudscape",
-  "description": "A dreamy retro sky theme featuring fluffy ivory clouds against a deep navy blue sky with a vintage halftone print texture",
-  "category": "nature",
-  "iconType": "pattern",
-  "iconValue": "pattern",
-  "bgType": "pattern",
-  "bgValue": "pattern",
-  "color_tags": [
-    "navy",
-    "blue",
-    "cream",
-    "ivory",
-    "white"
-  ],
-  "theme_tags": [
-    "clouds",
-    "sky",
-    "vintage",
-    "retro",
-    "halftone",
-    "dreamy",
-    "celestial",
-    "aesthetic"
-  ]
-}
+        "slug": "sage-floral-dream",
+        "name": "Sage Floral Dream",
+        "description": "A dreamy vintage floral theme featuring delicate white and yellow wildflowers, flowing botanical patterns, and soft sage green tones",
+        "category": "nature",
+        "iconType": "color",
+        "iconValue": "#E7D9FD",
+        "bgType": "pattern",
+        "bgValue": "pattern",
+        "color_tags": [
+          "sage",
+          "green",
+          "mint",
+          "cream",
+          "white",
+          "yellow",
+          "lavender"
+        ],
+        "theme_tags": [
+          "floral",
+          "wildflower",
+          "botanical",
+          "vintage",
+          "sage",
+          "dreamy",
+          "soft",
+          "aesthetic",
+          "nature"
+        ]
+      },
+      {
+        "slug": "almond-blossom",
+        "name": "Almond Blossom",
+        "description": "An artistic floral theme inspired by delicate almond blossoms on winding dark branches against a dreamy swirling teal-blue background",
+        "category": "nature",
+        "iconType": "pattern",
+        "iconValue": "pattern",
+        "bgType": "pattern",
+        "bgValue": "pattern",
+        "color_tags": [
+          "blue",
+          "teal",
+          "sage",
+          "cream",
+          "beige",
+          "brown",
+          "dark-green"
+        ],
+        "theme_tags": [
+          "floral",
+          "blossom",
+          "almond",
+          "botanical",
+          "artistic",
+          "vintage",
+          "nature",
+          "painting",
+          "aesthetic"
+        ]
+      },
+      {
+        "slug": "vintage-cloudscape",
+        "name": "Vintage Cloudscape",
+        "description": "A dreamy retro sky theme featuring fluffy ivory clouds against a deep navy blue sky with a vintage halftone print texture",
+        "category": "nature",
+        "iconType": "pattern",
+        "iconValue": "pattern",
+        "bgType": "pattern",
+        "bgValue": "pattern",
+        "color_tags": [
+          "navy",
+          "blue",
+          "cream",
+          "ivory",
+          "white"
+        ],
+        "theme_tags": [
+          "clouds",
+          "sky",
+          "vintage",
+          "retro",
+          "halftone",
+          "dreamy",
+          "celestial",
+          "aesthetic"
+        ]
+      }
     ]
   }
 ]

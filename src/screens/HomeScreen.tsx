@@ -239,7 +239,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
             horizontal
             showsHorizontalScrollIndicator={false}
             data={categories.length > 0 ? ['all', ...categories.map(c => c.id)] : []}
-            keyExtractor={(item) => item}
+            keyExtractor={(item, index) => `${item}-${index}`}
             contentContainerStyle={styles.categoryScroll}
             initialNumToRender={8}
             windowSize={3}
@@ -263,7 +263,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           <FlatList
             key={`search-list-${selectedCategoryId}`}
             data={filteredThemes}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item, index) => `${item.id}-${index}`}
             renderItem={renderThemeItem}
             numColumns={3}
             columnWrapperStyle={styles.columnWrapper}
@@ -283,7 +283,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           <FlatList
             key="all-list"
             data={categories}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item, index) => `${item.id}-${index}`}
             renderItem={renderCategoryItem}
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
@@ -311,7 +311,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps) {
           <FlatList
             key={`category-list-${selectedCategoryId}`}
             data={selectedThemes}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item, index) => `${item.id}-${index}`}
             renderItem={renderThemeItem}
             numColumns={3}
             columnWrapperStyle={styles.columnWrapper}

@@ -51,8 +51,8 @@ const ThemeCard = memo(({
       >
         {theme.featuredApps
           .slice(0, 4)
-          .map((appId) => (
-            <View key={appId} style={styles.iconTile}>
+          .map((appId, index) => (
+            <View key={`${appId}-${index}`} style={styles.iconTile}>
               <IconCanvas appId={appId} theme={theme} size={55} />
             </View>
           ))}

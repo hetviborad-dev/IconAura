@@ -101,7 +101,7 @@ export default function SavedThemesScreen({ navigation }: { navigation: NativeSt
 
       <FlatList
         data={savedThemes}
-        keyExtractor={item => item.id}
+        keyExtractor={(item, index) => `${item.id}-${index}`}
         contentContainerStyle={styles.listContent}
         numColumns={3}
         renderItem={({ item }) => (
@@ -116,8 +116,8 @@ export default function SavedThemesScreen({ navigation }: { navigation: NativeSt
                 previewDynamicStyle(item),
               ]}
             >
-              {(item.featuredApps || []).slice(0, 4).map((appId) => (
-                <View key={appId} style={styles.iconTile}>
+              {(item.featuredApps || []).slice(0, 4).map((appId, index) => (
+                <View key={`${appId}-${index}`} style={styles.iconTile}>
                   <IconCanvas appId={appId} theme={item} size={55} />
                 </View>
               ))}
